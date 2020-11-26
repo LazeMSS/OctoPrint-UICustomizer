@@ -1,0 +1,344 @@
+@media (min-width: 980px){
+	body.UICfixedHeader{
+		margin-top: 50px;
+	}
+	.UICHideDesktop{
+		display: none;
+	}
+
+    .UICHeaderIcons{
+        float: unset !important;
+        position: absolute !important;
+        left: 50% !important;
+        -webkit-transform: translateX(-50%);
+        -moz-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+        transform: translateX(-50%);
+    }
+}
+@media (max-width: 979px){
+	.UICHideDesktop{
+		display: inline-block !important
+	}
+
+	.UICHeaderIcons{
+		float:right !important;
+	}
+
+	body.UICResponsiveMode #navbar div.nav-collapse {
+		text-align: right;
+	}
+
+	body.UICResponsiveMode .modal-body, body.UICResponsiveMode .modal-overflow .modal-body{
+		position: relative;
+    	max-height: 40px;
+		padding: 15px;
+    	overflow-y: auto !important;
+	}
+}
+
+
+@media (max-width: 767px){
+	body.UICResponsiveMode .search-query-with-clear .search-clear{
+		right: 28px;
+	}
+}
+
+@media (max-width: 500px){
+	body.UICResponsiveMode #navbar a.brand{
+		width: 5px;
+		overflow: hidden;
+	}
+}
+body.UICfixedFooter{
+	margin-bottom: 45px;
+}
+
+
+body.UICPreviewON div#settings_dialog div.modal-body {
+    max-height: 200px !important;
+    min-height: 200px !important;;
+    height: 200px !important;
+}
+
+body.UICPreviewON div#settings_dialog {
+    margin-top: 0px !important;
+    top: calc(100% - 350px);
+}
+
+body.UICPreviewON div.modal-backdrop.fade.in {
+    opacity: 0.3;
+}
+
+#tabs_content{
+	margin-bottom: 2px !important;
+}
+
+#files_wrapper ul.dropdown-menu {
+    right: 0;
+    left: auto;
+}
+
+.search-clear{
+	/* display: none !important;**/
+}
+
+.input-block.search-query{
+	max-width: 90% !important;
+    width: calc(100% - 28px) !important;
+    margin-right: -20px;
+    margin-left: -20px;
+}
+.search-query-with-clear .search-clear{
+	right: 8px;
+}
+
+
+.UICnoBackground{
+	background: none !important;
+}
+
+#UICSortRows input[type=range]{
+	width: 85%;
+}
+
+#UICSortRows ul {
+	clear: both;
+    padding-bottom: 40px;
+    background-color: #eee;
+    border-radius: 4px;
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none; /* Safari */
+	-khtml-user-select: none; /* Konqueror HTML */
+	-moz-user-select: none; /* Old versions of Firefox */
+	-ms-user-select: none; /* Internet Explorer/Edge */
+	user-select: none; /* Non-prefixed version, currently
+	                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+#UICSortRows ul li{
+	background-color: #fff;
+	cursor: grab;
+}
+
+#UICSortRows {
+    margin: 10px 0px;
+}
+
+#settings_plugin_uicustomizer form.form-horizontal .controls{
+	margin-left: 45px !important;
+}
+
+div.modal.modal-overflow #UICsettingsMenuNav{
+	margin-top: -30px !important;
+}
+
+#UICsettingsMenuNav{
+	position: fixed;
+	margin-top: -15px;
+	margin-bottom: 0px;
+	z-index: 1000;
+	padding: 10px 0px 15px 0px;
+	background: rgb(255,255,255);
+    background: linear-gradient(180deg, rgba(255,255,255,1) 0px, rgba(255,255,255,1) 55px, rgba(255,255,255,0) 100%);
+}
+
+#UICsettingsMenu a {
+    font-size: 14px;
+    font-weight: normal;
+}
+
+#UICsettingsMenu ul.dropdown-menu li.active a {
+    color: #fff;
+}
+
+body.UICResponsiveMode div.modal.modal-overflow #settings_dialog_content{
+	margin-top: 35px !important;
+}
+body.UICResponsiveMode div.modal #settings_dialog_content{
+	margin-top: 50px;
+}
+
+#UICsetMenuShow{
+	font-size: 12px;
+    overflow: hidden;
+    height: 10px;
+    display: block;
+    max-width: 60%;
+    width: 60%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    position: absolute;
+    pointer-events: none;
+}
+
+
+#UICSettingsHeader{
+	font-size: 50%;
+    margin-right: 20px;
+}
+
+.UIC-pulsate{
+	animation: pulsate_input 1s ease-out;
+    animation-iteration-count: infinite
+}
+
+
+body.UICResponsiveMode #gcode_canvas{
+    position: relative;
+    width: 100% !important;
+    height:100% !important;
+    float: right;
+    right: -1px;
+}
+
+body.UICResponsiveMode #gcode_layer_slider{
+	position: relative;
+}
+body.UICResponsiveMode #canvas_container div.slider-horizontal, body.UICResponsiveMode #gcode div.progress{
+	width: 100% !important;
+}
+
+body.UICResponsiveMode #gcode #gcode_layer_slider{
+    height: 100% !important;
+    height: calc(100% - 30px) !important;
+    z-index: 1000;
+    right: -11px;
+}
+
+
+body.UICResponsiveMode select{
+	width: initial !important;
+}
+
+#gcode div.UICToolTipLeft{
+	left: -120px !important;
+}
+
+.UICHide{
+	display: none;
+}
+
+.UICToggleVis{
+    cursor: pointer !important;
+    position: absolute;
+    right: 3px;
+    padding-top: 8px;
+    background: #fff;
+    margin-top: -7px;
+    padding-bottom: 10px;
+    width: 25px;
+    text-align: center;
+}
+
+div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
+    background-color: #eee;
+    color: #000;
+}
+
+.UICToggleVis:hover {
+	background-color: #fff !important;
+    border: 1px solid #aaa;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    border-radius: 5px;
+}
+
+#navbar_plugin_navbartemp.UICIconHack > div > div{
+	position: relative;
+	overflow: hidden;
+	float: left;
+	padding-top: 8px;
+	margin-bottom: -10px;
+}
+
+#navbar_plugin_navbartemp.UICIconHack > div > div > span {
+    position: relative;
+    margin-left: -13px;
+    margin-right: 10px;
+}
+#navbar_plugin_navbartemp.UICIconHack #socInfo{
+    margin-left: -31px !important;
+}
+
+#navbar_plugin_navbartemp.UICIconHack > div > div > span:after{
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    position: absolute;
+    color: #000;
+    text-align: center;
+    width: 100%;
+    left: 0px;
+    padding-left: 5px;
+    top: -15px;
+    opacity:0.4;
+}
+
+#navbar_plugin_navbartemp.UICIconHack > div > div > #socInfo:after{
+	content:"\f2db" !important;
+}
+
+#navbar_plugin_navbartemp.UICIconHack > div > div >  #bedInfo:after{
+	content:"\f2d1" !important;
+}
+
+#navbar_plugin_navbartemp.UICIconHack > div > div > #toolInfo:after{
+	content:"\f06d" !important;
+}
+
+
+.UICWebCamClick{
+    position: absolute;
+    right: 10px;
+    font-size: 2em;
+    z-index: 1000;
+    background-color: #eeeeeea1;
+    margin: 10px;
+    padding: 5px 5px 3px 5px;
+    border-radius: 8px;
+}
+
+#UICWebCamFull{
+    position: absolute;
+    left: 50px;
+    top: 200px;
+    width: calc(100% - 100px);
+    z-index: 1000;
+    background: rgba(255,255,255,0.66);
+    border: 2px  solid rgba(0,0,0,0.5);
+    border-radius: 4px; padding: 8px;
+    min-height: 30px;
+    min-width: 30px;
+    resize: both;
+    overflow: hidden;
+    max-height: fit-content;
+    max-width: fit-content;
+}
+
+#UICWebCamFull img{
+    width: 100%;
+}
+
+.UICHeaderIcons #filament_indicator.present i{
+    color:#40e543 !important;
+}
+
+.UICHeaderIcons #filament_indicator.empty i{
+    color:#b94a48  !important;
+}
+
+.UICHeaderIcons #filament_indicator.empty i:before{
+    content: "\f071" !important;
+}
+
+.UICHeaderIcons #filament_indicator.unknown i{
+    color: #3a87ad !important;
+}
+
+.UICHideHard{
+    display: none !important;
+}
