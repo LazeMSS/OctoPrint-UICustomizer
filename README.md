@@ -24,5 +24,14 @@ or manually using this URL:
 
 
 ## Configuration
+![](extras/settings.png)
 
-**TODO:** Describe your plugin's configuration options (if any).
+## Screenshots
+### Responsive layouts
+![](extras/responsive.png)
+### Overview with webcam widget
+![](extras/camwidget.png)
+### Floating webcam
+![](extras/floating.png)
+### Compact Navbar temp
+![](extras/compactnav.png)
