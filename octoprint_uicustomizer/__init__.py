@@ -69,7 +69,7 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                 current=self._plugin_version,
 
                 # update method: pip
-                pip="https://github.com/LazeMSS/OctoPrint-UICustomizer/archive/{target}.zip"
+                pip="https://github.com/LazeMSS/OctoPrint-UICustomizer/archive/{target_version}.zip"
             )
         )
 
