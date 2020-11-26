@@ -18,7 +18,7 @@ plugin_version = "0.0.9"
 
 # The plugin's description. Can be overwritten within OctoPrint's internal data via __plugin_description__ in the plugin
 # module
-plugin_description = """Customize the layout of OctoPrint UI and more"""
+plugin_description = """Customize the layout of OctoPrint userinterface, add webcam widget and more"""
 
 # The plugin's author. Can be overwritten within OctoPrint's internal data via __plugin_author__ in the plugin module
 plugin_author = "Mikkel Skovgaard"
@@ -27,7 +27,7 @@ plugin_author = "Mikkel Skovgaard"
 plugin_author_email = "UICustomizer@jemi.dk"
 
 # The plugin's homepage URL. Can be overwritten within OctoPrint's internal data via __plugin_url__ in the plugin module
-plugin_url = "https://github.com/yourGithubName/OctoPrint-Helloworld"
+plugin_url = "https://github.com/LazeMSS/OctoPrint-UICustomizer"
 
 # The plugin's license. Can be overwritten within OctoPrint's internal data via __plugin_license__ in the plugin module
 plugin_license = "AGPLv3"

@@ -76,7 +76,6 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
 
 __plugin_name__ = "UI Customizer"
 __plugin_pythoncompat__ = ">=2.7,<4"
-__plugin_version__ = "0.0.9"
 
 def __plugin_load__():
     global __plugin_implementation__
