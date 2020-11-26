@@ -27,7 +27,7 @@ or manually using this URL:
 The configuration is split into two sections - the top checkboxes for switching features on and off.
 ![](extras/settings.png)
 
-###Features
+### Features
 * Realtime preview - switching this on will minimize the settingsdialog and preview any changes made to UI Customizer settings directly in the UI
 * Fixed header/topbar - should the top menubar stay fixed when scrolling or not
 * Fixed footer/bottombar - should the bottom bar stay fixed when scrolling or not
