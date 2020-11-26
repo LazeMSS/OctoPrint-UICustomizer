@@ -758,7 +758,7 @@ $(function() {
         }
 
 
-        // Set graph background
+        // Fix fluid layout
         self.set_fluidLayout = function(enabled){
             if (enabled){
                 $('#navbar > div.navbar-inner.default > div.container').removeClass("container").addClass("container-fluid").removeAttr("style","");
