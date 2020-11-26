@@ -11,6 +11,9 @@ It also features a lot of other fixes and improvements:
 * Hide temperature background graphics
 * Zoomed/Floating webcam option
 * Extra Webcam "widget"
+* Compact Navbar temp icons
+* Hide widget
+* Realtime preview of changes
 
 ## Setup
 
