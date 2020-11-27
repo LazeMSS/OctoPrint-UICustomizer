@@ -1,3 +1,4 @@
+/* UICustomizer START */
 @media (min-width: 980px){
 	body.UICfixedHeader{
 		margin-top: 50px;
@@ -54,6 +55,9 @@ body.UICfixedFooter{
 	margin-bottom: 45px;
 }
 
+body.UICResponsiveMode div#settings_dialog{
+    display: block;
+}
 
 body.UICPreviewON div#settings_dialog div.modal-body {
     max-height: 200px !important;
@@ -342,3 +346,6 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
 .UICHideHard{
     display: none !important;
 }
+
+
+/* UICustomizer END */

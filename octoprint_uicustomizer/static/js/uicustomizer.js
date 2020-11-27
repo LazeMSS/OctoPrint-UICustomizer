@@ -1,3 +1,4 @@
+/* UICustomizer START */
 /*
 What it does:
     full row layout control - place "widgets" and change row widths
@@ -69,6 +70,7 @@ $(function() {
 
         // Quick debug
         self.logToConsole = function(msg){
+            return true;
             console.log('UICustomizer:',msg)
         }
 
@@ -557,6 +559,9 @@ $(function() {
                     curactive.find('a:first').trigger('click');
                 }
 
+                // Fix floating errors
+                $('#UICFullSettingsBox div.control-group:not(.row-fluid)').addClass('row-fluid UICRemoveFluidRow');
+
                 // Build settings hack --------------------------------------------------------- END
 
                 // Fix modals on show
@@ -652,8 +657,10 @@ $(function() {
                 $('body').off('shown.bs.modal.UICHandler');
                 $(window).off('resize.UICHandler');
                 $('#settings_dialog_menu a').off('click.UICSetMenu');
+                // Remove fluid hack
+                $('#UICFullSettingsBox div.control-group.UICRemoveFluidRow').removeClass('row-fluid UICRemoveFluidRow');
 
-                // Clen menu height hacks
+                // Clean menu height hacks
                 $('#UICsettingsMenu .pre-scrollable').removeClass('pre-scrollable');
                 $('#UICsettingsMenu .dropdown-menu').css({'height':''});
 
@@ -1044,3 +1051,5 @@ $(function() {
         []
     ]);
 });
+
+/* UICustomizer END */
