@@ -55,7 +55,7 @@ body.UICfixedFooter{
 	margin-bottom: 45px;
 }
 
-body.UICResponsiveMode div#settings_dialog{
+body.UICResponsiveMode div#settings_dialog,body.UICResponsiveMode div#settings_dialog .help-inline{
     display: block;
 }
 
