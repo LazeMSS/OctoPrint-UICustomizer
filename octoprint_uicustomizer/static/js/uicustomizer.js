@@ -1,18 +1,6 @@
 /* UICustomizer START */
 /*
-What it does:
-    full row layout control - place "widgets" and change row widths
-    Mobile responsive support added
-    custom webcam widget
-    Options:
-        Fluid layout mode
-        Fixed header
-        Fixed footer
-        Hide temp graph background
-    preview mode - change on the fly
-
 TODO:
-    #https://docs.octoprint.org/en/master/plugins/gettingstarted.html#saying-hello-how-to-make-the-plugin-actually-do-something
     https://plugins.octoprint.org/help/registering/
 
 Nice to:
@@ -454,7 +442,7 @@ $(function() {
             }
 
             // Fix modal sizing
-            if ($('div.modal-body:visible').length && $('div.modal-body:visible').attr('style').match(/(^|\s)max-height: \d+px !important;/i) == null){
+            if ($('div.modal-body:visible').length && $('div.modal-body:visible').attr('style') != undefined $('div.modal-body:visible').attr('style').match(/(^|\s)max-height: \d+px !important;/i) == null){
                 var newstyle = $('div.modal-body:visible').attr('style').replace(/(^|\s)max-height: \d+px/i,`$& !important`);
                 $('div.modal-body:visible').attr('style',newstyle);
             }
