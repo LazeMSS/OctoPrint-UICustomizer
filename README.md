@@ -5,6 +5,7 @@ It also features a lot of other fixes and improvements:
 * Change width of the columns
 * Move "widgets" around in columns
 * Turn on/off responsive layout
+* Improved settings window
 * Fixed header/topbar
 * Fixed footer/bottombar
 * Fluid/full width layout
