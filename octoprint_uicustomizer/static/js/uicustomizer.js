@@ -442,7 +442,7 @@ $(function() {
             }
 
             // Fix modal sizing
-            if ($('div.modal-body:visible').length && $('div.modal-body:visible').attr('style') != undefined $('div.modal-body:visible').attr('style').match(/(^|\s)max-height: \d+px !important;/i) == null){
+            if ($('div.modal-body:visible').length && $('div.modal-body:visible').attr('style') != undefined && $('div.modal-body:visible').attr('style').match(/(^|\s)max-height: \d+px !important;/i) == null){
                 var newstyle = $('div.modal-body:visible').attr('style').replace(/(^|\s)max-height: \d+px/i,`$& !important`);
                 $('div.modal-body:visible').attr('style',newstyle);
             }
