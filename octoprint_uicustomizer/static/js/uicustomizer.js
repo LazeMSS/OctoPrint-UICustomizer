@@ -156,6 +156,12 @@ $(function() {
                     if (typeof shown == "function"){
                         shown = shown();
                     }
+                    // Remove prefixes - they are added to keep the order in json object
+                    if (widgetid.charAt(0) == "_"){
+                        self.logToConsole("Slicing 3 chars of: " + widgetid);
+                        widgetid = widgetid.slice(3);
+                        self.logToConsole("new widgetid: " + widgetid);
+                    }
                     self.logToConsole("Building row " +rowid + ": " + widgetid + (shown?" Adding":" Hiding"));
                     // Add the widgets if visible or in custom list
                     if (shown && ($(widgetid).length || widgetid in self.customWidgets)){
@@ -308,12 +314,7 @@ $(function() {
                         });
                         // Add hls player
                         var video = $('#UICWebCamFull video')[0];
-                        var hls = new Hls();
-                        hls.loadSource(streamURL);
-                        hls.attachMedia(video);
-                        hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                            video.play();
-                        });
+                        self.startHLSstream(video,streamURL);
                     }else{
                         $('#UICWebCamFull img').on('load',function(){
                             $('#UICWebCamFull div.nowebcam').remove();
@@ -378,7 +379,7 @@ $(function() {
                             $('#control_link a').trigger('click');
                         }));
 
-                    }).off('playing.UICCam').on('playing.UICCam',function(event){
+                    }).off('playing.UICCam').on('playing.UICCam play',function(event){
                         // Clean up and show the player again
                         $('#IUCWebcamContainer div.nowebcam').remove();
                         $('#IUCWebcamContainer video').show();
@@ -398,12 +399,7 @@ $(function() {
 
                         // Start HLS player - a seperate stream is better - tried canvas copy etc.
                         var video = $('#IUCWebcamContainer video')[0];
-                        var hls = new Hls();
-                        hls.loadSource(streamURL);
-                        hls.attachMedia(video);
-                        hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                            video.play();
-                        });
+                        self.startHLSstream(video,streamURL);
                     });
 
                     // Error handling on webcam handler
@@ -411,12 +407,17 @@ $(function() {
                         function extendCam(){
                             self.onWebCamErrorOrg();
                             self.logToConsole("Webcam HLS onWebcamErrored triggered");
-                            // Error loading sign and show info
-                            $('#IUCWebcamContainer video').hide();
-                            $('#IUCWebcamContainer div.nowebcam').remove();
-                            $('#IUCWebcamContainer > div').append($('<div class="nowebcam text-center"><i class="fa fa-exclamation-triangle"></i> Error loading webcam</div>').off('click.UICWebCamErrror').on('click.UICWebCamErrror',function(){
-                                $('#control_link a').trigger('click');
-                            }));
+                            if ($('#IUCWebcamContainer video')[0].paused){
+                                // Error loading sign and show info
+                                $('#IUCWebcamContainer video').hide();
+                                $('#IUCWebcamContainer div.nowebcam').remove();
+                                $('#IUCWebcamContainer > div').append($('<div class="nowebcam text-center"><i class="fa fa-exclamation-triangle"></i> Error loading webcam</div>').off('click.UICWebCamErrror').on('click.UICWebCamErrror',function(){
+                                    $('#control_link a').trigger('click');
+                                }));
+                            }else{
+                                $('#IUCWebcamContainer video').show();
+                                $('#IUCWebcamContainer div.nowebcam').remove();
+                            }
                         }
                         return extendCam;
                     })();
@@ -496,7 +497,6 @@ $(function() {
                         streamURL += new Date().getTime();
                         self.logToConsole("Setting webcam url:"+ streamURL);
                         $('#IUCWebcamContainerInner img').attr('src',streamURL);
-                        // Update the full - todo: Support HLS fixes
                         if ($('#UICWebCamFull img').length){
                             $('#UICWebCamFull img').attr('src',streamURL);
                         }
@@ -513,6 +513,18 @@ $(function() {
                 // Restore
                 OctoPrint.coreui.browserTabVisible = prevVal;
                 OctoPrint.coreui.selectedTab = prevVal2;
+
+                // Start the HLS cam just to make sure
+                if (hlsCam){
+                    // Play HLS and store URL + state
+                    var streamURL = self.settings.webcam_streamUrl();
+                    $('#IUCWebcamContainer video').data('streamURL',streamURL);
+                    $('#IUCWebcamContainer video').data('playing',true);
+
+                    // Start HLS player - a seperate stream is better - tried canvas copy etc.
+                    var video = $('#IUCWebcamContainer video')[0];
+                    self.startHLSstream(video,streamURL);
+                }
 
             }else{
                  OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded = self.onWebCamOrg;
@@ -902,10 +914,29 @@ $(function() {
 
         // ------------------------------------------------------------------------------------------------------------------------
 
+        // Improve the HLS playback method
+        self.startHLSstream = function(element,streamURL){
+            if (element.canPlayType('application/vnd.apple.mpegurl')) {
+                self.logToConsole("HLS Playing APPLE style : " + streamURL);
+                element.src = streamURL;
+            }else if (Hls.isSupported()) {
+                self.logToConsole("HLS Playing oldschool style : " + streamURL);
+                var hls = new Hls();
+                hls.loadSource(streamURL);
+                hls.attachMedia(element);
+                // Play
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    element.play();
+                });
+            }else{
+                self.logToConsole("HLS NOT playing ANY style :  " + streamURL);
+            }
+        }
+
         // Save handler and update
         self.onSettingsBeforeSave = function () {
             self.saved = true;
-            var rowData = self.buildRows();
+            var rowData = self.buildRows(true);
             // Save and update
             self.settings.settings.plugins.uicustomizer.rows = rowData[0];
             self.settings.settings.plugins.uicustomizer.widths = rowData[1];
@@ -922,16 +953,24 @@ $(function() {
         }
 
         // Build row layout and width
-        self.buildRows = function(){
+        self.buildRows = function(prefix){
+            var prefixItem = '';
             var rowsSave = [];
             $('#UICSortRows ul').each(function(key,val){
                 rowsSave[key] = {};
                 $(this).find('li').each(function(key2,val2){
+                    if (prefix){
+                        if (key2 < 10){
+                            prefixItem = '_0'+key2;
+                        }else{
+                            prefixItem = '_'+key2;
+                        }
+                    }
                     // Hidden or shown
                     if ($(this).find('input:checkbox').is(":checked")){
-                        rowsSave[key][$(this).data('id')] = true;
+                        rowsSave[key][prefixItem+$(this).data('id')] = true;
                     }else{
-                        rowsSave[key][$(this).data('id')] = false;
+                        rowsSave[key][prefixItem+$(this).data('id')] = false;
                     }
                 });
             });
@@ -976,6 +1015,12 @@ $(function() {
             $(rows).each(function(rowid,items){
                 // add to the editor
                 $.each(items, function(widgetid,shown){
+                    // prefix removal
+                    if (widgetid.charAt(0) == "_"){
+                        self.logToConsole("Slicing 3 chars of: " + widgetid);
+                        widgetid = widgetid.slice(3);
+                        self.logToConsole("new widgetid: " + widgetid);
+                    }
                     self.logToConsole('Adding widget "' + widgetid + '"('+shown() + ") to selector");
                     self.addToSorter(rowid,widgetid,shown());
                     // Remove from add defaults
@@ -1036,7 +1081,7 @@ $(function() {
                         fixMinMax();
                         // Preview
                         if (self.previewOn){
-                            var rowData = self.buildRows();
+                            var rowData = self.buildRows(false);
                             self.set_rowsLayout({'rows': rowData[0],'widths':rowData[1]});
                         }
                     }
@@ -1083,7 +1128,7 @@ $(function() {
                 }
                 // Preview
                 if (self.previewOn){
-                    var rowData = self.buildRows();
+                    var rowData = self.buildRows(false);
                     self.set_rowsLayout({'rows': rowData[0],'widths':rowData[1]});
                 }
             });
@@ -1103,7 +1148,7 @@ $(function() {
                     self.previewHasBeenOn = true;
                     // Update all
                     $('#settings_plugin_uicustomizer input:checkbox[data-settingtype]').trigger('change.uicus');
-                    var rowData = self.buildRows();
+                    var rowData = self.buildRows(false);
                     self.set_rowsLayout({'rows': rowData[0],'widths':rowData[1]});
 
                     // Trigger us self if checking another settings
