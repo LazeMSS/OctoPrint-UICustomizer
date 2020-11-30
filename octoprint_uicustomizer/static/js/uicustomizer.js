@@ -78,7 +78,6 @@ $(function() {
 
             // Load custom layout
             self.UpdateLayout(self.settings.settings.plugins.uicustomizer);
-
         }
 
         // Add an item to settings UI
@@ -234,7 +233,6 @@ $(function() {
 
 
         // ------------------------------------------------------------------------------------------------------------------------
-
         self.set_addWebCamZoom = function(enable){
             if (!enable){
                 $('div.UICWebCamClick').remove();
@@ -247,11 +245,13 @@ $(function() {
                 var style = window.getComputedStyle(event.target, null);
                 event.dataTransfer.setData("text/plain",(parseInt(style.getPropertyValue("left"),10) - event.clientX) + ',' + (parseInt(style.getPropertyValue("top"),10) - event.clientY));
             }
+
             var drag_over = function(event) {
                 $('#drop_overlay').addClass('UICHideHard');
                 event.preventDefault();
                 return false;
             }
+
             var drop = function(event) {
                 var offset = event.dataTransfer.getData("text/plain").split(',');
                 var dm = document.getElementById('UICWebCamFull');
@@ -278,6 +278,7 @@ $(function() {
                 $('#webcam_hls_container video').attr('src','');
                 $('#webcam_hls_container').hide();
             }
+
             // Remove all zoom classes
             $('.UIWebcamZoomSrc').removeClass('UIWebcamZoomSrc');
 
@@ -288,7 +289,9 @@ $(function() {
                 obj.addClass('UIWebcamZoomSrc');
                 var zoomclick = $('<div class="UICWebCamClick"><a href="javascript:void(0);"><i class="fa fa-expand"></i></a></div>');
                 obj.prepend(zoomclick);
-                zoomclick.hide();
+                if (!self.previewOn){
+                    zoomclick.hide();
+                }
                 zoomclick.off('click.UICWebCamClick').on('click.UICWebCamClick',function(){
                     $('.UIWebcamZoomSrc').hide();
                     // Remove previous if any
