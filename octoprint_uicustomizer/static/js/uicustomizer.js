@@ -379,7 +379,7 @@ $(function() {
                             $('#control_link a').trigger('click');
                         }));
 
-                    }).off('playing.UICCam').on('playing.UICCam play',function(event){
+                    }).off('playing.UICCam').on('playing.UICCam',function(event){
                         // Clean up and show the player again
                         $('#IUCWebcamContainer div.nowebcam').remove();
                         $('#IUCWebcamContainer video').show();
