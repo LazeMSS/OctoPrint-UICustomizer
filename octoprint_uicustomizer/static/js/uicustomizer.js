@@ -1,8 +1,5 @@
 /* UICustomizer START */
 /*
-TODO:
-    https://plugins.octoprint.org/help/registering/
-
 Nice to:
     icon picker/search
     graph background set
