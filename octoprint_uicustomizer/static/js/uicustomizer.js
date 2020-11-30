@@ -272,10 +272,11 @@ $(function() {
                 containers = ['#webcam_hls_container','#IUCWebcamContainer > div'];
                 // fix position of hls
                 $('#webcam_hls_container').css('position','relative');
+                $('#webcam_container img').attr('src','');
                 $('#webcam_container').hide();
             }else{
-                $('#webcam_hls_container').hide();
                 $('#webcam_hls_container video').attr('src','');
+                $('#webcam_hls_container').hide();
             }
             // Remove all zoom classes
             $('.UIWebcamZoomSrc').removeClass('UIWebcamZoomSrc');
@@ -912,11 +913,11 @@ $(function() {
 
             var streamURL = self.settings.webcam_streamUrl();
             if (/.m3u8/i.test(streamURL)){
-                $('#webcam_container').hide();
                 $('#webcam_container img').attr('src','');
+                $('#webcam_container').hide();
             }else{
-                $('#webcam_hls_container').hide();
                 $('#webcam_hls_container video').attr('src','');
+                $('#webcam_hls_container').hide();
             }
         }
 
