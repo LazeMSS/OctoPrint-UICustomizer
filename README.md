@@ -42,7 +42,8 @@ The layout of the screen can be made into 1,2 or 3 columns and the size of the c
 If you want a two or one column layout then just drag the "widgets" all the widgets into the left hand side columns.
 Each widget can be moved by draging. The widgets can also be hidden by clicking the eye on the right hand side of the widget.
 
-## Screenshots
+## Screenshots/Video
+[YouTube](https://youtu.be/BTiI6i1Rc5c)
 ### Responsive layouts
 ![](extras/responsive.png)
 ### Overview with webcam widget
