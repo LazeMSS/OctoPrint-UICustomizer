@@ -55,7 +55,7 @@ body.UICfixedFooter{
 	margin-bottom: 45px;
 }
 
-body.UICResponsiveMode div#settings_dialog,body.UICResponsiveMode div#settings_dialog .help-inline{
+body.UICResponsiveMode div#settings_dialog .help-inline{
     display: block;
 }
 
@@ -268,8 +268,6 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
 
 #navbar_plugin_navbartemp.UICIconHack > div > div > span:after{
     display: inline-block;
-    font: normal normal normal 14px/1 FontAwesome;
-    font-size: inherit;
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     position: absolute;
@@ -280,6 +278,16 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
     padding-left: 5px;
     top: -15px;
     opacity:0.4;
+    font-style: normal;
+    font-variant-ligatures: normal;
+    font-variant-caps: normal;
+    font-variant-numeric: normal;
+    font-variant-east-asian: normal;
+    font-weight: 900;
+    font-stretch: normal;
+    font-size: inherit;
+    line-height: 1;
+    font-family: "Font Awesome 5 Free","FontAwesome";
 }
 
 #navbar_plugin_navbartemp.UICIconHack > div > div > #socInfo:after{
@@ -297,13 +305,17 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
 
 .UICWebCamClick{
     position: absolute;
-    right: 10px;
-    font-size: 2em;
+    right: 0px;
+    font-size: 1.5em;
     z-index: 1000;
     background-color: #eeeeeea1;
-    margin: 10px;
+    margin: 5px 15px 0px 0px;
     padding: 5px 5px 3px 5px;
     border-radius: 8px;
+}
+
+#IUCWebcamContainer .UICWebCamClick{
+    margin-right: 20px;
 }
 
 #UICWebCamFull{
@@ -321,10 +333,68 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
     overflow: hidden;
     max-height: fit-content;
     max-width: fit-content;
+    object-fit: contain;
+    background-color: #eee;
 }
 
-#UICWebCamFull img{
+#UICWebCamFull img,#UICWebCamFull video{
     width: 100%;
+    min-width: 200px !important;
+}
+
+.UICWebcam .webcam_rotated {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    pointer-events: none
+}
+
+.UICWebcam .webcam_rotated .webcam_fixed_ratio {
+    position: absolute;
+    transform: rotate(-90deg);
+    top: 0;
+    bottom: 0;
+    pointer-events: none
+}
+
+.UICWebcam .webcam_rotated .webcam_fixed_ratio .webcam_fixed_ratio_inner {
+    width: 100%;
+    height: 100%;
+    pointer-events: none
+}
+
+.UICWebcam .webcam_unrotated .webcam_fixed_ratio {
+    width: 100%;
+    pointer-events: none;
+    padding-bottom: 100%;
+    position: relative
+}
+
+.UICWebcam .webcam_unrotated .webcam_fixed_ratio.ratio43 {
+    padding-bottom: 75%
+}
+
+.UICWebcam .webcam_unrotated .webcam_fixed_ratio.ratio169 {
+    padding-bottom: 56.25%
+}
+
+.UICWebcam .webcam_unrotated .webcam_fixed_ratio.ratio1610 {
+    padding-bottom: 62.5%
+}
+
+.UICWebcam .webcam_unrotated .webcam_fixed_ratio .webcam_fixed_ratio_inner {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    pointer-events: none
+}
+
+.UICWebcam img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .UICHeaderIcons #filament_indicator.present i{
@@ -346,6 +416,5 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
 .UICHideHard{
     display: none !important;
 }
-
 
 /* UICustomizer END */
