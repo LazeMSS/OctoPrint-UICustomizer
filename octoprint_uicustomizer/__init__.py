@@ -44,8 +44,9 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
             "fixedFooter" : True,
             "hideGraphBackground" : True,
             "responsiveMode": True,
-            "navbarplugintempfix": False,
-            "addWebCamZoom" : False
+            "navbarplugintempfix": True,
+            "addWebCamZoom" : True,
+            "centerTopIcons": True,
         }
 
     def get_template_configs(self):

@@ -134,6 +134,11 @@ $(function() {
                 self.set_navbarplugintempfix(true);
             }
 
+            // Center the icons
+            if (settingsPlugin.centerTopIcons()){
+                self.set_centerTopIcons(true);
+            }
+
             self.set_rowsLayout(settingsPlugin);
 
             // addWebCamZoom
@@ -728,8 +733,6 @@ $(function() {
 
                 // Add menu button to the main menu
                 $('#navbar div.navbar-inner').prepend('<a class="btn btn-navbar collapsed" data-toggle="collapse" data-target=".UICMainMenu"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a>');
-                // Move header icons out of menu
-                $('div.UICMainMenu').before($('<ul class="UICHeaderIcons nav"></ul>').append($('div.UICMainMenu ul.nav li[id^="navbar_plugin"] > :not(a[href])').parent()));
 
                 // Close menu on click
                 $('div.UICMainMenu a:not(.dropdown-toggle)').off('click.UICMainMenu').on('click.UICMainMenu',function(){
@@ -822,16 +825,32 @@ $(function() {
 
                 // Remove menu hacks
                 $('#navbar div.navbar-inner a.btn-navbar').remove();
-                $('div.UICMainMenu > ul.nav').prepend($('ul.UICHeaderIcons li'));
                 $('div.UICMainMenu .UICHideDesktop').remove();
                 $('div.UICMainMenu').removeClass('UICMainMenu');
-                $('ul.UICHeaderIcons').remove();
 
                  $('.UICToolTipLeft').removeClass('UICToolTipLeft');
 
                 $('body').removeClass('UICResponsiveMode');
 
 
+            }
+        }
+
+        // Should we center the icons or not?
+        self.set_centerTopIcons = function(enabled){
+            if (enabled){
+                if ($('ul.UICHeaderIcons').length){
+                    return true;
+                }
+                // Move header icons out of menu
+                $('#navbar div.navbar-inner > div > div.nav-collapse').addClass('UICMainMenu');
+                $('div.UICMainMenu').before($('<ul class="UICHeaderIcons nav"></ul>').append($('div.UICMainMenu ul.nav li[id^="navbar_plugin"] > :not(a[href])').parent()));
+            }else{
+                if (!$('ul.UICHeaderIcons').length){
+                    return true;
+                }
+                $('div.UICMainMenu > ul.nav').prepend($('ul.UICHeaderIcons li'));
+                $('ul.UICHeaderIcons').remove();
             }
         }
 

@@ -15,6 +15,7 @@ It also features a lot of other fixes and improvements:
 * [Compact Navbar temp](https://plugins.octoprint.org/plugins/navbartemp/) icons
 * Hide widget
 * Realtime preview of changes
+* Center top bar icons
 
 ## Setup
 
