@@ -40,6 +40,11 @@
         background-color: #ebebeb;
     }
 
+    body.UICResponsiveMode #navbar .navbar-inner .nav>li>a:hover,
+    body.UICResponsiveMode #navbar .navbar-inner .nav>li.dropdown.open>.dropdown-toggle{
+         background: #dedede;
+    }
+
 	body.UICResponsiveMode .modal-body, body.UICResponsiveMode .modal-overflow .modal-body{
 		position: relative;
     	max-height: 40px;

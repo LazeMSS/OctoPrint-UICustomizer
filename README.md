@@ -27,7 +27,7 @@ or manually using this URL:
 
 ## Configuration
 The configuration is split into two sections - the top checkboxes for switching features on and off.
-![](extras/settings.png)
+![](extras/settings.png?new=1)
 
 ### Features
 * Realtime preview - switching this on will minimize the settingsdialog and preview any changes made to UI Customizer settings directly in the UI
