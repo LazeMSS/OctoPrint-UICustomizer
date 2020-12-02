@@ -1215,11 +1215,12 @@ $(function() {
                 // Change checkbox
                 var chbox = $(this).parent().parent().find('input');
                 chbox.prop("checked", !chbox.prop("checked"));
+                if (self.previewOn){
+                    $($(this).closest('li').data('id')).toggle().addClass('UICpreviewToggle');
+                    self.previewHasBeenOn = true;
+                }
                 event.stopPropagation();
             });
-
-            // Disable the main draghandler to enable the local drag&drop
-            // $(document).unbind("dragenter");
 
             // Update min max
             var fixMinMax = function(){
@@ -1346,6 +1347,8 @@ $(function() {
             // Revert if not saved and we have been previewing anything
             if (!self.saved && self.previewHasBeenOn){
                 self.UpdateLayout(self.settings.settings.plugins.uicustomizer);
+                $('.UICpreviewToggle').toggle();
+                $('.UICpreviewToggle').removeClass('UICpreviewToggle');
             }
             $('body').removeClass('UICPreviewON');
 
