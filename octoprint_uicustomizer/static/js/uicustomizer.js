@@ -56,7 +56,7 @@ $(function() {
 
         // Quick debug
         self.logToConsole = function(msg){
-            return true;
+            // return true;
             console.log('UICustomizer:',msg)
         }
 
@@ -394,6 +394,7 @@ $(function() {
                     document.addEventListener(visibilityChange, function(){
                         if (document[hidden]) {
                             self.logToConsole("Visibility changed to hidden");
+                            $('#IUCWebcamContainer').data('pausedByVis',true);
                             if (hlsCam){
                                 $('#IUCWebcamContainer video')[0].pause();
                             }else{
@@ -403,6 +404,7 @@ $(function() {
                             }
                         }else{
                             self.logToConsole("Visibility changed to visible");
+                            $('#IUCWebcamContainer').data('pausedByVis',false);
                             if (hlsCam){
                                 $('#IUCWebcamContainer video')[0].play();
                             }else{
@@ -472,7 +474,9 @@ $(function() {
                         function extendCam(){
                             self.onWebCamErrorOrg();
                             self.logToConsole("Webcam HLS onWebcamErrored triggered");
-                            if ($('#IUCWebcamContainer video')[0].paused){
+                            self.logToConsole($('#IUCWebcamContainer video')[0].paused);
+                            self.logToConsole($('#IUCWebcamContainer').data('pausedByVis'));
+                            if ($('#IUCWebcamContainer video')[0].paused && $('#IUCWebcamContainer').data('pausedByVis') !== true){
                                 // Error loading sign and show info
                                 $('#IUCWebcamContainer video').hide();
                                 $('#IUCWebcamContainer div.nowebcam').remove();
