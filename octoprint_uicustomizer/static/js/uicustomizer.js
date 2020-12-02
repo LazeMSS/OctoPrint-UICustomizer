@@ -582,15 +582,22 @@ $(function() {
         }
 
         // Fix modal
-        self.FixModalBox = function(eventType){
+        self.fixSettingsModal = function(eventType){
             // Nothing to do
             if (!$('body').hasClass('UICResponsiveMode')){
                 return true;
             }
-            self.logToConsole('FixModalBox triggered : ' + eventType);
+            self.logToConsole('FixSettingsModal triggered : ' + eventType);
 
             // Fix collapse menu hack for smaller screens than normal bootstrap 2 :(  All these hacks are terrible i know but fun to make - Maybe I should have spent my time making a implementation using BootStap4 instead - well...
             if ($('#settings_dialog_menu:visible').length && $('#UICsettingsMenu').length){
+
+                // Expand the screen estate
+                if ($('body').width() <= 980){
+                    $('#settings_dialog_content').addClass('span12').removeClass('span9');
+                }else{
+                    $('#settings_dialog_content').addClass('span9').removeClass('span12');
+                }
 
                 // Set width
                 $('#UICsettingsMenuNav').width($('#UICFullSettingsBox').width());
@@ -755,10 +762,10 @@ $(function() {
                             $('#UICsettingsMenu').data('UICOrgWidth',$('#UICsettingsMenu').width()+20);
                             $('#settings_dialog_menu').width('');
                              // Hack on modal heights
-                            self.FixModalBox('resize');
+                            self.fixSettingsModal('resize');
                         }else{
                             // Hack on modal heights
-                            self.FixModalBox('shown');
+                            self.fixSettingsModal('shown');
                         }
                     }
                 });
@@ -768,7 +775,7 @@ $(function() {
                     if (self.modalTimer != null){
                         window.clearTimeout(self.modalTimer);
                     }
-                    self.modalTimer = setTimeout(function(){self.FixModalBox('resize')}, 100);
+                    self.modalTimer = setTimeout(function(){self.fixSettingsModal('resize')}, 100);
                 });
 
                 // Make it easier
@@ -857,6 +864,7 @@ $(function() {
                         $('#settingsTabs').append($(this));
                    }
                 });
+                $('#settings_dialog_content').addClass('span9').removeClass('span12');
 
                 $('#settings_dialog_content').insertAfter($('#settings_dialog_menu'));
                 $('#settings_dialog_content').addClass('scrollable');
@@ -871,7 +879,8 @@ $(function() {
                 $('div.UICMainMenu .UICHideDesktop').remove();
                 $('div.UICMainMenu').removeClass('UICMainMenu');
 
-                 $('.UICToolTipLeft').removeClass('UICToolTipLeft');
+                $('.UICToolTipLeft').removeClass('UICToolTipLeft');
+
 
                 $('body').removeClass('UICResponsiveMode');
 
