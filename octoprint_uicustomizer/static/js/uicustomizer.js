@@ -56,7 +56,7 @@ $(function() {
 
         // Quick debug
         self.logToConsole = function(msg){
-            // return true;
+            return true;
             console.log('UICustomizer:',msg)
         }
 
@@ -300,6 +300,12 @@ $(function() {
             $('div.UICWebCamClick').not('#UICWebCamFull > div.UICWebCamClick').remove();
             $.each(containers,function(i,idx){
                 var obj = $(idx);
+
+                // Skip hidden
+                if (obj.hasClass('UICHideHard')){
+                    return true;
+                }
+
                 obj.addClass('UIWebcamZoomSrc');
                 var zoomclick = $('<div class="UICWebCamClick"><a href="javascript:void(0);"><i class="fa fa-expand"></i></a></div>');
                 obj.prepend(zoomclick);
@@ -312,7 +318,7 @@ $(function() {
                     $('#UICWebCamFull').remove();
 
                     // Append floating cam to body
-                    $('body').append('<div id="UICWebCamFull" draggable="true" class="UICWebcam"><div id="UICWebCamShrink" class="UICWebCamClick"><a href="javascript: void(0);"><i class="fa fa-compress"></i></a></div><img><div class="nowebcam text-center"><i class="fa fa-spinner fa-spin"></i> <span class="UIC-pulsate">Loading webcam&hellip;<br><br></span></div></div>');
+                    $('body').append('<div id="UICWebCamFull" draggable="true" class="UICWebcam"><div class="nowebcam text-center"><i class="fa fa-spinner fa-spin"></i> <span class="UIC-pulsate">Loading webcam&hellip;</span></div><div id="UICWebCamShrink" class="UICWebCamClick"><a href="javascript: void(0);"><i class="fa fa-compress"></i></a></div><img></div>');
                     $('#UICWebCamShrink').hide();
 
                     // Set source item
@@ -359,256 +365,146 @@ $(function() {
             });
         }
 
+        // Hide main cams
+        self.set_hideMainCam = function(enable){
+            if (enable){
+                if ($('#webcam_hls').length){
+                    $('#webcam_hls_container').addClass('UICHideHard');
+                    $('#webcam_hls')[0].pause();
+                }
+                $('#webcam_container').addClass('UICHideHard');
+                $('#webcam_container').next().addClass('UICHideHard');
+                $('#webcam_image').attr('src','data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
+                $('#webcam_image').data("isHidden",true);
+            }else{
+                if ($('#webcam_hls').length){
+                    $('#webcam_hls_container').removeClass('UICHideHard');
+                }
+                $('#webcam_container').removeClass('UICHideHard');
+                $('#webcam_container').next().removeClass('UICHideHard');
+                $('#webcam_image').data("isHidden",false);
+            }
+        }
+
         self.CustomW_initWebCam = function(enable){
             self.logToConsole('WebCam custom init');
-            if (enable){
-                // Cleanup
-                $('#IUCWebcamContainer > div').html('');
+
+            // Hide main cams
+            self.set_hideMainCam(self.settings.settings.plugins.uicustomizer.hideMainCam());
+
+            // Disable it all
+            if (!enable){
+                 OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded = self.onWebCamOrg;
+                 OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored = self.onWebCamErrorOrg;
+                 $('#UICWebCamWidget').remove();
+                 return true;
+            }
+            // Cleanup
+            $('#IUCWebcamContainer > div').html('');
+            var hlsCam = false;
+            var streamURL = self.settings.webcam_streamUrl();
+            // BROKEN due to loading/changes not triggering at the right time: || (typeof OctoPrint.coreui.viewmodels.controlViewModel.webcamHlsEnabled == "function" && OctoPrint.coreui.viewmodels.controlViewModel.webcamHlsEnabled()
+            if (/.m3u8/i.test(streamURL)){
+                self.logToConsole("HLS WebCam detected: " + streamURL);
+                hlsCam = true;
+            }
+
+            // Visibilty handler custom
+            // https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
+            var hidden, visibilityChange;
+            if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
+                hidden = "hidden";
+                visibilityChange = "visibilitychange";
+            } else if (typeof document.msHidden !== "undefined") {
+                hidden = "msHidden";
+                visibilityChange = "msvisibilitychange";
+            } else if (typeof document.webkitHidden !== "undefined") {
+                hidden = "webkitHidden";
+                visibilityChange = "webkitvisibilitychange";
+            }
+
+            // Event handler
+            var eventVIS = function(){
                 var hlsCam = false;
                 var streamURL = self.settings.webcam_streamUrl();
-                // BROKEN due to loading/changes not triggering at the right time: || (typeof OctoPrint.coreui.viewmodels.controlViewModel.webcamHlsEnabled == "function" && OctoPrint.coreui.viewmodels.controlViewModel.webcamHlsEnabled()
                 if (/.m3u8/i.test(streamURL)){
-                    self.logToConsole("HLS WebCam detected: " + streamURL);
                     hlsCam = true;
                 }
-
-                // Visibilty handler custom
-                // https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
-                var hidden, visibilityChange;
-                if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
-                    hidden = "hidden";
-                    visibilityChange = "visibilitychange";
-                } else if (typeof document.msHidden !== "undefined") {
-                    hidden = "msHidden";
-                    visibilityChange = "msvisibilitychange";
-                } else if (typeof document.webkitHidden !== "undefined") {
-                    hidden = "webkitHidden";
-                    visibilityChange = "webkitvisibilitychange";
-                }
-
-                // Warn if the browser doesn't support addEventListener or the Page Visibility API
-                if (typeof document.addEventListener === "undefined" || hidden === undefined) {
-                    self.logToConsole("NO event handler for visibility :( ");
-                } else {
-                    // Handle page visibility change
-                    document.addEventListener(visibilityChange, function(){
-                        if (document[hidden]) {
-                            self.logToConsole("Visibility changed to hidden");
-                            $('#IUCWebcamContainer').data('pausedByVis',true);
-                            if (hlsCam){
-                                $('#IUCWebcamContainer video')[0].pause();
-                            }else{
-                                // Hide the cam widget
-                                $('#IUCWebcamContainer').hide();
-                                $('#IUCWebcamContainerInner img').attr('src','data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
-                            }
-                        }else{
-                            self.logToConsole("Visibility changed to visible");
-                            $('#IUCWebcamContainer').data('pausedByVis',false);
-                            if (hlsCam){
-                                $('#IUCWebcamContainer video')[0].play();
-                            }else{
-                                // Reload the webcam
-                                $('.UICWebCamClick').hide();
-                                $('#IUCWebcamContainer div.nowebcam').remove();
-                                $('#IUCWebcamContainer > div').append('<div class="nowebcam text-center"><i class="fa fa-spinner fa-spin"></i> <span class="UIC-pulsate">Loading webcam&hellip;</span></div>');
-                                $('#IUCWebcamContainerInner').hide();
-                                $('#IUCWebcamContainer').show();
-                                $('#IUCWebcamContainerInner img').attr('src',streamURL);
-                            }
-                        }
-                    }, false);
-                }
-
-                // Set loading
-                $('.UICWebCamClick').hide();
-                $('#IUCWebcamContainer > div').append('<div class="nowebcam text-center"><i class="fa fa-spinner fa-spin"></i> <span class="UIC-pulsate">Loading webcam&hellip;</span></div>');
-
-                // HLS cam handling is a bit easier than normal stuff
-                if(hlsCam){
-                    // reset
-                    OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded = self.onWebCamOrg;
-                    // Clone it
-                    var clone = $('#webcam_hls').clone();
-                    clone.removeAttr('id');
-                    $('#IUCWebcamContainer > div').html(clone).find('*').removeAttr('id');
-
-                    // Event handling on the main player
-                    $('#webcam_hls').off('error.UICCam').on('error.UICCam',function(event){
-                        self.logToConsole("webcam_hls HLS error");
-                        $('#IUCWebcamContainer video').data('playing',false);
-
-                        // Error loading sign and show info
-                        $('#IUCWebcamContainer video').hide();
+                if (document[hidden]) {
+                    self.logToConsole("Visibility changed to hidden");
+                    $('#IUCWebcamContainer').data('pausedByVis',true);
+                    if (hlsCam){
+                        $('#IUCWebcamContainer video')[0].pause();
+                    }else{
+                        // Hide the cam widget
+                        $('#IUCWebcamContainer').hide();
+                        $('#IUCWebcamContainerInner img').attr('src','data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
+                    }
+                }else{
+                    self.logToConsole("Visibility changed to visible");
+                    $('#IUCWebcamContainer').data('pausedByVis',false);
+                    if (hlsCam){
+                        $('#IUCWebcamContainer video')[0].play();
+                    }else{
+                        // Reload the webcam
                         $('.UICWebCamClick').hide();
                         $('#IUCWebcamContainer div.nowebcam').remove();
-                        $('#IUCWebcamContainer > div').append($('<div class="nowebcam text-center"><i class="fa fa-exclamation-triangle"></i> Error loading webcam</div>').off('click.UICWebCamErrror').on('click.UICWebCamErrror',function(){
-                            $('#control_link a').trigger('click');
-                        }));
-
-                    }).off('playing.UICCam').on('playing.UICCam',function(event){
-                        // Clean up and show the player again
-                        $('#IUCWebcamContainer div.nowebcam').remove();
-                        $('#IUCWebcamContainer video').show();
-                        $('.UICWebCamClick').show();
-
-                        // Foobar trigger - then just skip if nothing new
-                        if (!$('#IUCWebcamContainer div.nowebcam').length && self.settings.webcam_streamUrl() == $('#IUCWebcamContainer video').data('streamURL') && $('#IUCWebcamContainer video').data('playing') === true){
-                            self.logToConsole("Webcam HLS playing not updated!");
-                            return false;
-                        }
-                        self.logToConsole("Webcam HLS playing");
-
-                        // Play HLS and store URL + state
-                        var streamURL = self.settings.webcam_streamUrl();
-                        $('#IUCWebcamContainer video').data('streamURL',streamURL);
-                        $('#IUCWebcamContainer video').data('playing',true);
-
-                        // Start HLS player - a seperate stream is better - tried canvas copy etc.
-                        var video = $('#IUCWebcamContainer video')[0];
-                        self.startHLSstream(video,streamURL);
-                    });
-
-                    // Error handling on webcam handler
-                    OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored = (function(old) {
-                        function extendCam(){
-                            self.onWebCamErrorOrg();
-                            self.logToConsole("Webcam HLS onWebcamErrored triggered");
-                            self.logToConsole($('#IUCWebcamContainer video')[0].paused);
-                            self.logToConsole($('#IUCWebcamContainer').data('pausedByVis'));
-                            if ($('#IUCWebcamContainer video')[0].paused && $('#IUCWebcamContainer').data('pausedByVis') !== true){
-                                // Error loading sign and show info
-                                $('#IUCWebcamContainer video').hide();
-                                $('#IUCWebcamContainer div.nowebcam').remove();
-                                $('#IUCWebcamContainer > div').append($('<div class="nowebcam text-center"><i class="fa fa-exclamation-triangle"></i> Error loading webcam</div>').off('click.UICWebCamErrror').on('click.UICWebCamErrror',function(){
-                                    $('#control_link a').trigger('click');
-                                }));
-                            }else{
-                                $('#IUCWebcamContainer video').show();
-                                $('#IUCWebcamContainer div.nowebcam').remove();
-                            }
-                        }
-                        return extendCam;
-                    })();
-
-                }else{
-                    $('#webcam_hls_container').hide();
-                    $('#webcam_hls_container video').attr('src','');
-                    $('#UICWebCamWidget').addClass('UICWebcam');
-                    // Remove old just in case
-                    OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored = self.onWebCamErrorOrg;
-
-                    // Normal webcam stream
-                    self.logToConsole("WebCam NON-hls starting");
-
-                    // Clone and cleanup
-                    var clone = $('#webcam_rotator').clone();
-                    $('#IUCWebcamContainer > div').append(clone).find('*').removeAttr('id');
-                    clone.attr('id',"IUCWebcamContainerInner").hide();
-
-                    // Error handling
-                    var webcamLoader = function(){
-                        $('#IUCWebcamContainerInner img').off('error').on('error',function(){
-                            // Error loading
-                            $('#IUCWebcamContainerInner').hide();
-                            $('.UICWebCamClick').hide();
-                            $('#IUCWebcamContainer div.nowebcam').remove();
-                            $('#IUCWebcamContainer > div').append($('<div class="nowebcam text-center"><i class="fa fa-exclamation-triangle"></i> Error loading webcam</div>').off('click.UICWebCamErrror').on('click.UICWebCamErrror',function(){
-                                $('#control_link a').trigger('click');
-                            }));
-                        }).on('load',function(){
-                            // Loaded
-                            $('.UICWebCamClick').show();
-                            $('#IUCWebcamContainerInner').show();
-                            $('#IUCWebcamContainerInner img').show();
-                            $('#IUCWebcamContainer div.nowebcam').hide();
-                        });
-                    };
-                    webcamLoader();
-
-                    // Event handlers
-                    OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded = (function(old) {
-                        function extendWebCam() {
-                            self.onWebCamOrg();
-                            if ($('#IUCWebcamContainer:visible').length){
-                                // Remove the no webcam container
-                                $('#IUCWebcamContainer div.nowebcam').remove();
-                                $('.UICWebCamClick').show();
-                                $('#IUCWebcamContainerInner img').show();
-                                // Compare content of the containers
-                                if ($('#IUCWebcamContainerInner').clone().wrap('<p/>').parent().find('*').removeAttr('id').removeAttr('src').html().replace(' style=""' ,'').trim() != $('#webcam_rotator').clone().wrap('<p/>').parent().find('*').removeAttr('id').removeAttr('src').html().replace(' style=""','').trim()){
-                                    self.logToConsole("WebCam updated TOTAL");
-                                    $('#IUCWebcamContainerInner').remove();
-                                    // Clone and cleanup
-                                    var clone = $('#webcam_rotator').clone();
-                                    $('#IUCWebcamContainer > div').append(clone).find('*').removeAttr('id');
-                                    clone.attr('id',"IUCWebcamContainerInner");
-                                    // Setup error handling again
-                                    webcamLoader();
-
-                                    // Fix the fullscreen overlay if present
-                                    if ($('#UICWebCamFullInnerDIV').length){
-                                        var clone = $('#webcam_rotator').clone();
-                                        clone.attr('id','UICWebCamFullInnerDIV');
-                                        $('#UICWebCamFullInnerDIV').html(clone).find('*').removeAttr('id');
-                                        $('#UICWebCamFull img').on('load',function(){
-                                            $('#UICWebCamFull div.nowebcam').remove();
-                                        });
-                                        $('#UICWebCamFull img').attr('src',streamURL);
-                                    }
-
-                                }else if($('#IUCWebcamContainerInner img').attr('src') != streamURL){
-                                    self.logToConsole("WebCam updated SRC");
-                                    $('#IUCWebcamContainerInner img').attr('src',streamURL);
-                                }
-                                // Make sure its shown
-                                $('#IUCWebcamContainer > div >div').show();
-                            }
-                        }
-                        return extendWebCam;
-                    })();
-
-                    // Set url if not found or not the same
-                    if ($('#IUCWebcamContainerInner img').attr('src') == undefined || $('#IUCWebcamContainerInner img').attr('src').indexOf(streamURL) == -1){
-                        if (streamURL[streamURL.length-1] == "?"){
-                            streamURL += "&"
-                        }else{
-                            streamURL += "?"
-                        }
-                        streamURL += new Date().getTime();
-                        self.logToConsole("Setting webcam url:"+ streamURL);
+                        $('#IUCWebcamContainer > div').append('<div class="nowebcam text-center"><i class="fa fa-spinner fa-spin"></i> <span class="UIC-pulsate">Loading webcam&hellip;</span></div>');
+                        $('#IUCWebcamContainerInner').hide();
+                        $('#IUCWebcamContainer').show();
                         $('#IUCWebcamContainerInner img').attr('src',streamURL);
-                        // Fix the fullscreen overlay if present
-                        if ($('#UICWebCamFull img').length){
-                            $('#UICWebCamFull img').attr('src',streamURL);
-                        }
-                    }
-
-                    // Fix the fullscreen overlay if present
-                    if ($('#UICWebCamFullInnerDIV').length){
-                        var clone = $('#webcam_rotator').clone();
-                        clone.attr('id','UICWebCamFullInnerDIV');
-                        $('#UICWebCamFullInnerDIV').html(clone).find('*').removeAttr('id');
-                        $('#UICWebCamFull img').on('load',function(){
-                            $('#UICWebCamFull div.nowebcam').remove();
-                        });
-                        $('#UICWebCamFull img').attr('src',streamURL);
                     }
                 }
+            }
 
-                // Hack the webcam start flow
-                var prevVal = OctoPrint.coreui.browserTabVisible;
-                OctoPrint.coreui.browserTabVisible = true;
-                var prevVal2 = OctoPrint.coreui.selectedTab;
-                OctoPrint.coreui.selectedTab = '#control'
-                // Trigger change
-                OctoPrint.coreui.onTabChange('#control');
-                // Restore
-                OctoPrint.coreui.browserTabVisible = prevVal;
-                OctoPrint.coreui.selectedTab = prevVal2;
+            // Warn if the browser doesn't support addEventListener or the Page Visibility API
+            if (typeof document.addEventListener === "undefined" || hidden === undefined) {
+                self.logToConsole("NO event handler for visibility :( ");
+            } else {
+                // Handle page visibility change
+                document.removeEventListener(visibilityChange, eventVIS ,false);
+                document.addEventListener(visibilityChange, eventVIS, false);
+            }
 
-                // Start the HLS cam just to make sure
-                if (hlsCam){
+            // Set loading
+            $('.UICWebCamClick').hide();
+            $('#IUCWebcamContainer > div').append('<div class="nowebcam text-center"><i class="fa fa-spinner fa-spin"></i> <span class="UIC-pulsate">Loading webcam&hellip;</span></div>');
+
+            // HLS cam handling is a bit easier than normal stuff
+            if(hlsCam){
+                // reset
+                OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded = self.onWebCamOrg;
+                // Clone it
+                var clone = $('#webcam_hls').clone();
+                clone.removeAttr('id');
+                $('#IUCWebcamContainer > div').html(clone).find('*').removeAttr('id');
+
+                // Event handling on the main player
+                $('#IUCWebcamContainer video').off('error').on('error',function(event){
+                    self.logToConsole("webcam_hls HLS error");
+                    $('#IUCWebcamContainer video').data('playing',false);
+
+                    // Error loading sign and show info
+                    $('#IUCWebcamContainer video').hide();
+                    $('.UICWebCamClick').hide();
+                    $('#IUCWebcamContainer div.nowebcam').remove();
+                    $('#IUCWebcamContainer > div').append($('<div class="nowebcam text-center"><i class="fa fa-exclamation-triangle"></i> Error loading webcam</div>').off('click.UICWebCamErrror').on('click.UICWebCamErrror',function(){
+                        $('#control_link a').trigger('click');
+                    }));
+
+                }).off('playing').on('playing',function(event){
+                    // Clean up and show the player again
+                    $('#IUCWebcamContainer div.nowebcam').remove();
+                    $('#IUCWebcamContainer video').show();
+                    $('.UICWebCamClick').show();
+
+                    // Foobar trigger - then just skip if nothing new
+                    if (!$('#IUCWebcamContainer div.nowebcam').length && self.settings.webcam_streamUrl() == $('#IUCWebcamContainer video').data('streamURL') && $('#IUCWebcamContainer video').data('playing') === true){
+                        self.logToConsole("Webcam HLS playing not updated!");
+                        return false;
+                    }
+                    self.logToConsole("Webcam HLS playing");
+
                     // Play HLS and store URL + state
                     var streamURL = self.settings.webcam_streamUrl();
                     $('#IUCWebcamContainer video').data('streamURL',streamURL);
@@ -617,12 +513,155 @@ $(function() {
                     // Start HLS player - a seperate stream is better - tried canvas copy etc.
                     var video = $('#IUCWebcamContainer video')[0];
                     self.startHLSstream(video,streamURL);
-                }
+                });
+
+                // Error handling on webcam handler
+                OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored = (function(old) {
+                    function extendCam(){
+                        self.onWebCamErrorOrg();
+                        self.logToConsole("Webcam HLS onWebcamErrored triggered");
+                        if ($('#IUCWebcamContainer video')[0].paused && $('#IUCWebcamContainer').data('pausedByVis') !== true){
+                            // Error loading sign and show info
+                            $('#IUCWebcamContainer video').hide();
+                            $('#IUCWebcamContainer div.nowebcam').remove();
+                            $('#IUCWebcamContainer > div').append($('<div class="nowebcam text-center"><i class="fa fa-exclamation-triangle"></i> Error loading webcam</div>').off('click.UICWebCamErrror').on('click.UICWebCamErrror',function(){
+                                $('#control_link a').trigger('click');
+                            }));
+                        }else{
+                            $('#IUCWebcamContainer video').show();
+                            $('#IUCWebcamContainer div.nowebcam').remove();
+                        }
+                    }
+                    return extendCam;
+                })();
 
             }else{
-                 OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded = self.onWebCamOrg;
-                 OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored = self.onWebCamErrorOrg;
-                 $('#UICWebCamWidget').remove();
+                $('#webcam_hls_container').hide();
+                $('#webcam_hls')[0].pause();
+                $('#UICWebCamWidget').addClass('UICWebcam');
+                // Remove old just in case
+                OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored = self.onWebCamErrorOrg;
+
+                // Normal webcam stream
+                self.logToConsole("WebCam NON-hls starting");
+
+                // Clone and cleanup
+                var clone = $('#webcam_rotator').clone();
+                $('#IUCWebcamContainer > div').append(clone).find('*').removeAttr('id');
+                clone.attr('id',"IUCWebcamContainerInner").hide();
+
+                // Error handling
+                var webcamLoader = function(){
+                    $('#IUCWebcamContainerInner img').off('error').on('error',function(){
+                        // Error loading
+                        $('#IUCWebcamContainerInner').hide();
+                        $('.UICWebCamClick').hide();
+                        $('#IUCWebcamContainer div.nowebcam').remove();
+                        $('#IUCWebcamContainer > div').append($('<div class="nowebcam text-center"><i class="fa fa-exclamation-triangle"></i> Error loading webcam</div>').off('click.UICWebCamErrror').on('click.UICWebCamErrror',function(){
+                            $('#control_link a').trigger('click');
+                        }));
+                    }).on('load',function(){
+                        // Loaded
+                        $('.UICWebCamClick').show();
+                        $('#IUCWebcamContainerInner').show();
+                        $('#IUCWebcamContainerInner img').show();
+                        $('#IUCWebcamContainer div.nowebcam').hide();
+                    });
+                };
+                webcamLoader();
+
+                // Event handlers
+                OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded = (function(old) {
+                    function extendWebCam() {
+                        self.onWebCamOrg();
+                        if ($('#IUCWebcamContainer:visible').length && $('#webcam_image').data("isHidden") !== true){
+                            // Remove the no webcam container
+                            $('#IUCWebcamContainer div.nowebcam').remove();
+                            $('.UICWebCamClick').show();
+                            $('#IUCWebcamContainerInner img').show();
+                            // Compare content of the containers
+                            if ($('#IUCWebcamContainerInner').clone().wrap('<p/>').parent().find('*').removeAttr('id').removeAttr('src').html().replace(' style=""' ,'').trim() != $('#webcam_rotator').clone().wrap('<p/>').parent().find('*').removeAttr('id').removeAttr('src').html().replace(' style=""','').trim()){
+                                self.logToConsole("WebCam updated TOTAL");
+                                $('#IUCWebcamContainerInner').remove();
+                                // Clone and cleanup
+                                var clone = $('#webcam_rotator').clone();
+                                $('#IUCWebcamContainer > div').append(clone).find('*').removeAttr('id');
+                                clone.attr('id',"IUCWebcamContainerInner");
+                                // Setup error handling again
+                                webcamLoader();
+
+                                // Fix the fullscreen overlay if present
+                                if ($('#UICWebCamFullInnerDIV').length){
+                                    var clone = $('#webcam_rotator').clone();
+                                    clone.attr('id','UICWebCamFullInnerDIV');
+                                    $('#UICWebCamFullInnerDIV').html(clone).find('*').removeAttr('id');
+                                    $('#UICWebCamFull img').on('load',function(){
+                                        $('#UICWebCamFull div.nowebcam').remove();
+                                    });
+                                    $('#UICWebCamFull img').attr('src',streamURL);
+                                }
+
+                            }else if($('#IUCWebcamContainerInner img').attr('src') != streamURL){
+                                self.logToConsole("WebCam updated SRC");
+                                $('#IUCWebcamContainerInner img').attr('src',streamURL);
+                            }
+                            // Make sure its shown
+                            $('#IUCWebcamContainer > div >div').show();
+                        }
+                    }
+                    return extendWebCam;
+                })();
+
+                // Set url if not found or not the same
+                if ($('#IUCWebcamContainerInner img').attr('src') == undefined || $('#IUCWebcamContainerInner img').attr('src').indexOf(streamURL) == -1){
+                    if (streamURL[streamURL.length-1] == "?"){
+                        streamURL += "&"
+                    }else{
+                        streamURL += "?"
+                    }
+                    streamURL += new Date().getTime();
+                    self.logToConsole("Setting webcam url:"+ streamURL);
+                    $('#IUCWebcamContainerInner img').attr('src',streamURL);
+                    // Fix the fullscreen overlay if present
+                    if ($('#UICWebCamFull img').length){
+                        $('#UICWebCamFull img').attr('src',streamURL);
+                    }
+                }
+
+                // Fix the fullscreen overlay if present
+                if ($('#UICWebCamFullInnerDIV').length){
+                    var clone = $('#webcam_rotator').clone();
+                    clone.attr('id','UICWebCamFullInnerDIV');
+                    $('#UICWebCamFullInnerDIV').html(clone).find('*').removeAttr('id');
+                    $('#UICWebCamFull img').on('load',function(){
+                        $('#UICWebCamFull div.nowebcam').remove();
+                    });
+                    $('#UICWebCamFull img').attr('src',streamURL);
+                }
+            }
+
+            // Hack the webcam start flow
+            var prevVal = OctoPrint.coreui.browserTabVisible;
+            OctoPrint.coreui.browserTabVisible = true;
+            var prevVal2 = OctoPrint.coreui.selectedTab;
+            OctoPrint.coreui.selectedTab = '#control'
+            // Trigger change
+            OctoPrint.coreui.onTabChange('#control');
+            // Restore
+            OctoPrint.coreui.browserTabVisible = prevVal;
+            OctoPrint.coreui.selectedTab = prevVal2;
+
+            // Start the HLS cam just to make sure
+            if (hlsCam){
+                // Play HLS and store URL + state
+                var streamURL = self.settings.webcam_streamUrl();
+                $('#IUCWebcamContainer video').data('streamURL',streamURL);
+                $('#IUCWebcamContainer').data('pausedByVis',true);
+                $('#IUCWebcamContainer video').data('playing',true);
+
+                // Start HLS player - a seperate stream is better - tried canvas copy etc.
+                var video = $('#IUCWebcamContainer video')[0];
+                self.startHLSstream(video,streamURL);
             }
         }
 

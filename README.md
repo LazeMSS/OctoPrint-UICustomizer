@@ -26,7 +26,7 @@ or manually using this URL:
 
 
 ## Configuration
-The configuration is split into two sections - the top checkboxes for switching features on and off.
+The configuration is split into two sections - the top checkboxes for switching features on and off and the bottom for layout handling
 ![](extras/settings.png?new=1)
 
 ### Features
@@ -35,6 +35,7 @@ The configuration is split into two sections - the top checkboxes for switching 
 * Fixed footer/bottombar - should the bottom bar stay fixed when scrolling or not
 * Compact ["Navbar temperature plugin"](https://plugins.octoprint.org/plugins/navbartemp/) - will add icons and shrink the temperature display on this awesome plugin
 * Center topbar icons - will horizontal center the extra plugins/top icons in the topbar
+# Hide main camera - should the main camera be hidden - only acive if the webcam widget is enabled
 * Hide temp. graph background - Hide temperature background graphics
 * Fluid/full width layout - should the entire screen width be used or not
 * Improve mobile/responsive - enable the improved responsive modes including settings for mobile screens etc.

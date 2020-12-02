@@ -28,6 +28,11 @@
                         <input type="checkbox" data-settingtype="centerTopIcons" data-bind="checked: settings.plugins.uicustomizer.centerTopIcons"> {{ _('Center topbar icons') }}
                     </label>
                 </div>
+                 <div class="controls">
+                    <label class="checkbox" tile="Hide the main camera - only acive if the webcam in the wiget is enabled">
+                        <input type="checkbox" data-settingtype="hideMainCam" data-bind="checked: settings.plugins.uicustomizer.hideMainCam"> {{ _('Hide main camera') }}
+                    </label>
+                </div>
             </div>
             <div class="span6">
                 <div class="controls">
@@ -52,7 +57,7 @@
                 </div>
                 <div class="controls">
                     <label class="checkbox" title="Should the dropdown menu be a single compact menu">
-                        <input type="checkbox" data-settingtype="compactMenu" data-bind="checked: settings.plugins.uicustomizer.compactMenu"> {{ _('Compact menu') }}
+                        <input type="checkbox" data-bind="checked: settings.plugins.uicustomizer.compactMenu"> {{ _('Compact menu') }}
                     </label>
                 </div>
             </div>

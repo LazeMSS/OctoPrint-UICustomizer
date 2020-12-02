@@ -344,8 +344,8 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
     background: rgba(255,255,255,0.66);
     border: 2px  solid rgba(0,0,0,0.5);
     border-radius: 4px; padding: 8px;
-    min-height: 30px;
-    min-width: 30px;
+    min-height: 100px;
+    min-width: 100px;
     resize: both;
     overflow: hidden;
     max-height: fit-content;
@@ -357,6 +357,14 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
 #UICWebCamFull img,#UICWebCamFull video{
     width: 100%;
     min-width: 200px !important;
+}
+#UICWebCamFull .nowebcam{
+    width: 100%;
+    margin: 0 auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 /* floating webcam fixes*/
