@@ -34,9 +34,13 @@ The configuration is split into two sections - the top checkboxes for switching 
 * Fixed header/topbar - should the top menubar stay fixed when scrolling or not
 * Fixed footer/bottombar - should the bottom bar stay fixed when scrolling or not
 * Compact ["Navbar temperature plugin"](https://plugins.octoprint.org/plugins/navbartemp/) - will add icons and shrink the temperature display on this awesome plugin
+* Center topbar icons - will horizontal center the extra plugins/top icons in the topbar
+* Hide temp. graph background - Hide temperature background graphics
 * Fluid/full width layout - should the entire screen width be used or not
 * Improve mobile/responsive - enable the improved responsive modes including settings for mobile screens etc.
 * Zoom/float webcam icon - will add an zoom icon to the webcam live feed that will popup out the webcam video feed into a floating resizeable overlay
+* Compact menu - should the "dropdown" menu be a single compact menu
+
 
 ### Layout
 The layout of the screen can be made into 1,2 or 3 columns and the size of the columns can be adjusted. The total width of the columns added together must not be greater than 12. Each column can contain zero or more widgets, widgets are the diffent "containers" for all the user interface, ie. the webcam, files etc.

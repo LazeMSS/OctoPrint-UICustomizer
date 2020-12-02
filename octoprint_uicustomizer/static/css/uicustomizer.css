@@ -30,6 +30,16 @@
 		text-align: right;
 	}
 
+    body.UICResponsiveMode #navbar div.nav-collapse.UICCompactMenu {
+        position: absolute;
+        right: 0px;
+        top: 52px;
+        z-index: 1000;
+        border-bottom-right-radius: 5px;
+        border-bottom-left-radius: 5px;
+        background-color: #ebebeb;
+    }
+
 	body.UICResponsiveMode .modal-body, body.UICResponsiveMode .modal-overflow .modal-body{
 		position: relative;
     	max-height: 40px;
@@ -307,7 +317,7 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
     position: absolute;
     right: 0px;
     font-size: 1.5em;
-    z-index: 1000;
+    z-index: 900;
     background-color: #eeeeeea1;
     margin: 5px 15px 0px 0px;
     padding: 5px 5px 3px 5px;

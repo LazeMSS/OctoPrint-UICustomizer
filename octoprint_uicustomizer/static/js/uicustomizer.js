@@ -139,6 +139,11 @@ $(function() {
                 self.set_centerTopIcons(true);
             }
 
+            // Compact menus
+            if (settingsPlugin.compactMenu()){
+                self.set_compactMenu(true);
+            }
+
             self.set_rowsLayout(settingsPlugin);
 
             // addWebCamZoom
@@ -564,6 +569,15 @@ $(function() {
                  OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded = self.onWebCamOrg;
                  OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored = self.onWebCamErrorOrg;
                  $('#UICWebCamWidget').remove();
+            }
+        }
+
+        // Set compact drop down menu
+        self.set_compactMenu= function(enabled){
+            if (enabled){
+                $('div.UICMainMenu').addClass('UICCompactMenu');
+            }else{
+                $('div.UICMainMenu').removeClass('UICCompactMenu');
             }
         }
 
