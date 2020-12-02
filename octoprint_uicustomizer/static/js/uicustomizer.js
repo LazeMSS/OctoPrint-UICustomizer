@@ -56,7 +56,7 @@ $(function() {
 
         // Quick debug
         self.logToConsole = function(msg){
-            // return true;
+            return true;
             console.log('UICustomizer:',msg)
         }
 
@@ -370,6 +370,52 @@ $(function() {
                 if (/.m3u8/i.test(streamURL)){
                     self.logToConsole("HLS WebCam detected: " + streamURL);
                     hlsCam = true;
+                }
+
+                // Visibilty handler custom
+                // https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
+                var hidden, visibilityChange;
+                if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
+                    hidden = "hidden";
+                    visibilityChange = "visibilitychange";
+                } else if (typeof document.msHidden !== "undefined") {
+                    hidden = "msHidden";
+                    visibilityChange = "msvisibilitychange";
+                } else if (typeof document.webkitHidden !== "undefined") {
+                    hidden = "webkitHidden";
+                    visibilityChange = "webkitvisibilitychange";
+                }
+
+                // Warn if the browser doesn't support addEventListener or the Page Visibility API
+                if (typeof document.addEventListener === "undefined" || hidden === undefined) {
+                    self.logToConsole("NO event handler for visibility :( ");
+                } else {
+                    // Handle page visibility change
+                    document.addEventListener(visibilityChange, function(){
+                        if (document[hidden]) {
+                            self.logToConsole("Visibility changed to hidden");
+                            if (hlsCam){
+                                $('#IUCWebcamContainer video')[0].pause();
+                            }else{
+                                // Hide the cam widget
+                                $('#IUCWebcamContainer').hide();
+                                $('#IUCWebcamContainerInner img').attr('src','data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
+                            }
+                        }else{
+                            self.logToConsole("Visibility changed to visible");
+                            if (hlsCam){
+                                $('#IUCWebcamContainer video')[0].play();
+                            }else{
+                                // Reload the webcam
+                                $('.UICWebCamClick').hide();
+                                $('#IUCWebcamContainer div.nowebcam').remove();
+                                $('#IUCWebcamContainer > div').append('<div class="nowebcam text-center"><i class="fa fa-spinner fa-spin"></i> <span class="UIC-pulsate">Loading webcam&hellip;</span></div>');
+                                $('#IUCWebcamContainerInner').hide();
+                                $('#IUCWebcamContainer').show();
+                                $('#IUCWebcamContainerInner img').attr('src',streamURL);
+                            }
+                        }
+                    }, false);
                 }
 
                 // Set loading
