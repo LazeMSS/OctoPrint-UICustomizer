@@ -319,10 +319,12 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
 }
 
 #UICWebCamFull{
+    cursor: move;
     position: absolute;
-    left: 50px;
-    top: 200px;
-    width: calc(100% - 100px);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(100% - 200px);
     z-index: 1000;
     background: rgba(255,255,255,0.66);
     border: 2px  solid rgba(0,0,0,0.5);

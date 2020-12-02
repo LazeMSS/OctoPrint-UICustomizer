@@ -55,7 +55,7 @@ $(function() {
 
         // Quick debug
         self.logToConsole = function(msg){
-            return true;
+            // return true;
             console.log('UICustomizer:',msg)
         }
 
@@ -523,6 +523,17 @@ $(function() {
                         if ($('#UICWebCamFull img').length){
                             $('#UICWebCamFull img').attr('src',streamURL);
                         }
+                    }
+
+                    // Fix the fullscreen overlay if present
+                    if ($('#UICWebCamFullInnerDIV').length){
+                        var clone = $('#webcam_rotator').clone();
+                        clone.attr('id','UICWebCamFullInnerDIV');
+                        $('#UICWebCamFullInnerDIV').html(clone).find('*').removeAttr('id');
+                        $('#UICWebCamFull img').on('load',function(){
+                            $('#UICWebCamFull div.nowebcam').remove();
+                        });
+                        $('#UICWebCamFull img').attr('src',streamURL);
                     }
                 }
 
