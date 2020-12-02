@@ -321,11 +321,14 @@ $(function() {
                         var video = $('#UICWebCamFull video')[0];
                         self.startHLSstream(video,streamURL);
                     }else{
+                        // Clone to fix rotation etc.
+                        var clone = $('#webcam_rotator').clone();
+                        clone.attr('id','UICWebCamFullInnerDIV');
+                        $('#UICWebCamFull img').replaceWith(clone).find('*').removeAttr('id');
                         $('#UICWebCamFull img').on('load',function(){
                             $('#UICWebCamFull div.nowebcam').remove();
                         });
                         $('#UICWebCamFull img').attr('src',streamURL);
-                        $('#UICWebCamFull img').attr('class',$('#webcam_rotator div').attr('class'));
                     }
 
                     // Fix on resize done
@@ -369,7 +372,9 @@ $(function() {
                 // HLS cam handling is a bit easier than normal stuff
                 if(hlsCam){
                     // Clone it
-                    $('#IUCWebcamContainer > div').html($('#webcam_hls').clone().removeAttr('id'));
+                    var clone = $('#webcam_hls').clone();
+                    clone.removeAttr('id');
+                    $('#IUCWebcamContainer > div').html(clone).find('*').removeAttr('id');
 
                     // Event handling on the main player
                     $('#webcam_hls').off('error.UICCam').on('error.UICCam',function(event){
@@ -481,6 +486,18 @@ $(function() {
                                     clone.attr('id',"IUCWebcamContainerInner");
                                     // Setup error handling again
                                     webcamLoader();
+
+                                    // Fix the fullscreen overlay if present
+                                    if ($('#UICWebCamFullInnerDIV').length){
+                                        var clone = $('#webcam_rotator').clone();
+                                        clone.attr('id','UICWebCamFullInnerDIV');
+                                        $('#UICWebCamFullInnerDIV').html(clone).find('*').removeAttr('id');
+                                        $('#UICWebCamFull img').on('load',function(){
+                                            $('#UICWebCamFull div.nowebcam').remove();
+                                        });
+                                        $('#UICWebCamFull img').attr('src',streamURL);
+                                    }
+
                                 }else if($('#IUCWebcamContainerInner img').attr('src') != $('#webcam_image').attr('src')){
                                     self.logToConsole("WebCam updated SRC");
                                     $('#IUCWebcamContainerInner img').attr('src',$('#webcam_image').attr('src'));
@@ -502,6 +519,7 @@ $(function() {
                         streamURL += new Date().getTime();
                         self.logToConsole("Setting webcam url:"+ streamURL);
                         $('#IUCWebcamContainerInner img').attr('src',streamURL);
+                        // Fix the fullscreen overlay if present
                         if ($('#UICWebCamFull img').length){
                             $('#UICWebCamFull img').attr('src',streamURL);
                         }

@@ -342,6 +342,21 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
     min-width: 200px !important;
 }
 
+/* floating webcam fixes*/
+#UICWebCamFullInnerDIV.webcam_rotated .webcam_fixed_ratio,
+#UICWebCamFullInnerDIV.webcam_unrotated .webcam_fixed_ratio .webcam_fixed_ratio_inner,
+#UICWebCamFullInnerDIV.webcam_unrotated .webcam_fixed_ratio.ratio169,
+#UICWebCamFullInnerDIV.webcam_unrotated .webcam_fixed_ratio.ratio43
+{
+    position: relative !important;
+    padding-bottom: 0px !important;
+}
+#UICWebCamFullInnerDIV.webcam_rotated,
+#UICWebCamFullInnerDIV.webcam_rotated .webcam_rotated {
+    padding-bottom: 0%;
+}
+
+
 .UICWebcam .webcam_rotated {
     position: relative;
     width: 100%;
