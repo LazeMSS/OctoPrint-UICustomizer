@@ -20,6 +20,7 @@ $(function() {
         // Setting preview
         self.previewOn = false;
         self.previewHasBeenOn = false;
+        self.settingsBeenShown = false;
 
         // timer for resize fix modal
         self.modalTimer = null;
@@ -331,6 +332,7 @@ $(function() {
                         clone.attr('id','UICWebCamFullInnerDIV');
                         $('#UICWebCamFull img').replaceWith(clone).find('*').removeAttr('id');
                         $('#UICWebCamFull img').on('load',function(){
+                            $('#UICWebCamShrink').show();
                             $('#UICWebCamFull div.nowebcam').remove();
                         });
                         $('#UICWebCamFull img').attr('src',streamURL);
@@ -348,7 +350,7 @@ $(function() {
                     document.body.addEventListener('drop',drop,false);
 
                     // Close again
-                    window.setTimeout(function(){$('#UICWebCamShrink').show();},1000);
+                    window.setTimeout(function(){$('#UICWebCamShrink').show();},5000);
                     $('#UICWebCamShrink').one('click',function(){
                         $('.UIWebcamZoomSrc').show();
                         $('#UICWebCamFull').remove();
@@ -376,6 +378,8 @@ $(function() {
 
                 // HLS cam handling is a bit easier than normal stuff
                 if(hlsCam){
+                    // reset
+                    OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded = self.onWebCamOrg;
                     // Clone it
                     var clone = $('#webcam_hls').clone();
                     clone.removeAttr('id');
@@ -503,9 +507,9 @@ $(function() {
                                         $('#UICWebCamFull img').attr('src',streamURL);
                                     }
 
-                                }else if($('#IUCWebcamContainerInner img').attr('src') != $('#webcam_image').attr('src')){
+                                }else if($('#IUCWebcamContainerInner img').attr('src') != streamURL){
                                     self.logToConsole("WebCam updated SRC");
-                                    $('#IUCWebcamContainerInner img').attr('src',$('#webcam_image').attr('src'));
+                                    $('#IUCWebcamContainerInner img').attr('src',streamURL);
                                 }
                                 // Make sure its shown
                                 $('#IUCWebcamContainer > div >div').show();
@@ -1006,20 +1010,24 @@ $(function() {
 
         // Save handler and update
         self.onSettingsBeforeSave = function () {
-            self.saved = true;
-            var rowData = self.buildRows(true);
-            // Save and update
-            self.settings.settings.plugins.uicustomizer.rows = rowData[0];
-            self.settings.settings.plugins.uicustomizer.widths = rowData[1];
-            self.UpdateLayout(self.settings.settings.plugins.uicustomizer);
+            // Update if we have been shown/edited
+            if (self.settingsBeenShown){
+                self.saved = true;
+                var rowData = self.buildRows(true);
 
-            var streamURL = self.settings.webcam_streamUrl();
-            if (/.m3u8/i.test(streamURL)){
-                $('#webcam_container img').attr('src','');
-                $('#webcam_container').hide();
-            }else{
-                $('#webcam_hls_container video').attr('src','');
-                $('#webcam_hls_container').hide();
+                // Save and update
+                self.settings.settings.plugins.uicustomizer.rows = rowData[0];
+                self.settings.settings.plugins.uicustomizer.widths = rowData[1];
+                self.UpdateLayout(self.settings.settings.plugins.uicustomizer);
+
+                var streamURL = self.settings.webcam_streamUrl();
+                if (/.m3u8/i.test(streamURL)){
+                    $('#webcam_container img').attr('src','');
+                    $('#webcam_container').hide();
+                }else{
+                    $('#webcam_hls_container video').attr('src','');
+                    $('#webcam_hls_container').hide();
+                }
             }
         }
 
@@ -1053,6 +1061,7 @@ $(function() {
 
         // Settings handler
         self.onSettingsShown = function() {
+            self.settingsBeenShown = true;
             // Widgets found
             var sidebarItems = ['div.UICmainTabs'];
             $('#sidebar div.accordion-group').each(function(){
@@ -1244,7 +1253,7 @@ $(function() {
 
         // When settings are hidden
         self.onSettingsHidden = function() {
-
+            self.settingsBeenShown = false;
             // Revert if not saved and we have been previewing anything
             if (!self.saved && self.previewHasBeenOn){
                 self.UpdateLayout(self.settings.settings.plugins.uicustomizer);
