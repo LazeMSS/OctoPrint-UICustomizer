@@ -27,10 +27,10 @@ or manually using this URL:
 
 ## Configuration
 The configuration is split into two sections - the top checkboxes for switching features on and off and the bottom for layout handling
-![](extras/settings.png?new=1)
+![](extras/settings.png?new=2)
 
 ### Features
-* Realtime preview - switching this on will minimize the settingsdialog and preview any changes made to UI Customizer settings directly in the UI
+* Preview - switching this on will minimize the settingsdialog and preview any changes made to UI Customizer settings directly in the UI
 * Fixed header/topbar - should the top menubar stay fixed when scrolling or not
 * Fixed footer/bottombar - should the bottom bar stay fixed when scrolling or not
 * Compact ["Navbar temperature plugin"](https://plugins.octoprint.org/plugins/navbartemp/) - will add icons and shrink the temperature display on this awesome plugin

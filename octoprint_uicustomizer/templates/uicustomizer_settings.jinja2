@@ -1,13 +1,11 @@
 <form class="form-horizontal">
-   <h4>{{ _('General options') }}</h4>
-   <fieldset>
+    <label class="checkbox pull-right" title="Switching this on will minimize the settingsdialog and preview any changes made to UI Customizer settings directly in the UI">
+        <input type="checkbox" id="UICRealPrev"> {{ _('Preview') }}
+    </label>
+    <h4>{{ _('General options') }}</h4>
+    <fieldset>
         <div class="row-fluid">
             <div class="span6">
-                <div class="controls">
-                    <label class="checkbox" title="Switching this on will minimize the settingsdialog and preview any changes made to UI Customizer settings directly in the UI">
-                        <input type="checkbox" id="UICRealPrev"> {{ _('Realtime preview') }}
-                    </label>
-                </div>
                 <div class="controls">
                     <label class="checkbox" title="Should the top menubar stay fixed when scrolling or not">
                         <input type="checkbox" data-settingtype="fixedHeader" data-bind="checked: settings.plugins.uicustomizer.fixedHeader"> {{ _('Fixed header/topbar') }}
