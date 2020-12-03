@@ -211,6 +211,11 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
 
 /* setting menu for responsive*/
 
+div.UICHackResponseActive {
+    width: 100%;
+    margin-top: 5px;
+}
+
 #UICsettingsMenuNav{
 	position: fixed;
 	margin-top: -15px;
@@ -235,7 +240,7 @@ body.UICResponsiveMode #settings_dialog_content{
     width: 100%;
     width: calc(100% - 30px);
     margin-right: -18px;
-    margin-top: 35px;
+    margin-top: 45px;
 }
 
 body.UICResponsiveMode #settings_dialog_content div.tab-pane{
