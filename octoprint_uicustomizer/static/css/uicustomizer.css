@@ -1,4 +1,6 @@
 /* UICustomizer START */
+
+/* big screens */
 @media (min-width: 980px){
 	body.UICfixedHeader{
 		margin-top: 50px;
@@ -6,7 +8,7 @@
 	.UICHideDesktop{
 		display: none;
 	}
-
+    /* on big screens we center these*/
     .UICHeaderIcons{
         float: unset !important;
         position: absolute !important;
@@ -17,19 +19,23 @@
         transform: translateX(-50%);
     }
 }
+/* smaller than  big screens :) */
 @media (max-width: 979px){
 	.UICHideDesktop{
 		display: inline-block !important
 	}
 
+    /* on small screens we align to the right */
 	.UICHeaderIcons{
 		float:right !important;
 	}
 
+    /* align drop down menu text to the right*/
 	body.UICResponsiveMode #navbar div.nav-collapse {
 		text-align: right;
 	}
 
+    /* compact menu instead of full width top bar menu*/
     body.UICResponsiveMode #navbar div.nav-collapse.UICCompactMenu {
         position: absolute;
         right: 0px;
@@ -45,68 +51,80 @@
          background: #dedede;
     }
 
+    /*fix modals on small screens*/
 	body.UICResponsiveMode .modal-body, body.UICResponsiveMode .modal-overflow .modal-body{
 		position: relative;
     	max-height: 40px;
 		padding: 15px;
     	overflow-y: auto !important;
 	}
+
+    /* small screen fix for top bar*/
+    #UICsettingsMenuNav{
+        margin-top: -30px !important;
+    }
 }
 
-
+/* tiny screns aka mobile */
 @media (max-width: 767px){
+    /*fix input fields broken*/
 	body.UICResponsiveMode .search-query-with-clear .search-clear{
 		right: 28px !important;
 	}
-
-
+    /* fix the margin of the seting dialog to make even more space */
     body.UICResponsiveMode #settings_dialog_content div.tab-pane{
         margin-right: -25px !important;
     }
 }
 
+/* super tiny hack*/
 @media (max-width: 500px){
 	body.UICResponsiveMode #navbar a.brand{
 		width: 5px;
 		overflow: hidden;
 	}
 }
+
 body.UICfixedFooter{
 	margin-bottom: 45px;
 }
 
+/* fix broken styles when running settings full width*/
 body.UICResponsiveMode div#settings_dialog .help-inline{
     display: block;
 }
 
+/* fix the modal body to play nice in responsive - it will be resized with js*/
 body.UICPreviewON div#settings_dialog div.modal-body {
     max-height: 200px !important;
     min-height: 200px !important;;
     height: 200px !important;
 }
 
+/* when we turn on preview lets change the position*/
 body.UICPreviewON div#settings_dialog {
     margin-top: 0px !important;
     top: calc(100% - 350px);
 }
 
+/* make the modal backdrop transparent in preview*/
 body.UICPreviewON div.modal-backdrop.fade.in {
     opacity: 0.3;
 }
 
+/* fix tabs bottom spacing*/
 #tabs_content{
 	margin-bottom: 2px !important;
 }
 
+/* fix right side menu drop on files*/
 #files_wrapper ul.dropdown-menu {
     right: 0;
     left: auto;
 }
 
-.search-clear{
-	/* display: none !important;**/
-}
 
+/* fix search more for non settings */
 .input-block.search-query{
 	max-width: 90% !important;
     width: calc(100% - 28px) !important;
@@ -114,6 +132,7 @@ body.UICPreviewON div.modal-backdrop.fade.in {
     margin-left: -20px;
 }
 
+/* search in settings fix*/
 body.UICResponsiveMode #settings_dialog .input-block.search-query, body.UICResponsiveMode #settings_plugin_pluginmanager_repositorydialog .input-block.search-query{
     margin-right: 0px;
     margin-left: 0px;
@@ -122,16 +141,17 @@ body.UICResponsiveMode #settings_dialog .input-block.search-query, body.UICRespo
     max-width: 100% !important;
 }
 
-
 body.UICResponsiveMode .search-query-with-clear .search-clear{
 	right: 8px;
 }
 
 
+/* remove background image for graph*/
 .UICnoBackground{
 	background: none !important;
 }
 
+/*UIC settings */
 #UICSortRows input[type=range]{
 	width: 85%;
 }
@@ -159,13 +179,37 @@ body.UICResponsiveMode .search-query-with-clear .search-clear{
     margin: 10px 0px;
 }
 
+.UICToggleVis{
+    cursor: pointer !important;
+    position: absolute;
+    right: 3px;
+    padding-top: 8px;
+    background: #fff;
+    margin-top: -7px;
+    padding-bottom: 10px;
+    width: 25px;
+    text-align: center;
+}
+
+div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
+    background-color: #eee;
+    color: #000;
+}
+
+.UICToggleVis:hover {
+    background-color: #fff !important;
+    border: 1px solid #aaa;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    border-radius: 5px;
+}
+
 #settings_plugin_uicustomizer form.form-horizontal .controls{
 	margin-left: 45px !important;
 }
 
-div.modal.modal-overflow #UICsettingsMenuNav{
-	margin-top: -30px !important;
-}
+/* setting menu for responsive*/
 
 #UICsettingsMenuNav{
 	position: fixed;
@@ -186,28 +230,25 @@ div.modal.modal-overflow #UICsettingsMenuNav{
     color: #fff;
 }
 
-body.UICResponsiveMode div.modal.modal-overflow #settings_dialog_content{
-	margin-top: 35px !important;
-}
-body.UICResponsiveMode div.modal #settings_dialog_content{
-	margin-top: 50px;
-}
 
 body.UICResponsiveMode #settings_dialog_content{
     width: 100%;
     width: calc(100% - 30px);
     margin-right: -18px;
+    margin-top: 35px;
 }
 
 body.UICResponsiveMode #settings_dialog_content div.tab-pane{
     margin-right: 25px;
 }
 
+/* fix list in settins responsive*/
 body.UICResponsiveMode #settings_plugin_softwareupdate_updatelist, body.UICResponsiveMode #settings_plugin_pluginmanager_pluginlist{
     max-height: initial;
     min-height: 100px;
 }
 
+/* settings menu cookie*/
 #UICsetMenuShow{
 	font-size: 12px;
     overflow: hidden;
@@ -221,7 +262,6 @@ body.UICResponsiveMode #settings_plugin_softwareupdate_updatelist, body.UICRespo
     pointer-events: none;
 }
 
-
 #UICSettingsHeader{
 	font-size: 50%;
     margin-right: 20px;
@@ -232,13 +272,17 @@ body.UICResponsiveMode #settings_plugin_softwareupdate_updatelist, body.UICRespo
     animation-iteration-count: infinite
 }
 
-
+/* Fix gcode for responsive*/
 body.UICResponsiveMode #gcode_canvas{
     position: relative;
     width: 100% !important;
     height:100% !important;
     float: right;
     right: -1px;
+}
+
+#gcode div.UICToolTipLeft{
+    left: -120px !important;
 }
 
 body.UICResponsiveMode #gcode_layer_slider{
@@ -255,44 +299,16 @@ body.UICResponsiveMode #gcode #gcode_layer_slider{
     right: -11px;
 }
 
-
 body.UICResponsiveMode select{
 	width: initial !important;
 }
 
-#gcode div.UICToolTipLeft{
-	left: -120px !important;
-}
 
 .UICHide{
 	display: none;
 }
 
-.UICToggleVis{
-    cursor: pointer !important;
-    position: absolute;
-    right: 3px;
-    padding-top: 8px;
-    background: #fff;
-    margin-top: -7px;
-    padding-bottom: 10px;
-    width: 25px;
-    text-align: center;
-}
-
-div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
-    background-color: #eee;
-    color: #000;
-}
-
-.UICToggleVis:hover {
-	background-color: #fff !important;
-    border: 1px solid #aaa;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    border-radius: 5px;
-}
+/* Compact navbar temp fixes */
 
 #navbar_plugin_navbartemp.UICIconHack > div > div{
 	position: relative;
@@ -347,7 +363,7 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
 	content:"\f06d" !important;
 }
 
-
+/* webcam zoom/float */
 .UICWebCamClick{
     position: absolute;
     right: 0px;
@@ -467,6 +483,8 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
     object-fit: contain;
 }
 
+
+/* filament indicator color schemee*/
 .UICHeaderIcons #filament_indicator.present i{
     color:#40e543 !important;
 }
