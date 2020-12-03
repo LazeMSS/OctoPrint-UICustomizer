@@ -846,6 +846,9 @@ $(function() {
 
                 $('#settings_dialog_content').addClass('span12').removeClass('span9');
 
+                // Fix buttons footer
+                $('#settings_dialog > div.modal-footer button:has(i)').not('.btn-primary').each(function(){$(this).contents().eq(1).wrap('<span class="hidden-phone"/>')});
+
                 // Build settings hack --------------------------------------------------------- END
 
                 // Fix modals on show
@@ -960,6 +963,7 @@ $(function() {
                    }
                 });
                 $('#settings_dialog_content').addClass('span9').removeClass('span12');
+                $('#settings_dialog > div.modal-footer span.hidden-phone').each(function(){$(this).parent().append($(this).text());$(this).remove();})
 
                 $('#settings_dialog_content').insertAfter($('#settings_dialog_menu'));
                 $('#settings_dialog_content').addClass('scrollable');
