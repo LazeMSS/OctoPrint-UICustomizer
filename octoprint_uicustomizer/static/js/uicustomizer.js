@@ -685,13 +685,6 @@ $(function() {
             // Fix collapse menu hack for smaller screens than normal bootstrap 2 :(  All these hacks are terrible i know but fun to make - Maybe I should have spent my time making a implementation using BootStap4 instead - well...
             if ($('#settings_dialog_menu:visible').length && $('#UICsettingsMenu').length){
 
-                // Expand the screen estate
-                if ($('body').width() <= 980){
-                    $('#settings_dialog_content').addClass('span12').removeClass('span9');
-                }else{
-                    $('#settings_dialog_content').addClass('span9').removeClass('span12');
-                }
-
                 // Set width
                 $('#UICsettingsMenuNav').width($('#UICFullSettingsBox').width());
                 var curClass = $('#settings_dialog_menu').attr('class');
@@ -739,6 +732,13 @@ $(function() {
             if ($('div.modal-body:visible').length && $('div.modal-body:visible').attr('style') != undefined && $('div.modal-body:visible').attr('style').match(/(^|\s)max-height: \d+px !important;/i) == null){
                 var newstyle = $('div.modal-body:visible').attr('style').replace(/(^|\s)max-height: \d+px/i,`$& !important`);
                 $('div.modal-body:visible').attr('style',newstyle);
+            }
+
+            // Fix settingslists
+            if ($('div.modal-body:visible').length){
+                var setfixheight = $('#settings_dialog div.modal-body:first').height();
+                $('#settings_plugin_pluginmanager_pluginlist').height(setfixheight-300);
+                $('#settings_plugin_softwareupdate_updatelist').height(setfixheight-300);
             }
         }
 
@@ -843,6 +843,8 @@ $(function() {
 
                 // Fix floating errors
                 $('#UICFullSettingsBox div.control-group:not(.row-fluid)').addClass('row-fluid UICRemoveFluidRow');
+
+                $('#settings_dialog_content').addClass('span12').removeClass('span9');
 
                 // Build settings hack --------------------------------------------------------- END
 

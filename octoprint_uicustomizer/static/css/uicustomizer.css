@@ -56,8 +56,13 @@
 
 @media (max-width: 767px){
 	body.UICResponsiveMode .search-query-with-clear .search-clear{
-		right: 28px;
+		right: 28px !important;
 	}
+
+
+    body.UICResponsiveMode #settings_dialog_content div.tab-pane{
+        margin-right: 5px !important;
+    }
 }
 
 @media (max-width: 500px){
@@ -108,7 +113,17 @@ body.UICPreviewON div.modal-backdrop.fade.in {
     margin-right: -20px;
     margin-left: -20px;
 }
-.search-query-with-clear .search-clear{
+
+body.UICResponsiveMode #settings_dialog .input-block.search-query, body.UICResponsiveMode #settings_plugin_pluginmanager_repositorydialog .input-block.search-query{
+    margin-right: 0px;
+    margin-left: 0px;
+    margin-bottom: 10px;
+    margin-bottom: 10px;
+    max-width: 100% !important;
+}
+
+
+body.UICResponsiveMode .search-query-with-clear .search-clear{
 	right: 8px;
 }
 
@@ -176,6 +191,20 @@ body.UICResponsiveMode div.modal.modal-overflow #settings_dialog_content{
 }
 body.UICResponsiveMode div.modal #settings_dialog_content{
 	margin-top: 50px;
+}
+
+body.UICResponsiveMode #settings_dialog_content{
+    width: 100%;
+    margin-right: -18px;
+}
+
+body.UICResponsiveMode #settings_dialog_content div.tab-pane{
+    margin-right: 25px;
+}
+
+body.UICResponsiveMode #settings_plugin_softwareupdate_updatelist, body.UICResponsiveMode #settings_plugin_pluginmanager_pluginlist{
+    max-height: initial;
+    min-height: 100px;
 }
 
 #UICsetMenuShow{
