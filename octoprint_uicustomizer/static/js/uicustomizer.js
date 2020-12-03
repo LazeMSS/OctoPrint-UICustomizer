@@ -1,10 +1,4 @@
 /* UICustomizer START */
-/*
-Nice to:
-    icon picker/search
-    graph background set
-    icon changer
-*/
 $(function() {
     function UICustomizerViewModel(parameters) {
         var self = this;
@@ -729,9 +723,9 @@ $(function() {
             }
 
             // Fix modal sizing
-            if ($('div.modal-body:visible').length && $('div.modal-body:visible').attr('style') != undefined && $('div.modal-body:visible').attr('style').match(/(^|\s)max-height: \d+px !important;/i) == null){
-                var newstyle = $('div.modal-body:visible').attr('style').replace(/(^|\s)max-height: \d+px/i,`$& !important`);
-                $('div.modal-body:visible').attr('style',newstyle);
+            if ($('#settings_dialog:visible').length && $('#settings_dialog:visible').attr('style') != undefined && $('#settings_dialog:visible').attr('style').match(/(^|\s)max-height: \d+px !important;/i) == null){
+                var newstyle = $('#settings_dialog div.modal-body:first').attr('style').replace(/(^|\s)max-height: \d+px/i,`$& !important`);
+                $('#settings_dialog div.modal-body:first').attr('style',newstyle);
             }
 
             // Fix settingslists
@@ -1123,6 +1117,8 @@ $(function() {
                     $('#webcam_hls_container video').attr('src','');
                     $('#webcam_hls_container').hide();
                 }
+
+                self.logToConsole(" ----> Settings have been saved/updated <----");
             }
         }
 
