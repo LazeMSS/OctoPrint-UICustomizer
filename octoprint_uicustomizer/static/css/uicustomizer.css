@@ -61,7 +61,7 @@
 
 
     body.UICResponsiveMode #settings_dialog_content div.tab-pane{
-        margin-right: 5px !important;
+        margin-right: -25px !important;
     }
 }
 
@@ -195,6 +195,7 @@ body.UICResponsiveMode div.modal #settings_dialog_content{
 
 body.UICResponsiveMode #settings_dialog_content{
     width: 100%;
+    width: calc(100% - 30px);
     margin-right: -18px;
 }
 
