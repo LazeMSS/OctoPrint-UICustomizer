@@ -48,7 +48,8 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
             "addWebCamZoom" : True,
             "centerTopIcons": True,
             "compactMenu": True,
-            "hideMainCam": False
+            "hideMainCam": False,
+            "disableTermInactive": False
         }
 
     def get_template_configs(self):

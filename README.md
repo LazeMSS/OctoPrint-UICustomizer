@@ -26,8 +26,8 @@ or manually using this URL:
 
 
 ## Configuration
-The configuration is split into two sections - the top checkboxes for switching features on and off and the bottom for layout handling
-![](extras/settings.png?new=2)
+The configuration is split into 3 sections - the top checkboxes for switching features on and off and the bottom for layout handling and finally Advanced settings
+![](extras/settings.png?new=3)
 
 ### Features
 * Preview - switching this on will minimize the settingsdialog and preview any changes made to UI Customizer settings directly in the UI
@@ -47,6 +47,9 @@ The configuration is split into two sections - the top checkboxes for switching 
 The layout of the screen can be made into 1,2 or 3 columns and the size of the columns can be adjusted. The total width of the columns added together must not be greater than 12. Each column can contain zero or more widgets, widgets are the diffent "containers" for all the user interface, ie. the webcam, files etc.
 If you want a two or one column layout then just drag the "widgets" all the widgets into the left hand side columns.
 Each widget can be moved by draging. The widgets can also be hidden by clicking the eye on the right hand side of the widget.
+
+### Advanced settings
+* Disable terminal when hidden - Disables the terminal update when the terminal tab is in the background - gives a small perfomance boost.
 
 ## Screenshots/Video
 [YouTube](https://youtu.be/BTiI6i1Rc5c)

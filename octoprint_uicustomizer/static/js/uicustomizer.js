@@ -68,6 +68,15 @@ $(function() {
             // Always add this?
             $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
 
+            // Disable output off the terminal if inactive
+            var oldfunction = OctoPrint.coreui.viewmodels.terminalViewModel._processCurrentLogData;
+            OctoPrint.coreui.viewmodels.terminalViewModel._processCurrentLogData = function(data) {
+                if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.uicustomizer.disableTermInactive() && (!OctoPrint.coreui.viewmodels.terminalViewModel.tabActive || !OctoPrint.coreui.browserTabVisible)){
+                    return;
+                }
+                oldfunction(data);
+            };
+
             // Load custom layout
             self.UpdateLayout(self.settings.settings.plugins.uicustomizer);
         }
@@ -932,6 +941,8 @@ $(function() {
                         }
                     }
                 });
+                // Hack this special button
+                $('#job_pause span:not(.hidden-tablet.UICHideTablet)').addClass('hidden-tablet UICHideTablet');
 
             }else{
                 if (!$('body').hasClass('UICResponsiveMode')){

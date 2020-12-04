@@ -94,5 +94,19 @@
             </div>
         </div>
     </fieldset>
+    <div class="accordion">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#UICSettingAdv" href="#UICSettingAdv">{{ _('Advanced settings') }}</a>
+            </div>
+            <div id="UICSettingAdv" class="accordion-body collapse">
+                <div class="accordion-inner">
+                    <label class="checkbox" title="Disables the terminal update when the tab is in the background - gives a small perfomance boost">
+                        <input type="checkbox" data-bind="checked: settings.plugins.uicustomizer.disableTermInactive"> {{ _('Disable terminal when hidden') }}
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
 </form>
 
