@@ -253,6 +253,31 @@ body.UICResponsiveMode #settings_plugin_softwareupdate_updatelist, body.UICRespo
     min-height: 100px;
 }
 
+/* force scrollbar */
+body.UICTouchDevice #settings_dialog ::-webkit-scrollbar {
+    width: 10px !important;
+    margin-right: 10px;
+}
+
+ /* Track */
+body.UICTouchDevice #settings_dialog ::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3) !important;
+    -webkit-border-radius: 10px !important;
+    border-radius: 10px !important;
+}
+
+ /* Handle */
+body.UICTouchDevice #settings_dialog ::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px !important;
+    border-radius: 10px !important;
+    background: #006dcc !important;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5) !important;
+}
+body.UICTouchDevice #settings_dialog ::-webkit-scrollbar-thumb:window-inactive {
+    background: #999999 !important;
+}
+
+
 /* settings menu cookie*/
 #UICsetMenuShow{
 	font-size: 12px;

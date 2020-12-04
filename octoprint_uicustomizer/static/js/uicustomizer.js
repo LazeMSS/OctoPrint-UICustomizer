@@ -723,8 +723,10 @@ $(function() {
             }
 
             // Fix modal sizing
-            if ($('#settings_dialog:visible').length && $('#settings_dialog:visible').attr('style') != undefined && $('#settings_dialog:visible').attr('style').match(/(^|\s)max-height: \d+px !important;/i) == null){
+            if ($('#settings_dialog:visible').length && $('#settings_dialog:visible').attr('style') != undefined && $('#settings_dialog:visible').attr('style').match(/(^|\s)max-height: \d+px !important/i) == null){
                 var newstyle = $('#settings_dialog div.modal-body:first').attr('style').replace(/(^|\s)max-height: \d+px/i,`$& !important`);
+                // Quick and dirty
+                newstyle = newstyle.replace("!important !important","!important");
                 $('#settings_dialog div.modal-body:first').attr('style',newstyle);
             }
 
@@ -742,6 +744,11 @@ $(function() {
                 // Skip if active
                 if ($('body').hasClass('UICResponsiveMode')){
                     return true;
+                }
+
+                // Check for touch
+                if (typeof Modernizr !== 'undefined' && Modernizr.touchevents) {
+                    $('body').addClass('UICTouchDevice');
                 }
 
                 // Fix gcode
@@ -903,7 +910,7 @@ $(function() {
                 }
 
                 // Fix labels on buttons
-                $('div.UICMainCont .btn > i.fa').each(function(){
+                $('div.UICMainCont .btn > i.fa,div.UICMainCont .btn > i.fas').each(function(){
                     if ($(this).next().prop("tagName") == "SPAN" && $(this).next().text() != ""){
                         $(this).next().addClass('hidden-tablet UICHideTablet');
                     }
@@ -931,6 +938,7 @@ $(function() {
                     return true;
                 }
                 $('.UICHideTablet').removeClass('UICHideTablet hidden-tablet');
+                $('body').removeClass('UICTouchDevice');
 
                 // Remmove events
                 $('body').off('shown.bs.modal.UICHandler');
