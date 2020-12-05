@@ -63,6 +63,10 @@
     #UICsettingsMenuNav{
         margin-top: -30px !important;
     }
+
+    body.UICResponsiveMode #settings_dialog_content {
+        margin-top: 35px !important;
+    }
 }
 
 /* tiny screns aka mobile */
@@ -96,15 +100,15 @@ body.UICResponsiveMode div#settings_dialog .help-inline{
 
 /* fix the modal body to play nice in responsive - it will be resized with js*/
 body.UICPreviewON div#settings_dialog div.modal-body {
-    max-height: 200px !important;
-    min-height: 200px !important;;
-    height: 200px !important;
+    max-height: 300px !important;
+    min-height: 300px !important;;
+    height: 300px !important;
 }
 
 /* when we turn on preview lets change the position*/
 body.UICPreviewON div#settings_dialog {
     margin-top: 0px !important;
-    top: calc(100% - 350px);
+    top: calc(100% - 450px);
 }
 
 /* make the modal backdrop transparent in preview*/
@@ -208,6 +212,10 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
 #settings_plugin_uicustomizer form.form-horizontal .controls{
 	margin-left: 45px !important;
 }
+#settings_plugin_uicustomizer > form.form-horizontal > ul.nav.nav-pills{
+    margin-bottom: 0px;
+    border-bottom: 1px solid #eeee;
+}
 
 /* setting menu for responsive*/
 
@@ -225,6 +233,10 @@ div.UICHackResponseActive {
 	background: rgb(255,255,255);
     background: linear-gradient(180deg, rgba(255,255,255,1) 0px, rgba(255,255,255,1) 55px, rgba(255,255,255,0) 100%);
 }
+.UICscrollMenu{
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 
 #UICsettingsMenu a {
     font-size: 14px;
@@ -240,7 +252,7 @@ body.UICResponsiveMode #settings_dialog_content{
     width: 100%;
     width: calc(100% - 30px);
     margin-right: -18px;
-    margin-top: 45px;
+    margin-top: 50px;
 }
 
 body.UICResponsiveMode #settings_dialog_content div.tab-pane{
@@ -275,6 +287,11 @@ body.UICTouchDevice #settings_dialog ::-webkit-scrollbar-thumb {
 }
 body.UICTouchDevice #settings_dialog ::-webkit-scrollbar-thumb:window-inactive {
     background: #999999 !important;
+}
+
+#UICRealPrevCheck a{
+    margin-left: 0px;
+    margin-right: 0px;
 }
 
 

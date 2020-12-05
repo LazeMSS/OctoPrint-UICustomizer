@@ -1,112 +1,98 @@
 <form class="form-horizontal">
-    <label class="checkbox pull-right" title="Switching this on will minimize the settingsdialog and preview any changes made to UI Customizer settings directly in the UI">
-        <input type="checkbox" id="UICRealPrev"> {{ _('Preview') }}
-    </label>
-    <h4>{{ _('General options') }}</h4>
-    <fieldset>
-        <div class="row-fluid">
-            <div class="span6">
-                <div class="controls">
-                    <label class="checkbox" title="Should the top menubar stay fixed when scrolling or not">
-                        <input type="checkbox" data-settingtype="fixedHeader" data-bind="checked: settings.plugins.uicustomizer.fixedHeader"> {{ _('Fixed header/topbar') }}
-                    </label>
+    <ul class="nav nav-pills">
+        <li class="active">
+            <a data-toggle="tab" href="#settings_uicustomizer_general">{{ _('General') }}</a>
+        </li>
+        <li>
+            <a data-toggle="tab" href="#settings_uicustomizer_layout">{{ _('Layout') }}</a>
+        </li>
+        <li>
+            <a data-toggle="tab" href="#settings_uicustomizer_adv">{{ _('Advanced') }}</a>
+        </li>
+        <li class="pull-right" id="UICRealPrevCheck" title="Switching this on will minimize the settingsdialog and preview any changes made to UI Customizer settings directly in the UI"><a href="#"><i class="far fa-square"></i> {{ _('Preview') }}</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="settings_uicustomizer_general">
+            <h4>{{ _('General options') }}</h4>
+            <fieldset>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <div class="controls">
+                            <label class="checkbox" title="Should the top menubar stay fixed when scrolling or not"><input data-bind="checked: settings.plugins.uicustomizer.fixedHeader" data-settingtype="fixedHeader" type="checkbox"> {{ _('Fixed header/topbar') }}</label>
+                        </div>
+                        <div class="controls">
+                            <label class="checkbox" title="Should the bottom bar stay fixed when scrolling or not"><input data-bind="checked: settings.plugins.uicustomizer.fixedFooter" data-settingtype="fixedFooter" type="checkbox"> {{ _('Fixed footer/bottom bar') }}</label>
+                        </div>
+                        <div class="controls">
+                            <label class="checkbox" title="Will add icons and shrink the temperature display on the Navbar temperature plugin"><input data-bind="checked: settings.plugins.uicustomizer.navbarplugintempfix" data-settingtype="navbarplugintempfix" type="checkbox"> {{ _('Compact "Navbar Temperature Plugin"') }}</label>
+                        </div>
+                        <div class="controls">
+                            <label class="checkbox" title="Will horizontal center the extra plugins, top icons in the topbar"><input data-bind="checked: settings.plugins.uicustomizer.centerTopIcons" data-settingtype="centerTopIcons" type="checkbox"> {{ _('Center topbar icons') }}</label>
+                        </div>
+                        <div class="controls">
+                            <label class="checkbox" title="Hide the main camera - only acive if the webcam in the wiget is enabled"><input data-bind="checked: settings.plugins.uicustomizer.hideMainCam" data-settingtype="hideMainCam" type="checkbox"> {{ _('Hide main camera') }}</label>
+                        </div>
+                    </div>
+                    <div class="span6">
+                        <div class="controls">
+                            <label class="checkbox" title="Should the entire screen width be used or not"><input data-bind="checked: settings.plugins.uicustomizer.fluidLayout" data-settingtype="fluidLayout" type="checkbox"> {{ _('Fluid/full width layout') }}</label>
+                        </div>
+                        <div class="controls">
+                            <label class="checkbox" title="Hide temperature background graphics"><input data-bind="checked: settings.plugins.uicustomizer.hideGraphBackground" data-settingtype="hideGraphBackground" type="checkbox"> {{ _('Hide temp. graph background') }}</label>
+                        </div>
+                        <div class="controls">
+                            <label class="checkbox" title="Enables the improved responsive modes including settings for mobile screens etc."><input data-bind="checked: settings.plugins.uicustomizer.responsiveMode" data-settingtype="responsiveMode" type="checkbox"> {{ _('Improve mobile/responsive') }}</label>
+                        </div>
+                        <div class="controls">
+                            <label class="checkbox" title="Will add an zoom icon to the webcam live feed that will popup out the webcam video feed into a floating resizeable overlay"><input data-bind="checked: settings.plugins.uicustomizer.addWebCamZoom" data-settingtype="addWebCamZoom" type="checkbox"> {{ _('Zoom/float webcam icon') }}</label>
+                        </div>
+                        <div class="controls">
+                            <label class="checkbox" title="Should the dropdown menu be a single compact menu"><input data-bind="checked: settings.plugins.uicustomizer.compactMenu" type="checkbox"> {{ _('Compact menu') }}</label>
+                        </div>
+                    </div>
                 </div>
-                <div class="controls">
-                    <label class="checkbox" title="Should the bottom bar stay fixed when scrolling or not">
-                        <input type="checkbox" data-settingtype="fixedFooter" data-bind="checked: settings.plugins.uicustomizer.fixedFooter"> {{ _('Fixed footer/bottom bar') }}
-                    </label>
-                </div>
-                <div class="controls">
-                    <label class="checkbox" title="Will add icons and shrink the temperature display on the Navbar temperature plugin">
-                        <input type="checkbox" data-settingtype="navbarplugintempfix" data-bind="checked: settings.plugins.uicustomizer.navbarplugintempfix"> {{ _('Compact "Navbar Temperature Plugin"') }}
-                    </label>
-                </div>
-                <div class="controls">
-                    <label class="checkbox" tile="Will horizontal center the extra plugins, top icons in the topbar">
-                        <input type="checkbox" data-settingtype="centerTopIcons" data-bind="checked: settings.plugins.uicustomizer.centerTopIcons"> {{ _('Center topbar icons') }}
-                    </label>
-                </div>
-                 <div class="controls">
-                    <label class="checkbox" tile="Hide the main camera - only acive if the webcam in the wiget is enabled">
-                        <input type="checkbox" data-settingtype="hideMainCam" data-bind="checked: settings.plugins.uicustomizer.hideMainCam"> {{ _('Hide main camera') }}
-                    </label>
-                </div>
-            </div>
-            <div class="span6">
-                <div class="controls">
-                    <label class="checkbox" title="Should the entire screen width be used or not">
-                        <input type="checkbox" data-settingtype="fluidLayout" data-bind="checked: settings.plugins.uicustomizer.fluidLayout"> {{ _('Fluid/full width layout') }}
-                    </label>
-                </div>
-                <div class="controls">
-                    <label class="checkbox" title="Hide temperature background graphics">
-                        <input type="checkbox" data-settingtype="hideGraphBackground" data-bind="checked: settings.plugins.uicustomizer.hideGraphBackground"> {{ _('Hide temp. graph background') }}
-                    </label>
-                </div>
-                <div class="controls">
-                    <label class="checkbox" title="Enables the improved responsive modes including settings for mobile screens etc.">
-                        <input type="checkbox" data-settingtype="responsiveMode" data-bind="checked: settings.plugins.uicustomizer.responsiveMode"> {{ _('Improve mobile/responsive') }}
-                    </label>
-                </div>
-                <div class="controls">
-                    <label class="checkbox" title="Will add an zoom icon to the webcam live feed that will popup out the webcam video feed into a floating resizeable overlay">
-                        <input type="checkbox" data-settingtype="addWebCamZoom" data-bind="checked: settings.plugins.uicustomizer.addWebCamZoom"> {{ _('Zoom/float webcam icon') }}
-                    </label>
-                </div>
-                <div class="controls">
-                    <label class="checkbox" title="Should the dropdown menu be a single compact menu">
-                        <input type="checkbox" data-bind="checked: settings.plugins.uicustomizer.compactMenu"> {{ _('Compact menu') }}
-                    </label>
-                </div>
-            </div>
+            </fieldset>
         </div>
-    </fieldset>
-    <h4>{{ _('Layout') }}</h4>
-    <span class="help-block">{{ _('Total width cannot exceed 12') }}</span>
-    <fieldset>
-        <div class="row-fluid" id="UICSortRows">
-            <div class="span4">
-                <h5 class="text-center">{{ _('Left row') }}</h5>
-                {{ _('Width:') }}
-                <div class="pull-right">
-                    <input type="range" class="uicrowwidth" data-bind="value: settings.plugins.uicustomizer.widths()[0]" min="0" max="10">
-                    <span>3</span>
-                </div>
-                <ul class="nav nav-stacked"></ul>
+        <div class="tab-pane" id="settings_uicustomizer_layout">
+            <div class="help-block pull-right">
+                {{ _('Total width cannot exceed 12') }}
             </div>
-            <div class="span4">
-                <h5 class="text-center">{{ _('Center row') }}</h5>
-                {{ _('Width:') }}
-                <div class="pull-right">
-                    <input type="range" class="uicrowwidth" data-bind="value: settings.plugins.uicustomizer.widths()[1]" min="0" max="10">
-                    <span>6</span>
+            <h4>{{ _('Layout') }}</h4>
+            <fieldset>
+                <div class="row-fluid" id="UICSortRows">
+                    <div class="span4">
+                        <h5 class="text-center">{{ _('Left row') }}</h5>{{ _('Width:') }}
+                        <div class="pull-right">
+                            <input class="uicrowwidth" data-bind="value: settings.plugins.uicustomizer.widths()[0]" max="10" min="0" type="range"> <span>3</span>
+                        </div>
+                        <ul class="nav nav-stacked"></ul>
+                    </div>
+                    <div class="span4">
+                        <h5 class="text-center">{{ _('Center row') }}</h5>{{ _('Width:') }}
+                        <div class="pull-right">
+                            <input class="uicrowwidth" data-bind="value: settings.plugins.uicustomizer.widths()[1]" max="10" min="0" type="range"> <span>6</span>
+                        </div>
+                        <ul class="nav nav-stacked"></ul>
+                    </div>
+                    <div class="span4">
+                        <h5 class="text-center">{{ _('Right row') }}</h5>{{ _('Width:') }}
+                        <div class="pull-right">
+                            <input class="uicrowwidth" data-bind="value: settings.plugins.uicustomizer.widths()[2]" max="10" min="0" type="range"> <span>3</span>
+                        </div>
+                        <ul class="nav nav-stacked"></ul>
+                    </div>
                 </div>
-                <ul class="nav nav-stacked"></ul>
-            </div>
-            <div class="span4">
-                <h5 class="text-center">{{ _('Right row') }}</h5>
-                {{ _('Width:') }}
-                <div class="pull-right">
-                    <input type="range" class="uicrowwidth" data-bind="value: settings.plugins.uicustomizer.widths()[2]" min="0" max="10">
-                    <span>3</span>
-                </div>
-                <ul class="nav nav-stacked"></ul>
-            </div>
+            </fieldset>
         </div>
-    </fieldset>
-    <div class="accordion">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                <a class="accordion-toggle" data-toggle="collapse" data-parent="#UICSettingAdv" href="#UICSettingAdv">{{ _('Advanced settings') }}</a>
-            </div>
-            <div id="UICSettingAdv" class="accordion-body collapse">
-                <div class="accordion-inner">
-                    <label class="checkbox" title="Disables the terminal update when the tab is in the background - gives a small perfomance boost">
-                        <input type="checkbox" data-bind="checked: settings.plugins.uicustomizer.disableTermInactive"> {{ _('Disable terminal when hidden') }}
-                    </label>
+        <div class="tab-pane" id="settings_uicustomizer_adv">
+            <h4>{{ _('Advanced') }}</h4>
+            <div class="row-fluid">
+                <div class="span6">
+                    <div class="controls">
+                        <label class="checkbox" title="Disables the terminal update when the tab is in the background - gives a small perfomance boost"><input data-bind="checked: settings.plugins.uicustomizer.disableTermInactive" type="checkbox"> {{ _('Disable terminal when hidden') }}</label>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </form>
-

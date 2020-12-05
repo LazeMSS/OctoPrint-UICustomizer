@@ -77,6 +77,9 @@ $(function() {
                 oldfunction(data);
             };
 
+            // Fix SD card upload
+            $('#gcode_upload_sd').parent().find('i.fas.fa-upload').removeClass('fa-upload').addClass('fa-sd-card');
+
             // Load custom layout
             self.UpdateLayout(self.settings.settings.plugins.uicustomizer);
         }
@@ -685,6 +688,21 @@ $(function() {
             }
             self.logToConsole('FixSettingsModal triggered : ' + eventType);
 
+            // Fix modal sizing
+            if ($('#settings_dialog:visible').length && $('#settings_dialog:visible').attr('style') != undefined && $('#settings_dialog:visible').attr('style').match(/(^|\s)max-height: \d+px !important/i) == null){
+                var newstyle = $('#settings_dialog div.modal-body:first').attr('style').replace(/(^|\s)max-height: \d+px/i,`$& !important`);
+                // Quick and dirty
+                newstyle = newstyle.replace("!important !important","!important");
+                $('#settings_dialog div.modal-body:first').attr('style',newstyle);
+            }
+
+            // Fix settingslists
+            if ($('div.modal-body:visible').length){
+                var setfixheight = $('#settings_dialog div.modal-body:first').height();
+                $('#settings_plugin_pluginmanager_pluginlist').height(setfixheight-300);
+                $('#settings_plugin_softwareupdate_updatelist').height(setfixheight-300);
+            }
+
             // Fix collapse menu hack for smaller screens than normal bootstrap 2 :(  All these hacks are terrible i know but fun to make - Maybe I should have spent my time making a implementation using BootStap4 instead - well...
             if ($('#settings_dialog_menu:visible').length && $('#UICsettingsMenu').length){
 
@@ -708,44 +726,43 @@ $(function() {
                     $('#UICsetMenuShow').hide();
                     $('#UICsettingsMenu li.dropdown.open').removeClass('open');
                 }
+            }
 
-                // Fix dropdown menus on low height screens
-                if (!$('#settings_dialog_menu').hasClass('nav-collapse')){
-                    var offsetTop = $('#UICsettingsMenu').offset().top + $('#UICsettingsMenu').outerHeight();
-                    $('#settings_dialog_menu ul.dropdown-menu').each(function(){
-                        var menuopen = $(this);
-                        if (menuopen.data('UIC-height') != undefined && menuopen.data('UIC-height') > 0){
-                            var menuH = menuopen.data('UIC-height');
-                        }else{
-                            var menuH = offsetTop+menuopen.outerHeight();
-                            menuopen.data('UIC-height',menuH);
+            // Fix for the dropdown menu
+            if ($('#settings_dialog_menu').hasClass('nav-collapse')){
+                // how much space do we have
+                var screenroom = $(window).height()-($('#UICsettingsMenuNav').offset().top+50);
+                // Menu item length
+                var menuih = $('#settings_dialog_menu li.dropdown').first().outerHeight()+3;
+                // Calc each length
+                var mlength = menuih*$('#settings_dialog_menu li.dropdown').length;
+                var smallscreen = false;
+                if (mlength <= screenroom){
+                    // Should the main menu have overflow
+                    $('#settings_dialog_menu li.dropdown').each(function(idx,val){
+                        var thislen = ($(this).find('li').length*menuih)+((idx+1)*menuih);
+                        if (thislen > screenroom){
+                            smallscreen = true;
+                            return true;
                         }
-                        if ($(window).height() < menuH+44){
-                            menuopen.height($(window).height() - (offsetTop+44)).addClass('pre-scrollable').scrollTop(0);
-                        }else{
-                            menuopen.removeClass('pre-scrollable').css({'height':''});
-                        }
-                    });
+                    })
                 }else{
-                     $('#settings_dialog_menu ul.dropdown-menu').removeClass('pre-scrollable').css({'height':''});
+                    smallscreen = true;
                 }
-            }
-
-            // Fix modal sizing
-            if ($('#settings_dialog:visible').length && $('#settings_dialog:visible').attr('style') != undefined && $('#settings_dialog:visible').attr('style').match(/(^|\s)max-height: \d+px !important/i) == null){
-                var newstyle = $('#settings_dialog div.modal-body:first').attr('style').replace(/(^|\s)max-height: \d+px/i,`$& !important`);
-                // Quick and dirty
-                newstyle = newstyle.replace("!important !important","!important");
-                $('#settings_dialog div.modal-body:first').attr('style',newstyle);
-            }
-
-            // Fix settingslists
-            if ($('div.modal-body:visible').length){
-                var setfixheight = $('#settings_dialog div.modal-body:first').height();
-                $('#settings_plugin_pluginmanager_pluginlist').height(setfixheight-300);
-                $('#settings_plugin_softwareupdate_updatelist').height(setfixheight-300);
+                // Fix or not
+                if (smallscreen){
+                     $('#UICsettingsMenu , #UICsettingsMenu ul').addClass('UICscrollMenu').scrollTop(0);
+                     $('#UICsettingsMenu').css('max-height',screenroom+"px");
+                }else{
+                    $('#UICsettingsMenu , #UICsettingsMenu ul').removeClass('UICscrollMenu');
+                    $('#UICsettingsMenu').css('max-height','none');
+                }
+            }else{
+                $('#UICsettingsMenu , #UICsettingsMenu ul').removeClass('UICscrollMenu');
+                $('#UICsettingsMenu').css('max-height','none');
             }
         }
+
 
         // Set fixed header on/off
         self.set_responsiveMode = function(enabled){
@@ -834,16 +851,6 @@ $(function() {
                     var settingsMenuTxt = $(this).closest('li.dropdown').find('a:first').text() + '&nbsp;<i class="fa fa-chevron-right"></i>&nbsp;'+$(this).text();
                     $('#UICsetMenuShow').html(settingsMenuTxt);
                     $('#UICSettingsHeader').html(settingsMenuTxt);
-                });
-
-                // Fix drop down menus
-                $('#settings_dialog_menu a.dropdown-toggle').off('click.UICSetMenu').on('click.UICSetMenu',function(){
-                    // Fix menu height
-                    if ($('#UICsettingsMenu ul > li:visible:last').length && $('#settings_dialog div.modal-body:first').height() < $('#UICsettingsMenu ul > li:visible:last').offset().top){
-                        $('#UICsettingsMenu').addClass('pre-scrollable');
-                    }else{
-                        $('#UICsettingsMenu').removeClass('pre-scrollable');
-                    }
                 });
 
                 // Click the active menu to make it all look goode
@@ -954,7 +961,6 @@ $(function() {
                 // Remmove events
                 $('body').off('shown.bs.modal.UICHandler');
                 $(window).off('resize.UICHandler');
-                $('#settings_dialog_menu a').off('click.UICSetMenu');
                 // Remove fluid hack
                 $('#UICFullSettingsBox div.control-group.UICRemoveFluidRow').removeClass('row-fluid UICRemoveFluidRow');
 
@@ -1328,9 +1334,11 @@ $(function() {
             fixMinMax();
 
             // Toggle preview on/off
-            $('#UICRealPrev').prop('checked', false);
             self.previewOn = false;
-            $('#UICRealPrev').on('click.uicus',function(){
+            $('#UICRealPrevCheck').off('click.uicus').on('click.uicus',function(){
+                // Toggle icon
+                $(this).find('i').toggleClass('fa-square fa-check-square');
+                // Set status
                 self.previewOn = !self.previewOn;
                 $('body').toggleClass('UICPreviewON');
                 $(window).trigger('resize');
@@ -1345,13 +1353,13 @@ $(function() {
                     // Trigger us self if checking another settings
                     $('#settingsTabs').off('click.uicus').one('click.uicus','a',function(){
                         if (self.previewOn){
-                            $('#UICRealPrev').trigger('click.uicus');
+                            $('#UICRealPrevCheck').trigger('click.uicus');
                         }
                     });
                 }else{
                     $('#settingsTabs').off('click.uicus');
                 }
-            })
+            }).find('i').removeClass('fa-check-square').addClass('fa-square');
 
 
             // Realtime preview
