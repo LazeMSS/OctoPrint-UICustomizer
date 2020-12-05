@@ -9,7 +9,7 @@
 		display: none;
 	}
     /* on big screens we center these*/
-    .UICHeaderIcons{
+    .UICHeaderIcons.CenterMe{
         float: unset !important;
         position: absolute !important;
         left: 50% !important;
@@ -25,25 +25,24 @@
 		display: inline-block !important
 	}
 
-    /* on small screens we align to the right */
-	.UICHeaderIcons{
-		float:right !important;
-	}
-
     /* align drop down menu text to the right*/
 	body.UICResponsiveMode #navbar div.nav-collapse {
 		text-align: right;
 	}
 
     /* compact menu instead of full width top bar menu*/
-    body.UICResponsiveMode #navbar div.nav-collapse.UICCompactMenu {
+    body.UICResponsiveMode .UICCompactMenu {
         position: absolute;
         right: 0px;
-        top: 52px;
+        top: 42px;
         z-index: 1000;
         border-bottom-right-radius: 5px;
         border-bottom-left-radius: 5px;
         background-color: #ebebeb;
+    }
+
+    body.UICfixedHeader .UICCompactMenu{
+        top: 52px !important;
     }
 
     body.UICResponsiveMode #navbar .navbar-inner .nav>li>a:hover,
@@ -67,6 +66,10 @@
     body.UICResponsiveMode #settings_dialog_content {
         margin-top: 35px !important;
     }
+}
+
+.UICHeaderIcons{
+    float: right !important;
 }
 
 /* tiny screns aka mobile */

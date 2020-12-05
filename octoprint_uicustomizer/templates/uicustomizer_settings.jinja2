@@ -30,7 +30,7 @@
                             <label class="checkbox" title="Will horizontal center the extra plugins, top icons in the topbar"><input data-bind="checked: settings.plugins.uicustomizer.centerTopIcons" data-settingtype="centerTopIcons" type="checkbox"> {{ _('Center topbar icons') }}</label>
                         </div>
                         <div class="controls">
-                            <label class="checkbox" title="Hide the main camera - only acive if the webcam in the wiget is enabled"><input data-bind="checked: settings.plugins.uicustomizer.hideMainCam" data-settingtype="hideMainCam" type="checkbox"> {{ _('Hide main camera') }}</label>
+                            <label class="checkbox" title="Hide the main camera - only acive if the webcam in the wiget is enabled"><input data-bind="checked: settings.plugins.uicustomizer.hideMainCam" data-clickthis="#control_link a" data-settingtype="hideMainCam" type="checkbox"> {{ _('Hide main camera') }}</label>
                         </div>
                     </div>
                     <div class="span6">
@@ -38,7 +38,7 @@
                             <label class="checkbox" title="Should the entire screen width be used or not"><input data-bind="checked: settings.plugins.uicustomizer.fluidLayout" data-settingtype="fluidLayout" type="checkbox"> {{ _('Fluid/full width layout') }}</label>
                         </div>
                         <div class="controls">
-                            <label class="checkbox" title="Hide temperature background graphics"><input data-bind="checked: settings.plugins.uicustomizer.hideGraphBackground" data-settingtype="hideGraphBackground" type="checkbox"> {{ _('Hide temp. graph background') }}</label>
+                            <label class="checkbox" title="Hide temperature background graphics"><input data-bind="checked: settings.plugins.uicustomizer.hideGraphBackground" data-clickthis="#temp_link a" data-settingtype="hideGraphBackground" type="checkbox"> {{ _('Hide temp. graph background') }}</label>
                         </div>
                         <div class="controls">
                             <label class="checkbox" title="Enables the improved responsive modes including settings for mobile screens etc."><input data-bind="checked: settings.plugins.uicustomizer.responsiveMode" data-settingtype="responsiveMode" type="checkbox"> {{ _('Improve mobile/responsive') }}</label>
@@ -47,7 +47,7 @@
                             <label class="checkbox" title="Will add an zoom icon to the webcam live feed that will popup out the webcam video feed into a floating resizeable overlay"><input data-bind="checked: settings.plugins.uicustomizer.addWebCamZoom" data-settingtype="addWebCamZoom" type="checkbox"> {{ _('Zoom/float webcam icon') }}</label>
                         </div>
                         <div class="controls">
-                            <label class="checkbox" title="Should the dropdown menu be a single compact menu"><input data-bind="checked: settings.plugins.uicustomizer.compactMenu" type="checkbox"> {{ _('Compact menu') }}</label>
+                            <label class="checkbox" title="Should the dropdown menu be a single compact menu"><input data-bind="checked: settings.plugins.uicustomizer.compactMenu" data-settingtype="compactMenu" type="checkbox"> {{ _('Compact menu') }}</label>
                         </div>
                     </div>
                 </div>

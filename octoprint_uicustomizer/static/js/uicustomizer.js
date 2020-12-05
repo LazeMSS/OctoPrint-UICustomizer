@@ -48,12 +48,14 @@ $(function() {
         // Store sort
         self.SortableSet = [];
 
+        // ------------------------------------------------------------------------------------------------------------------------
         // Quick debug
         self.logToConsole = function(msg){
             return true;
             console.log('UICustomizer:',msg)
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
         // Initial bound and init the custom layout
         self.onAllBound = function(){
             // Store webcam
@@ -64,9 +66,7 @@ $(function() {
             $('div.octoprint-container div.tabbable').addClass('UICmainTabs').wrap( '<div class="UICRow2"></div>');
             $('#sidebar').addClass('UICRow1');
             $('div.octoprint-container').addClass('UICMainCont');
-
-            // Always add this?
-            $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
+            $('#navbar div.navbar-inner > div > div.nav-collapse').addClass('UICMainMenu');
 
             // Disable output off the terminal if inactive
             var oldfunction = OctoPrint.coreui.viewmodels.terminalViewModel._processCurrentLogData;
@@ -84,6 +84,7 @@ $(function() {
             self.UpdateLayout(self.settings.settings.plugins.uicustomizer);
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
         // Add an item to settings UI
         self.addToSorter = function(row,item,visible){
             var title = $(item+' div.accordion-heading a.accordion-toggle').html();
@@ -104,6 +105,7 @@ $(function() {
             $($('#UICSortRows ul')[row]).append($('<li data-id="'+item+'"><a>'+title+'<i class="pull-right fa '+checkclass+' UICToggleVis"></i></a><input class="hide" type="checkbox"'+checked+'></li>'));
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
         // Update the entire layout
         self.UpdateLayout= function(settingsPlugin){
             self.logToConsole('Updating UI/layout');
@@ -112,53 +114,38 @@ $(function() {
             $('#sidebar').removeClass('span4');
 
             // Fixed header
-            if (settingsPlugin.fixedHeader()){
-                self.set_fixedHeader(true);
-            }
+            self.set_fixedHeader(settingsPlugin.fixedHeader());
+
 
             // Fixed footer
-            if (settingsPlugin.fixedFooter()){
-                self.set_fixedFooter(true);
-            }
+            self.set_fixedFooter(settingsPlugin.fixedFooter());
 
             // remove graph background
-            if (settingsPlugin.hideGraphBackground()){
-                self.set_hideGraphBackground(true);
-            }
+            self.set_hideGraphBackground(settingsPlugin.hideGraphBackground());
 
             // Make it fluid
-            if (settingsPlugin.fluidLayout()){
-                self.set_fluidLayout(true);
-            }
+            self.set_fluidLayout(settingsPlugin.fluidLayout());
 
             // Run in responsive mode
-            if (settingsPlugin.responsiveMode()){
-                self.set_responsiveMode(true);
-            }
+            self.set_responsiveMode(settingsPlugin.responsiveMode());
 
             // Fix temp bar plugin
-            if (settingsPlugin.navbarplugintempfix()){
-                self.set_navbarplugintempfix(true);
-            }
+            self.set_navbarplugintempfix(settingsPlugin.navbarplugintempfix());
 
             // Center the icons
-            if (settingsPlugin.centerTopIcons()){
-                self.set_centerTopIcons(true);
-            }
+            self.set_centerTopIcons(settingsPlugin.centerTopIcons());
 
             // Compact menus
-            if (settingsPlugin.compactMenu()){
-                self.set_compactMenu(true);
-            }
+            self.set_compactMenu(settingsPlugin.compactMenu());
 
+            // BUild the rows layout
             self.set_rowsLayout(settingsPlugin);
 
             // addWebCamZoom
-            if (settingsPlugin.addWebCamZoom()){
-                self.set_addWebCamZoom(true);
-            }
+            self.set_addWebCamZoom(settingsPlugin.addWebCamZoom());
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
         self.set_rowsLayout = function(settingsPlugin){
             // Fix layout and width - using magic
             var TempRows = [...settingsPlugin.rows()];
@@ -371,6 +358,7 @@ $(function() {
             });
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
         // Hide main cams
         self.set_hideMainCam = function(enable){
             if (enable){
@@ -392,6 +380,7 @@ $(function() {
             }
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
         self.CustomW_initWebCam = function(enable){
             self.logToConsole('WebCam custom init');
 
@@ -671,6 +660,7 @@ $(function() {
             }
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
         // Set compact drop down menu
         self.set_compactMenu= function(enabled){
             if (enabled){
@@ -680,12 +670,14 @@ $(function() {
             }
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
         // Fix modal
         self.fixSettingsModal = function(eventType){
             // Nothing to do
             if (!$('body').hasClass('UICResponsiveMode')){
                 return true;
             }
+
             self.logToConsole('FixSettingsModal triggered : ' + eventType);
 
             // Fix modal sizing
@@ -764,13 +756,17 @@ $(function() {
         }
 
 
-        // Set fixed header on/off
+        // ------------------------------------------------------------------------------------------------------------------------
+        // Set responsive
         self.set_responsiveMode = function(enabled){
             if (enabled){
                 // Skip if active
                 if ($('body').hasClass('UICResponsiveMode')){
                     return true;
                 }
+
+                // Add dynamic viewport
+                $('head').append('<meta id="UICViewport" name="viewport" content="width=device-width, initial-scale=1.0">');
 
                 // Check for touch
                 if (typeof Modernizr !== 'undefined' && Modernizr.touchevents) {
@@ -893,9 +889,6 @@ $(function() {
                     self.modalTimer = setTimeout(function(){self.fixSettingsModal('resize')}, 100);
                 });
 
-                // Make it easier
-                $('#navbar div.navbar-inner > div > div.nav-collapse').addClass('UICMainMenu');
-
                 // Add menu button to the main menu
                 $('#navbar > div.navbar-inner.default > div:first').prepend('<a class="btn btn-navbar collapsed" data-toggle="collapse" data-target=".UICMainMenu"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a>');
 
@@ -948,6 +941,7 @@ $(function() {
                         }
                     }
                 });
+
                 // Hack this special button
                 $('#job_pause span:not(.hidden-tablet.UICHideTablet)').addClass('hidden-tablet UICHideTablet');
 
@@ -955,6 +949,8 @@ $(function() {
                 if (!$('body').hasClass('UICResponsiveMode')){
                     return true;
                 }
+                // Remove meta viewport
+                $('#UICViewport').remove();
                 $('.UICHideTablet').removeClass('UICHideTablet hidden-tablet');
                 $('body').removeClass('UICTouchDevice');
 
@@ -995,7 +991,6 @@ $(function() {
                 // Remove menu hacks
                 $('#navbar div.navbar-inner a.btn-navbar').remove();
                 $('div.UICMainMenu .UICHideDesktop').remove();
-                $('div.UICMainMenu').removeClass('UICMainMenu');
 
                 $('.UICToolTipLeft').removeClass('UICToolTipLeft');
 
@@ -1006,24 +1001,29 @@ $(function() {
             }
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
         // Should we center the icons or not?
         self.set_centerTopIcons = function(enabled){
-            if (enabled){
-                if ($('ul.UICHeaderIcons').length){
-                    return true;
-                }
-                // Move header icons out of menu
-                $('#navbar div.navbar-inner > div > div.nav-collapse').addClass('UICMainMenu');
-                $('div.UICMainMenu').before($('<ul class="UICHeaderIcons nav"></ul>').append($('div.UICMainMenu ul.nav li[id^="navbar_plugin"] > :not(a[href])').parent()));
-            }else{
-                if (!$('ul.UICHeaderIcons').length){
-                    return true;
-                }
+            // Remove it not request and not running responsive
+            if ((!enabled && !$('body').hasClass('UICResponsiveMode')) && $('ul.UICHeaderIcons').length){
                 $('div.UICMainMenu > ul.nav').prepend($('ul.UICHeaderIcons li'));
                 $('ul.UICHeaderIcons').remove();
+                return true;
+            }
+            // Build header icons always to fix responsive or on request
+            if ((enabled || $('body').hasClass('UICResponsiveMode')) && !$('ul.UICHeaderIcons').length){
+                // Move header icons out of menu
+                $('#navbar div.navbar-inner > div > div.nav-collapse').addClass('UICMainMenu');
+                $('div.UICMainMenu').after($('<ul class="UICHeaderIcons nav"></ul>').append($('div.UICMainMenu ul.nav li[id^="navbar_plugin"]:not(#navbar_plugin_announcements)')));
+            }
+            if (enabled){
+                $('ul.UICHeaderIcons').addClass('CenterMe');
+            }else{
+                $('ul.UICHeaderIcons').removeClass('CenterMe');
             }
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
         // Set fixed header on/off
         self.set_fixedHeader = function(enabled){
             if (enabled){
@@ -1035,6 +1035,7 @@ $(function() {
             }
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
         // Set Compact icons
         self.set_navbarplugintempfix = function(enabled){
             if (!$('#navbar_plugin_navbartemp').length){
@@ -1049,6 +1050,7 @@ $(function() {
             }
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
         // Set fixed footer on/off
         self.set_fixedFooter = function(enabled){
             if (enabled){
@@ -1078,6 +1080,7 @@ $(function() {
             }
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
         // Set graph background
         self.set_hideGraphBackground = function(enabled){
             if (enabled){
@@ -1087,7 +1090,7 @@ $(function() {
             }
         }
 
-
+        // ------------------------------------------------------------------------------------------------------------------------
         // Fix fluid layout
         self.set_fluidLayout = function(enabled){
             if (enabled){
@@ -1102,7 +1105,6 @@ $(function() {
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
-
         // Improve the HLS playback method
         self.startHLSstream = function(element,streamURL){
             if (element.canPlayType('application/vnd.apple.mpegurl')) {
@@ -1122,6 +1124,7 @@ $(function() {
             }
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
         // Save handler and update
         self.onSettingsBeforeSave = function () {
             // Update if we have been shown/edited
@@ -1147,6 +1150,7 @@ $(function() {
             }
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
         // Build row layout and width
         self.buildRows = function(prefix){
             var prefixItem = '';
@@ -1175,6 +1179,7 @@ $(function() {
             return [ko.observableArray(rowsSave), ko.observableArray(widths)];
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
         // Settings handler
         self.onSettingsShown = function() {
             self.settingsBeenShown = true;
@@ -1243,7 +1248,7 @@ $(function() {
                 var chbox = $(this).parent().parent().find('input');
                 chbox.prop("checked", !chbox.prop("checked"));
                 if (self.previewOn){
-                    $($(this).closest('li').data('id')).toggle().addClass('UICpreviewToggle');
+                    $($(this).closest('li').data('id')).toggle();
                     self.previewHasBeenOn = true;
                 }
                 event.stopPropagation();
@@ -1350,8 +1355,8 @@ $(function() {
                     var rowData = self.buildRows(false);
                     self.set_rowsLayout({'rows': rowData[0],'widths':rowData[1]});
 
-                    // Trigger us self if checking another settings
-                    $('#settingsTabs a, #UICsettingsMenu a:not(.dropdown-toggle)').off('click.uicusPrev').one('click.uicusPrev',function(){
+                    // Trigger us self if checking anything but our own menu item
+                    $('#settingsTabs a, #UICsettingsMenu a:not(.dropdown-toggle)').not('#settings_plugin_uicustomizer_link a').off('click.uicusPrev').one('click.uicusPrev',function(){
                         if (self.previewOn){
                             $('#UICRealPrevCheck').trigger('click.uicusPrev');
                         }
@@ -1364,23 +1369,28 @@ $(function() {
 
             // Realtime preview
             $('#settings_plugin_uicustomizer input:checkbox[data-settingtype]').on('change.uicus',function(){
-                 if (self.previewOn && typeof self['set_'+$(this).data('settingtype')] == "function"){
-                    self['set_'+$(this).data('settingtype')]($(this).is(':checked'));
+                var settingType = $(this).data('settingtype');
+                if (self.previewOn && typeof self['set_'+settingType] == "function"){
+                    if ($(this).data('clickthis') !== 'undefined'){
+                        $($(this).data('clickthis')).trigger('click');
+                    }
+                    self['set_'+settingType]($(this).is(':checked'));
                  }
             });
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
         // When settings are hidden
         self.onSettingsHidden = function() {
             self.settingsBeenShown = false;
             // Revert if not saved and we have been previewing anything
             if (!self.saved && self.previewHasBeenOn){
+                self.previewHasBeenOn = false;
+                // Cancel the data to revert settings
+                OctoPrint.coreui.viewmodels.settingsViewModel.cancelData();
                 self.UpdateLayout(self.settings.settings.plugins.uicustomizer);
-                $('.UICpreviewToggle').toggle();
-                $('.UICpreviewToggle').removeClass('UICpreviewToggle');
             }
             $('body').removeClass('UICPreviewON');
-
 
             // Remove sorts
             $(self.SortableSet).each(function(){
@@ -1394,6 +1404,7 @@ $(function() {
             $('#settings_plugin_uicustomizer input').off('input.uicus change.uicus click.uicus');
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
         self.onStartupComplete = function (){
             if (self.settings.settings.plugins.uicustomizer.navbarplugintempfix()){
                 // hackish - wait for the normal plugin
