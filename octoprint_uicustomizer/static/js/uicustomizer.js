@@ -1335,7 +1335,7 @@ $(function() {
 
             // Toggle preview on/off
             self.previewOn = false;
-            $('#UICRealPrevCheck').off('click.uicus').on('click.uicus',function(){
+            $('#UICRealPrevCheck').off('click.uicusPrev').on('click.uicusPrev',function(){
                 // Toggle icon
                 $(this).find('i').toggleClass('fa-square fa-check-square');
                 // Set status
@@ -1351,13 +1351,13 @@ $(function() {
                     self.set_rowsLayout({'rows': rowData[0],'widths':rowData[1]});
 
                     // Trigger us self if checking another settings
-                    $('#settingsTabs').off('click.uicus').one('click.uicus','a',function(){
+                    $('#settingsTabs a, #UICsettingsMenu a:not(.dropdown-toggle)').off('click.uicusPrev').one('click.uicusPrev',function(){
                         if (self.previewOn){
-                            $('#UICRealPrevCheck').trigger('click.uicus');
+                            $('#UICRealPrevCheck').trigger('click.uicusPrev');
                         }
                     });
                 }else{
-                    $('#settingsTabs').off('click.uicus');
+                    $('#settingsTabs').off('click.uicusPrev');
                 }
             }).find('i').removeClass('fa-check-square').addClass('fa-square');
 
