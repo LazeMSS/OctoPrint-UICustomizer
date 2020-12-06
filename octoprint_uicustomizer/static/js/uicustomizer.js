@@ -58,7 +58,7 @@ $(function() {
         // ------------------------------------------------------------------------------------------------------------------------
         // Initial bound and init the custom layout
         self.onAllBound = function(){
-            // Store webcam
+            // Store WebCam
             self.onWebCamOrg = OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded;
             self.onWebCamErrorOrg = OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored;
 
@@ -82,6 +82,80 @@ $(function() {
 
             // Load custom layout
             self.UpdateLayout(self.settings.settings.plugins.uicustomizer);
+
+            // Fix consolidate_temp_control layout issues
+            if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.consolidate_temp_control !== "undefined"){
+                $('div.page-container').css({'min-width':''});
+                $('div.footer').css({'padding-left':'','padding-right':''});
+                $('div.UICMainCont > div:first').css({'margin-left':'','padding-right':''});
+                $('div.UICMainCont').removeClass('row-fluid');
+                $('div.UICmainTabs').removeClass('span10');
+                $('div#tabs_content div.tab-pane:not("#tab_plugin_consolidate_temp_control") > div > div.span6').unwrap();
+                $('div#tabs_content div.tab-pane:not("#tab_plugin_consolidate_temp_control") > div.span6').children().unwrap();
+            }
+
+            // Check these plugins
+            var knowPluginIssues = {
+                'widescreen' : {
+                    'text': 'The plugin OctoPrint-WideScreen collides with the functionality of UI Customizer.\n\nEither disable UI Customizer or OctoPrint-WideScreen plugin for optimal performance.',
+                    'action' : function(){
+                        if (!$('#settings_dialog:visible').length){
+                            $('#navbar_show_settings').trigger('click');
+                            $('#settings_plugin_pluginmanager_link a').trigger('click');
+                        }
+                    }
+                },
+                'consolidate_temp_control': {
+                    'text': 'The plugin Consolidate Temp Control and UI Customizer can cause problems.\n\nThe UI Customizer plugin has tried to fix these problems but there might be layout issues.',
+                    'action' : null
+                },
+            }
+
+            // Notify options main options
+            var options = {
+                title: "Plugin compatibility issue",
+                text: "",
+                type: "notice",
+                hide: false,
+                confirm: {
+                    confirm: true,
+                    buttons: [
+                        {
+                            text: gettext("Cancel"),
+                            click: function (notice) {
+                                notice.remove();
+                                notice.get().trigger("pnotify.cancel", notice);
+                            }
+                        }
+                    ]
+                },
+                buttons: {sticker: false,closer: false}
+            };
+
+            // Check for any issues with installed plugins
+            $.each(knowPluginIssues,function(key,val){
+                if (typeof OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins[key] !== "undefined"){
+                    self.logToConsole("Plugin issues detected: " + key);
+                    if (val.action != null){
+                        var optionsCust = $.extend(true,{},options);
+                        optionsCust.text = val.text;
+                        optionsCust.confirm.buttons.unshift({
+                            text: gettext("Open"),
+                            click: function (notice) {
+                                val.action();
+                                notice.close();
+                            }
+                        });
+                        new PNotify(optionsCust);
+                    }else{
+                        new PNotify({
+                          title: options.title,
+                          text: val.text,
+                          hide: false
+                        });
+                    }
+                }
+            });
         }
 
         // ------------------------------------------------------------------------------------------------------------------------

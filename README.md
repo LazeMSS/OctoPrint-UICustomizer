@@ -27,7 +27,7 @@ or manually using this URL:
 
 ## Configuration
 The configuration is split into 3 sections - the top checkboxes for switching features on and off and the bottom for layout handling and finally Advanced settings
-![](extras/settings.png?new=3)
+![](extras/settings.png?new=4)
 
 ### Features
 * Preview - switching this on will minimize the settingsdialog and preview any changes made to UI Customizer settings directly in the UI
