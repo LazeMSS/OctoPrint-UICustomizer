@@ -26,20 +26,20 @@ or manually using this URL:
 
 
 ## Configuration
-The configuration is split into 3 sections - the top checkboxes for switching features on and off and the bottom for layout handling and finally Advanced settings
+The configuration is split into 3 tabs:
 ![](extras/settings.png?new=4)
 
-### Features
+### General
 * Preview - switching this on will minimize the settingsdialog and preview any changes made to UI Customizer settings directly in the UI
 * Fixed header/topbar - should the top menubar stay fixed when scrolling or not
-* Fixed footer/bottombar - should the bottom bar stay fixed when scrolling or not
-* Compact ["Navbar temperature plugin"](https://plugins.octoprint.org/plugins/navbartemp/) - will add icons and shrink the temperature display on this awesome plugin
-* Center topbar icons - will horizontal center the extra plugins/top icons in the topbar
-# Hide main camera - should the main camera be hidden - only acive if the webcam widget is enabled
-* Hide temp. graph background - Hide temperature background graphics
 * Fluid/full width layout - should the entire screen width be used or not
+* Fixed footer/bottombar - should the bottom bar stay fixed when scrolling or not
+* Hide temp. graph background - Hide temperature background graphics
+* Compact ["Navbar temperature plugin"](https://plugins.octoprint.org/plugins/navbartemp/) - will add icons and shrink the temperature display on this awesome plugin
 * Improve mobile/responsive - enable the improved responsive modes including settings for mobile screens etc.
+* Center topbar icons - will horizontal center the extra plugins/top icons in the topbar
 * Zoom/float webcam icon - will add an zoom icon to the webcam live feed that will popup out the webcam video feed into a floating resizeable overlay
+# Hide main camera - should the main camera be hidden - only acive if the webcam widget is enabled
 * Compact menu - should the "dropdown" menu be a single compact menu
 
 
@@ -48,7 +48,7 @@ The layout of the screen can be made into 1,2 or 3 columns and the size of the c
 If you want a two or one column layout then just drag the "widgets" all the widgets into the left hand side columns.
 Each widget can be moved by draging. The widgets can also be hidden by clicking the eye on the right hand side of the widget.
 
-### Advanced settings
+### Advanced
 * Disable terminal when hidden - Disables the terminal update when the terminal tab is in the background - gives a small perfomance boost.
 
 ## Screenshots/Video
