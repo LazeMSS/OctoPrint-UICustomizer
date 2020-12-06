@@ -27,9 +27,9 @@ or manually using this URL:
 
 ## Configuration
 The configuration is split into 3 tabs:
-![](extras/settings.png?new=4)
 
 ### General
+![](extras/settings.png?new=4)
 * Preview - switching this on will minimize the settingsdialog and preview any changes made to UI Customizer settings directly in the UI
 * Fixed header/topbar - should the top menubar stay fixed when scrolling or not
 * Fluid/full width layout - should the entire screen width be used or not
@@ -44,6 +44,7 @@ The configuration is split into 3 tabs:
 
 
 ### Layout
+![](extras/settings-layout.png?new=4)
 The layout of the screen can be made into 1,2 or 3 columns and the size of the columns can be adjusted. The total width of the columns added together must not be greater than 12. Each column can contain zero or more widgets, widgets are the diffent "containers" for all the user interface, ie. the webcam, files etc.
 If you want a two or one column layout then just drag the "widgets" all the widgets into the left hand side columns.
 Each widget can be moved by draging. The widgets can also be hidden by clicking the eye on the right hand side of the widget.
