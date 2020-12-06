@@ -39,7 +39,7 @@ The configuration is split into 3 tabs:
 * Improve mobile/responsive - enable the improved responsive modes including settings for mobile screens etc.
 * Center topbar icons - will horizontal center the extra plugins/top icons in the topbar
 * Zoom/float webcam icon - will add an zoom icon to the webcam live feed that will popup out the webcam video feed into a floating resizeable overlay
-# Hide main camera - should the main camera be hidden - only acive if the webcam widget is enabled
+* Hide main camera - should the main camera be hidden - only acive if the webcam widget is enabled
 * Compact menu - should the "dropdown" menu be a single compact menu
 
 
