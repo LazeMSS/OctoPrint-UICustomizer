@@ -139,8 +139,6 @@ body.UICPreviewON div.modal-backdrop.fade.in {
     margin-left: -20px;
 }
 
-body.UICResponsiveMode
-
 /* search in settings fix*/
 body.UICResponsiveMode #settings_dialog .input-block.search-query, body.UICResponsiveMode #settings_plugin_pluginmanager_repositorydialog .input-block.search-query{
     margin-right: 0px;
