@@ -222,6 +222,35 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
     border-radius: 5px;
 }
 
+#settings_plugin_uicustomizer .UICReportBug{
+    position: absolute;
+    bottom: 0px;
+    right: 20px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+#settings_plugin_uicustomizer #UICReportBug:hover i{
+    -webkit-animation: fa-spin 1s steps(8) infinite;
+    animation: fa-spin 1s steps(8) infinite;
+    padding-right: 20px;
+    color: #000;
+    margin-right: 5px;
+}
+
+#settings_plugin_uicustomizer #UICReportBug:hover{
+    width: 110px;
+}
+
+#settings_plugin_uicustomizer #UICReportBug{
+    transition: width 1s;
+    width: 90px;
+    height: 22px;
+    text-align:right;
+    overflow:hidden;
+    white-space: nowrap;
+}
+
 #settings_plugin_uicustomizer form.form-horizontal div.span6 .controls{
 	margin-left: 45px !important;
 }
