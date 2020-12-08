@@ -7,6 +7,9 @@
             <a data-toggle="tab" href="#settings_uicustomizer_layout">{{ _('Layout') }}</a>
         </li>
         <li>
+            <a data-toggle="tab" href="#settings_uicustomizer_tabs">{{ _('Main tabs') }}</a>
+        </li>
+        <li>
             <a data-toggle="tab" href="#settings_uicustomizer_adv">{{ _('Advanced') }}</a>
         </li>
         <li class="pull-right" id="UICRealPrevCheck" title="Switching this on will minimize the settingsdialog and preview any changes made to UI Customizer settings directly in the UI"><a href="#"><i class="far fa-square"></i> {{ _('Preview') }}</a></li>
@@ -82,6 +85,18 @@
                         <ul class="nav nav-stacked"></ul>
                     </div>
                 </div>
+            </fieldset>
+        </div>
+        <div class="tab-pane" id="settings_uicustomizer_tabs">
+            <h4>{{ _('Main tabs') }}</h4>
+            <fieldset>
+                <legend><label class="checkbox" title="Should we customize the main/center tabs"><input data-bind="checked: settings.plugins.uicustomizer.mainTabsCustomize" id="UICMainTabCustomizerToggle" type="checkbox"> {{ _('Customize tabs') }}</label></legend>
+                <div class="alert UICthemeifyAlert">
+                    <strong>Themeify plugin detected</strong>
+                    <br/>
+                    <small>Having both Themeify and UI Customizer changing tab icons can cause problems. You should uncheck <a href="javascript:$('#settings_plugin_themeify_link a').trigger('click');">"Enable Tab-icons" in Themeify</a> or "Customize tabs" in UI Customizer.</small>
+                </div>
+                <div id="settings_uicustomizer_tabs_look"></div>
             </fieldset>
         </div>
         <div class="tab-pane" id="settings_uicustomizer_adv">

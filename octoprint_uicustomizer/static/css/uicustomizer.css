@@ -132,20 +132,21 @@ body.UICPreviewON div.modal-backdrop.fade.in {
 
 
 /* fix search more for non settings */
-.input-block.search-query{
+#files_wrapper .input-block.search-query, body.UICResponsiveMode .input-block.search-query{
 	max-width: 90% !important;
     width: calc(100% - 28px) !important;
     margin-right: -20px;
     margin-left: -20px;
 }
 
+body.UICResponsiveMode
+
 /* search in settings fix*/
 body.UICResponsiveMode #settings_dialog .input-block.search-query, body.UICResponsiveMode #settings_plugin_pluginmanager_repositorydialog .input-block.search-query{
     margin-right: 0px;
     margin-left: 0px;
     margin-bottom: 10px;
-    margin-bottom: 10px;
-    max-width: 100% !important;
+    max-width: 50% !important;
 }
 
 body.UICResponsiveMode .search-query-with-clear .search-clear{
@@ -212,12 +213,96 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
     border-radius: 5px;
 }
 
-#settings_plugin_uicustomizer form.form-horizontal .controls{
+#settings_plugin_uicustomizer form.form-horizontal div.span6 .controls{
 	margin-left: 45px !important;
 }
 #settings_plugin_uicustomizer > form.form-horizontal > ul.nav.nav-pills{
     margin-bottom: 0px;
     border-bottom: 1px solid #eeee;
+}
+
+div#settings_uicustomizer_tabs_look .UICTabToggle, div#settings_uicustomizer_tabs_look .UICTabIcon{
+    min-width: 45px;
+}
+div#settings_uicustomizer_tabs_look div.btn-group button{
+    min-width: 70px;
+    text-align: left;
+}
+div#settings_uicustomizer_tabs_look div.btn-group span.caret{
+    float: right;
+}
+
+.UICiconSearchResults {
+    font-size: 12px;
+    overflow-y: auto;
+    max-height: 240px;
+    padding: 3px;
+    width: 100%;
+}
+
+.UICiconSearchResults a{
+    display:block;
+    float: left;
+    width: 25px;
+    height: 20px;
+    padding: 8px;
+    margin: 0 12px 12px 0;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px #ddd;
+    color: inherit;
+}
+
+.UICiconSearchResults a:hover{
+    background-color: #eee;
+}
+
+.UICiconSearchResults a i{
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    position: relative;
+    font-size: 20px;
+}
+
+.UICiconSearchResults a.UICIconSelected {
+    background-color: #000;
+    color: #fff
+}
+
+.UICiconSearchResults a.UICIconSelected:hover{
+    opacity: 0.80;
+}
+
+.UICiconSearchFilter{
+    width: 65% !important;
+}
+.UICiconSearchClose{
+    position:relative;
+    top: -50px;
+    right: -25px;
+    box-shadow: 2px 2px 4px #00000040;
+}
+.UICiconSearchInfo {
+    font-size : 15px;
+}
+
+#settings_uicustomizer_tabs div.popover.left{
+    margin-top: 22px;
+    margin-left: 3px;
+}
+#settings_uicustomizer_tabs div.popover.left div.arrow{
+    top: 26px;
+}
+
+#settings_uicustomizer_tabs div.popover form{
+    margin: 0px;
+    padding: 0px;
+}
+
+#settings_uicustomizer_tabs i.UICIconEmpty {
+    color: #3a87ad;
 }
 
 /* setting menu for responsive*/
@@ -553,6 +638,38 @@ body.UICResponsiveMode select{
 
 .UICHideHard{
     display: none !important;
+}
+
+/* generic padding */
+.UICPadLeft{
+    padding-left: 5px;
+}
+
+.UICPadRight{
+    padding-right: 5px;
+}
+
+/* hack to fix the consolidated tabs*/
+
+#temperature-table.UICFix input.input-mini, #temperature-table.UICFix .add-on, #temperature-table.UICFix span.input-mini {
+    height: 12px;
+    line-height: 12px;
+    top: -1px;
+    font-size: 12px;
+    max-width: 22px;
+}
+
+#temperature-table.UICFix td.temperature_tool, #temperature-table.UICFix th.temperature_tool{
+    width: initial !important;
+}
+#temperature-table.UICFix td.temperature_actual, #temperature-table.UICFix th.temperature_actual{
+    width: 60px !important;
+}
+#temperature-table.UICFix td.temperature_target, #temperature-table.UICFix th.temperature_target{
+    width: 110px !important;
+}
+#temperature-table.UICFix td.temperature_offset, #temperature-table.UICFix th.temperature_offset{
+    width: 108px !important;
 }
 
 /* UICustomizer END */

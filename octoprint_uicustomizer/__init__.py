@@ -49,7 +49,15 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
             "centerTopIcons": True,
             "compactMenu": True,
             "hideMainCam": False,
-            "disableTermInactive": False
+            "disableTermInactive": False,
+            "mainTabsCustomize" : True,
+            "mainTabs": [
+                ['control_link',True,False,'fas fa-expand-arrows-alt',True],
+                ['temp_link',True,False,'fas fa-thermometer-half',True],
+                ['timelapse_link',True,False,'fas fa-film',True],
+                ['term_link',True,False,'fas fa-terminal',True],
+                ['gcode_link',True,False,'fab fa-codepen',True],
+            ]
         }
 
     def get_template_configs(self):
