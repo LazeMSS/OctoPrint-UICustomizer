@@ -1420,7 +1420,13 @@ $(function() {
                         myself.popover('hide');
                     });
                     // Search
-                    searchInput.off('keyup').on('keyup',function(){
+                    searchInput.off('keyup').on('keyup',function(e){
+                        e.preventDefault();
+                        if (e.key == "Escape") {
+                            myself.popover('hide');
+                            e.stopPropagation();
+                            return false;
+                        }
                         $this = $(this);
                         if ($this.data('keyTime') != undefined && $this.data('keyTime') != null){
                             window.clearTimeout($this.data('keyTime'));
@@ -2022,6 +2028,9 @@ $(function() {
             $('#settings_uicustomizer_tabs_look').removeData('sorter');
             // Cleanup to prevent listners etc
             $('#settings_uicustomizer_tabs_look').empty();
+            // Remove popovers
+            $('button.UICTabIcon').popover('hide');
+            $('#settings_uicustomizer_tabs div.popover').remove();
 
             // Fix on close settings
             self.set_navbarplugintempfix(self.settings.settings.plugins.uicustomizer.navbarplugintempfix());
