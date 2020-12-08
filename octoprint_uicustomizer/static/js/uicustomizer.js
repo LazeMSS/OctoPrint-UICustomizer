@@ -51,7 +51,7 @@ $(function() {
         // ------------------------------------------------------------------------------------------------------------------------
         // Quick debug
         self.logToConsole = function(msg){
-            // return true;
+            return true;
             console.log('UICustomizer:',msg)
         }
 
