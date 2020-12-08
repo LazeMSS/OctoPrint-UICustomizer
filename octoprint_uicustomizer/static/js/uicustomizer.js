@@ -1471,7 +1471,7 @@ $(function() {
 
                     // Add delete button
                     if (addDelete){
-                        var delbtn = $('<button type="button" class="btn btn-warning pull-right"><i class="fas fa-trash"></i></button>');
+                        var delbtn = $('<button type="button" title="Dont select an icon, blank" class="btn btn-warning pull-right"><i class="fas fa-trash"></i></button>');
                         delbtn.on('click',function(){
                             if (typeof callback == "function"){
                                 callback(false);
