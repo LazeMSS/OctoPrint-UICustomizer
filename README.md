@@ -2,6 +2,7 @@
 
 A [OctoPrint](https://github.com/foosel/OctoPrint) plugin that allows you to customize the look and feel of the user interface.
 It also features a lot of other fixes and improvements:
+* Customize tabs: Change icon, labels, order, show/hide
 * Change width of the columns
 * Move "widgets" around in columns
 * Turn on/off responsive layout
@@ -13,9 +14,10 @@ It also features a lot of other fixes and improvements:
 * Zoomed/Floating webcam option
 * Extra Webcam "widget"
 * [Compact Navbar temp](https://plugins.octoprint.org/plugins/navbartemp/) icons
-* Hide widget
-* Realtime preview of changes
+* Hide widgets
+* Hide main camera
 * Center top bar icons
+* Realtime preview of changes
 
 ## Setup
 
@@ -51,12 +53,11 @@ Each widget can be moved by draging. The widgets can also be hidden by clicking 
 
 ### Main tabs
 ![](extras/settings-tabs.png?new=5)
-The main/center tabs can be changed using this settings panel.
-* The first field is for entering a custom name for the tab, if left blank it will use default.
-* The "eye" icon can show or hide the entire tab and its content - click to toggle show/hide.
-* The next icon is the icon shown in the tab - if no icon is selected then a blue magnifying glass is shown. Click the icon to get a search dialog up for searching icons. Click the icon you want or click the trashcan icon to leave it blank.
-* The Left/Right dropdown is used for setting the alignment of the icon on the tab.
-* The up/down arrow is used to change the order of the tabs
+The main/center tabs can be changed using this settings panel. The first field is for entering a custom name for the tab, if left blank it will use default.
+The "eye" icon can show or hide the entire tab and its content - click to toggle show/hide.
+The next icon is the icon shown in the tab - if no icon is selected then a blue magnifying glass is shown. Click the icon to get a search dialog up for searching icons. Click the icon you want or click the trashcan icon to leave it blank.
+The Left/Right dropdown is used for setting the alignment of the icon on the tab.
+The up and down arrow is used to change the order of the tabs
 
 
 ### Advanced

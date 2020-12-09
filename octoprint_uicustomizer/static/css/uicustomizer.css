@@ -80,6 +80,8 @@
 }
 
 .UICHeaderIcons{
+    height: 41px;
+    overflow: hidden;
     float: right !important;
 }
 
@@ -328,7 +330,8 @@ div#settings_uicustomizer_tabs_look div.btn-group span.caret{
 
 #settings_uicustomizer_tabs div.popover.left{
     margin-top: 22px;
-    margin-left: 3px;
+    margin-left: 26px;
+    width: 205px;
 }
 #settings_uicustomizer_tabs div.popover.left div.arrow{
     top: 26px;
