@@ -2,6 +2,8 @@
 $(function() {
     function UICustomizerViewModel(parameters) {
         var self = this;
+        // Run in debug/verbose mode
+        self.debug = false;
 
         // Set settings
         self.settings = parameters[1];
@@ -51,7 +53,9 @@ $(function() {
         // ------------------------------------------------------------------------------------------------------------------------
         // Quick debug
         self.logToConsole = function(msg){
-            return true;
+            if (!self.debug){
+                return true;
+            }
             console.log('UICustomizer:',msg)
         }
 
@@ -161,6 +165,11 @@ $(function() {
                     }
                 }
             });
+
+            // Refresh all
+            window.setTimeout(function() {
+                $(window).trigger('resize');
+            },500);
         }
 
 
@@ -202,6 +211,9 @@ $(function() {
 
             // Customize tabs
             self.set_mainTabsCustomize(settingsPlugin.mainTabsCustomize(),settingsPlugin.mainTabs());
+
+            // Hide main cams
+            self.set_hideMainCam(self.settings.settings.plugins.uicustomizer.hideMainCam());
 
             // addWebCamZoom
             self.set_addWebCamZoom(settingsPlugin.addWebCamZoom());
@@ -321,6 +333,8 @@ $(function() {
                     }
                     if ($(this).data('orgPos') != undefined){
                         orgSort[$(this).data('orgPos')] = $(this).parent().attr('id');
+                    }else{
+                        orgSort.push($(this).parent().attr('id'));
                     }
                 });
                 if (orgSort.length > 0){
@@ -329,6 +343,8 @@ $(function() {
                     });
                 }
             }
+            // Trigger tabover
+            $('#tabs').trigger('resize');
         }
 
 
@@ -485,6 +501,10 @@ $(function() {
         // Hide main cams
         self.set_hideMainCam = function(enable){
             if (enable){
+                if ($('#webcam_image').data("isHidden") === true){
+                    self.logToConsole("Main cam already hidden");
+                    return true;
+                }
                 if ($('#webcam_hls').length){
                     $('#webcam_hls_container').addClass('UICHideHard');
                     $('#webcam_hls')[0].pause();
@@ -494,6 +514,10 @@ $(function() {
                 $('#webcam_image').attr('src','data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
                 $('#webcam_image').data("isHidden",true);
             }else{
+                if ($('#webcam_image').data("isHidden") === false){
+                    self.logToConsole("Main cam is already shown");
+                    return true;
+                }
                 if ($('#webcam_hls').length){
                     $('#webcam_hls_container').removeClass('UICHideHard');
                 }
@@ -849,7 +873,7 @@ $(function() {
 
             // Fix for the dropdown menu
             // how much space do we have
-            var screenroom = $(window).height()-($('#UICsettingsMenuNav').offset().top+50);
+            var screenroom = $(window).height()-($('#UICsettingsMenuNav').offset().top+70);
             // Menu item length
             var menuih = $('#settings_dialog_menu li.dropdown').first().outerHeight()+3;
             // Calc each length
@@ -968,7 +992,7 @@ $(function() {
                 $('#UICsettingsMenuNav a.btn-navbar').hide();
                 $('#UICsetMenuShow').hide();
 
-                $('#settings_dialog_label').prepend('<span class="hidden-phone pull-right" id="UICSettingsHeader""></span>');
+                $('#settings_dialog_label').prepend('<span class="hidden-phone pull-right" id="UICSettingsHeader"></span>');
 
                 // Close menu on click if open and set item title
                 $('#settings_dialog_menu a:not(.dropdown-toggle)').off('click.UICSetMenu').on('click.UICSetMenu',function(){
@@ -1298,7 +1322,7 @@ $(function() {
                 }
             });
 
-            // Store all tabs names and add uknown
+            // Store all tabs names and add any unknown
             $('#tabs li:not(.tabdrop) a').each(function(pos,val){
                 if ($(this).data('orgPos') == undefined){
                     $(this).data('orgPos',pos);
@@ -1306,18 +1330,20 @@ $(function() {
                 if ($(this).data('orgName') == undefined){
                     var name = $.trim($(this).text());
                     $(this).data('orgName',name);
-                    var parid = $(this).parent().attr('id');
-                    // Append any items
-                    if (!(indexobj.hasOwnProperty(parid))){
-                        listItems.push(parid);
-                        // Default params
-                        var prevIcon = $(this).find('i');
-                        var prevIconName = '';
-                        if (prevIcon.length){
-                            prevIconName = prevIcon.attr('class');
-                        }
-                        indexobj[parid] = [parid,true,false,prevIconName,true];
+                }
+                // Get the parent id
+                var parid = $(this).parent().attr('id');
+
+                // Add any unknown items
+                if (!(indexobj.hasOwnProperty(parid))){
+                    listItems.push(parid);
+                    // Default params
+                    var prevIcon = $(this).find('i');
+                    var prevIconName = '';
+                    if (prevIcon.length){
+                        prevIconName = prevIcon.attr('class');
                     }
+                    indexobj[parid] = [parid,true,false,prevIconName,true,'#000000'];
                 }
             });
             return [indexobj,listItems];
@@ -1326,9 +1352,9 @@ $(function() {
         // ------------------------------------------------------------------------------------------------------------------------
         self.buildCustomTab = function(data){
             // PARAMS:
-            // [parid,true,false,'icon',true/false]
-            // ID, Shown,Customlabel,icon align:true = right
-            // 0 ,   1  ,    2      , 3
+            // [parid,true,false,'icon',true/false/textOnly/iconOnly]
+            // ID, Shown,Customlabel,tab design:, color code
+            // 0 ,   1  ,    2      , 3         , 5
             // Append them
             var val = data[0];
             var target = $('#'+val).find('a');
@@ -1342,22 +1368,32 @@ $(function() {
                 $('#'+val).hide();
                 $(targetID).removeClass('active');
             }
-            // Set label
-            if (data[2] != false){
-                $(newtabcontent).html(data[2]);
+            var title = target.data('orgName');
+            // Remove label if icon is present only
+            if (data[4] == "iconOnly" && data[3] != ''){
+                $(newtabcontent).html('');
             }else{
-                $(newtabcontent).html(target.data('orgName'));
-            }
-            // Set icon
-            if (data[3] != ''){
-                // On the right or the left hand side
-                if (data[4]){
-                    $(newtabcontent).prepend('<i class="UICPadRight hidden-tablet '+data[3]+'"></i>');
+                if (data[2] != false){
+                    title = data[2];
+                    $(newtabcontent).html(data[2]);
                 }else{
-                    $(newtabcontent).append('<i class="UICPadLeft hidden-tablet '+data[3]+'"></i>');
+                    $(newtabcontent).html(target.data('orgName'));
                 }
             }
-            $(target).html(newtabcontent.html());
+            // Set color
+            if (data[5] != undefined){
+                $(newtabcontent).css({'color':data[5]});
+            }
+            // On the right or the left hand side icon only
+            if (data[4] === true && data[3] != ''){
+                $(newtabcontent).prepend('<i class="UICPadRight hidden-tablet '+data[3]+'"></i>');
+            }else if (data[4] === false && data[3] != ''){
+                $(newtabcontent).append('<i class="UICPadLeft hidden-tablet '+data[3]+'"></i>');
+            }else if (data[4] == "iconOnly" && data[3] != ''){
+                $(newtabcontent).append('<i class="'+data[3]+'"></i>');
+            }
+
+            $(target).html(newtabcontent.html()).attr('title',title);
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
@@ -1374,12 +1410,19 @@ $(function() {
                 }else{
                     var classtxt = $.trim(iconSrc.attr('class'));
                 }
+                var color = "#000000";
+                if (iconSrc.data('color') != undefined){
+                    color = iconSrc.data('color');
+                }
                 newData.push(
-                    [$(this).parent().data('tabid'),
-                    $(this).find('button.UICTabToggle i').hasClass('fa-eye'),
-                    label,
-                    classtxt,
-                    $(this).find('ul.UICTabIconAlign li.active a').data('align')]
+                    [
+                        $(this).parent().data('tabid'),
+                        $(this).find('button.UICTabToggle i').hasClass('fa-eye'),
+                        label,
+                        classtxt,
+                        $(this).find('ul.UICTabDesign li.active a').data('design'),
+                        color
+                    ]
                 );
             });
             return newData;
@@ -1387,7 +1430,10 @@ $(function() {
 
         // ------------------------------------------------------------------------------------------------------------------------
         // Inspired by: https://itsjavi.com/fontawesome-iconpicker/
-        self.iconSearchPopover = function(searchNow,callback,addDelete){
+        self.iconSearchPopover = function(searchNow,callback,addDelete,addColorSelector,startcolor){
+            addDelete = addDelete || true;
+            addColorSelector = addColorSelector || true;
+            startcolor = startcolor || '#000000';
             if (typeof searchNow == "string"){
                 searchNow = searchNow.replace(/fa-|fas |far |fal |fad |fab |fa /gi,"");
             }
@@ -1401,7 +1447,7 @@ $(function() {
                         myself.data("frun",true);
                         return false;
                     }
-                    // Lookup dynamic if possible
+                    // Lookup dynamic source if possible
                     var defaultstr = searchNow;
                     if (typeof searchNow == "object"){
                         // Dont search empty icons
@@ -1411,15 +1457,35 @@ $(function() {
                             defaultstr = searchNow.attr('class').replace(/fa-|fas |far |fal |fad |fab |fa /gi,"");
                         }
                     }
+                    // Convert colors from object or string
+                    var strcolor = "#000000"
+                    if (typeof startcolor == "object"){
+                        if (typeof $(startcolor).data('color') == "string"){
+                            strcolor = $(startcolor).data('color');
+                        }else if(typeof $(startcolor).css('color') == "string"){
+                            var rgb = $(startcolor).css('color').match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+))?\)$/);
+                            hexcolor = function(x) {
+                                return ("0" + parseInt(x).toString(16)).slice(-2);
+                            }
+                            strcolor =  "#" + hexcolor(rgb[1]) + hexcolor(rgb[2]) + hexcolor(rgb[3]);
+                        }else{
+                            strcolor = "#000000"
+                        }
+                    }else{
+                        var strcolor = startcolor;
+                    }
+
                     // hide others
                     $('button.UICTabIcon').not(myself).popover('hide');
+                    // Build main forms
                     var searchInput = $('<input type="search" autocomplete="off" class="UICiconSearchFilter form-control" value="'+defaultstr+'" placeholder="Type to search">');
                     var closebtn = $('<button type="button" class="UICiconSearchClose btn btn-mini pull-right"><i class="fas fa-times"></i></button>');
                     // Close
                     closebtn.off('click').on('click',function(){
                         myself.popover('hide');
                     });
-                    // Search
+
+                    // auto search handler
                     searchInput.off('keyup').on('keyup',function(e){
                         e.preventDefault();
                         if (e.key == "Escape") {
@@ -1439,6 +1505,7 @@ $(function() {
                         }
                         var target = searchInput.closest('div.popover').find('div.UICiconSearchResults');
                         target.html('<div class="text-center UICiconSearchInfo"><i class="fas fa-spinner fa-pulse"></i>&nbsp;Searching&hellip;</div>');
+
                         // Set a time before searching
                         var timeout = window.setTimeout(function(){
                             if ($this.data('prevAjax') != undefined && $this.data('prevAjax') != null){
@@ -1460,37 +1527,58 @@ $(function() {
                                         return false;
                                     }
                                     $this.data('prevSearch',search);
-                                    self._iconSearchBuildResults(jsonObj,target,myself,callback);
+                                    // Trigger the icon refresher
+                                    self._iconSearchBuildResults(jsonObj,target,myself,search,callback);
                                 }
                             })
                             $this.data('prevAjax',xhr);
                         },350);
                         $this.data('keyTime',timeout);
                     });
-                    window.setTimeout(function(){
-                        searchInput.focus();
-                        searchInput.select();
-                        if (defaultstr != ""){
-                            searchInput.trigger('keyup');
-                        }
-                    },200);
 
-                    // Add delete button
+                    // Build a form
+                    var newForm = $('<form/>').submit(function(e){
+                        e.preventDefault();
+                        return false;
+                    })
+                    var inputcontainer = $('<div class="UICIconPickHeader"/>').append(searchInput);;
+                     // Add color selector
+                    if (addColorSelector){
+                        var colorSelector = $('<label class="btn UICTabIconColorLbl"><i class="fas fa-eye-dropper" style="color:'+strcolor+'"></i><input type="color" class="UICTabIconColor btn" value="'+strcolor+'"></label>');
+                        colorSelector.find('.UICTabIconColor').on('change input',function(){
+                            $(this).data('color',$(this).val());
+                            $(this).prev().css('color',$(this).val());
+                            $(this).closest('div.popover').find('.UICiconSearchResults').css('color',$(this).val());
+                        });
+                        inputcontainer.append(colorSelector);
+                        inputcontainer.addClass('input-append');
+                    }
+                    // Delete/trash
                     if (addDelete){
-                        var delbtn = $('<button type="button" title="Dont select an icon, blank" class="btn btn-warning pull-right"><i class="fas fa-trash"></i></button>');
+                        var delbtn = $('<button type="button" title="Dont select an icon, blank" class="btn"><i class="fas fa-trash"></i></button>');
                         delbtn.on('click',function(){
                             if (typeof callback == "function"){
                                 callback(false);
                             }
                             myself.popover('hide');
                         });
-                    }else{
-                        var delbtn = $('');
+                        inputcontainer.append(delbtn);
+                        inputcontainer.addClass('input-append');
                     }
-                    return $('<form/>').append(searchInput.add(delbtn).add(closebtn)).submit(function(e){
-                        e.preventDefault();
-                        return false;
-                    });
+                    // Build it all
+                    newForm.append(inputcontainer).append(closebtn);
+                    window.setTimeout(function(){
+                        searchInput.focus();
+                        searchInput.select();
+                        if (addColorSelector){
+                            colorSelector.trigger('change');
+                        }
+                        if (defaultstr != ""){
+                            searchInput.trigger('keyup');
+                        }
+                    },200);
+                    self.logToConsole(newForm.children());
+                    return newForm;
                 },
                 'content': function(){
                     var searchRes = $('<div class="UICiconSearchResults"><div class="text-center UICiconSearchInfo"><i class="fas fa-info-circle"></i>&nbsp;Type to search&hellip;</div></div>');
@@ -1499,33 +1587,48 @@ $(function() {
             };
         }
 
+
         // ------------------------------------------------------------------------------------------------------------------------
-        self._iconSearchBuildResults = function(jsonData,target,src,callback){
+        self._iconSearchBuildResults = function(jsonData,target,src,search,callback){
             if (!jsonData.hasOwnProperty('data') || !jsonData.data.hasOwnProperty('search') || jsonData.data.search.length == 0){
                 target.html('<div class="text-center UICiconSearchInfo"><i class="fas fa-heart-broken"></i> Sorry no results found&hellip;</div>')
                 return true;
             }
+            // Cleanup
             target.html('');
             $.each(jsonData.data.search,function(id,val){
                 if (!val.hasOwnProperty('id')){
                     return true;
                 }
+                // Lookup free stuff only
                 if (val.hasOwnProperty('membership') && val.membership.hasOwnProperty('free')){
                     $.each(val.membership.free,function(id2,itype){
                         var itypeL = itype.slice(0,1);
-                        target.append('<a role="button" href="javascript:void(0)"" title="' + val.label +'"><i class="fa' + itypeL + ' fa-' + val.id +'"></i></a>');
+                        var matched = '';
+                        // Disabled to it didn't look good
+                        if (search == val.id){
+                        //     matched = 'class="UICIconSelected"';
+                        }
+                        target.append('<a role="button" '+matched+' href="javascript:void(0)" title="' + val.label +'"><i class="fa' + itypeL + ' fa-' + val.id +'"></i></a>');
                     })
                 }
             });
+
+            // Click handler for selecting an icon
             target.find('a').off('click').on('click',function(){
                 var iconsel = $(this).find('i').attr('class');
+                // Should we trigger a callback
                 if (typeof callback == "function"){
-                    callback(iconsel);
+                    var color = null;
+                    var colorsel = target.closest('div.popover').find('input.UICTabIconColor');
+                    if (colorsel.length && colorsel.data('color') != undefined){
+                        color = colorsel.data('color');
+                    }
+                    callback(iconsel,color);
                 }
-                src.find('i').attr('class',iconsel);
                 src.popover('hide');
-                // target.find('.UICIconSelected').removeClass('UICIconSelected');
-                // $(this).addClass('UICIconSelected');
+                target.find('.UICIconSelected').removeClass('UICIconSelected');
+                $(this).addClass('UICIconSelected');
             });
         }
 
@@ -1580,7 +1683,7 @@ $(function() {
             $.each(listItems,function(idx,val){
                 // PARAMS:
                 // [parid,true,false,'icon','left']
-                // ID, Shown,Customlabel,icon align
+                // ID, Shown,Customlabel,tab design =true,false,iconOnly,textOnly
                 // 0 ,   1  ,    2      , 3, 4
                 // Build values
                 var target = $('#'+val).find('a');
@@ -1597,43 +1700,57 @@ $(function() {
                 if (localObj[2] != false){
                     custname = localObj[2];
                 }
-                var icon = 'fas fa-search UICIconEmpty';
-                if (localObj[3] != false){
-                    icon = localObj[3];
+                // Build colors
+                var color = "";
+                var colorData = "#000000";
+                if (localObj[5] != undefined){
+                    colorData = localObj[5];
+                    color = 'style="color:'+localObj[5]+'"';
                 }
 
-                var alignclassL = localObj[4] ? ' class="active" ' : '';
-                var alignclassR = localObj[4] ? '' : ' class="active" ';
-                var alignText = localObj[4] ? 'Left' : 'Right';
+                // Default is empty icon
+                var icon = 'fas fa-search UICIconEmpty';
+                var disbaledLI = ' disabled';
+                if (localObj[3] != false){
+                    icon = localObj[3];
+                    disbaledLI = '';
+                }else{
+                    color = '';
+                }
+
 
                 // BVuild new row
                 var newRow = $('\
                     <div class="control-group row-fluid UICRemoveFluidRow" data-tabid="'+val+'">\
                         <label class="control-label">'+orgName+'</label>\
                         <div class="controls">\
-                            <div class="input-append">\
-                                <input title="Enter tab name, blank = default" class="input-large UICTabNameInput" placeholder="Name: '+orgName+'" type="text" value="'+custname+'">\
+                            <div class="input-append input-prepend">\
+                                <button class="UICDragVHandle btn" type="button" title="Sort item"><i class="fas fa-arrows-alt-v"></i></button>\
+                                <input title="Enter tab name, blank = default" class="input-medium UICTabNameInput" placeholder="Name: '+orgName+'" type="text" value="'+custname+'">\
                                 <button class="btn UICTabToggle" type="button" title="Hide/Show tab"><i class="fas '+classVis+'"></i></button>\
-                                <button class="btn UICTabIcon" type="button"><i class="'+icon+'"></i></button><div class="btn-group">\
-                                <ul class="dropdown-menu UICTabIconAlign">\
-                                    <li'+alignclassL+'><a href="#" data-align="true">Left</a></li>\
-                                    <li'+alignclassR+'><a href="#" data-align="false">Right</a></li>\
+                                <button class="btn UICTabIcon" type="button"><i class="'+icon+'" '+color+' data-color="'+colorData+'"></i></button><div class="btn-group">\
+                                <ul class="dropdown-menu UICTabDesign">\
+                                    <li class="UICTabIconReq'+disbaledLI+'"><a href="#" data-design="true"><span class="visible-phone"><i class="fas fa-align-left UICPadRight"></i><i class="fas fa-heading"></i></span><span class="hidden-phone">Icon+Text</span></a></li>\
+                                    <li class="UICTabIconReq'+disbaledLI+'"><a href="#" data-design="false"><span class="visible-phone"><i class="fas fa-heading UICPadRight"></i><i class="fas fa-align-right"></i></span><span class="hidden-phone">Text+Icon</span></a></li>\
+                                    <li class="UICTabIconReq'+disbaledLI+'"><a href="#" data-design="iconOnly"><i class="visible-phone fas fa-icons"></i><span class="hidden-phone">Icon only</span></a></li>\
+                                    <li><a href="#" data-design="textOnly"><i class="visible-phone fas fa-heading"></i><span class="hidden-phone">Text only</span></a></a></li>\
                                 </ul>\
-                                <button class="btn dropdown-toggle" data-toggle="dropdown" title="Change icon position in tab" ><span class="UICTabIconPos">'+alignText+'</span> <span class="caret"></span></button>\
+                                <button class="btn dropdown-toggle" data-toggle="dropdown" title="Change view mode"><span class="UICTabIconPos"></span> <span class="caret"></span></button>\
                             </div>\
                         </div>\
-                        <button class="UICDragVHandle btn" type="button" title="Sort item"><i class="fas fa-arrows-alt-v"></i></button>\
                     </div>');
 
                 // Toggle tabs on/off
                 newRow.find('button.UICTabToggle').off('click').on('click',function(){
+                    // Hide all popovers
+                    $('button.UICTabIcon').popover('hide');
                     var icon = $(this).find('i');
                     icon.toggleClass('fa-eye fa-eye-slash');
                     if (self.previewOn){
-                        var cloneobj = $.extend(true,{},localObj);
-                        cloneobj[1] = icon.hasClass('fa-eye');
-                        self.buildCustomTab(cloneobj);
-                        if (cloneobj[1]){
+                        // Update
+                        var rowData = self.buildCustomTabsSave();
+                        self.set_mainTabsCustomize(true,rowData);
+                        if (icon.hasClass('fa-eye')){
                             // Remove all other active
                             $('.UICmainTabs .tab-pane.active').removeClass('active');
                             // Set this as active
@@ -1648,53 +1765,67 @@ $(function() {
 
                 // Change tab text
                 newRow.find('input.UICTabNameInput').off('blur keyup').on('blur keyup',function(){
+                    // Hide all popovers
+                    $('button.UICTabIcon').popover('hide');
                     if (self.previewOn){
-                        var cloneobj = $.extend(true,{},localObj);
-                        var val = $.trim($(this).val());
-                        cloneobj[2] = val;
-                        self.buildCustomTab(cloneobj);
+                        // Update
+                        var rowData = self.buildCustomTabsSave();
+                        self.set_mainTabsCustomize(true,rowData);
                     }
                 });
 
                 // Change tab icon
+                var newIconSrc = newRow.find('button.UICTabIcon >i');
                 newRow.find('button.UICTabIcon').removeData("frun").popover(
-                    self.iconSearchPopover(newRow.find('button.UICTabIcon >i'),function(newicon){
-                        if (self.previewOn){
-                            var cloneobj = $.extend(true,{},localObj);
-                            cloneobj[3] = newicon;
-                            self.buildCustomTab(cloneobj);
+                    self.iconSearchPopover(newIconSrc,function(newicon,newcolor){
+                        if (newcolor == null || newicon == false){
+                            newcolor = '#000000';
                         }
+                        newIconSrc.data('color',newcolor);
                         // Delete
                         if (newicon === false){
-                            newRow.find('button.UICTabIcon >i').attr('class','fas fa-search UICIconEmpty');
+                            newRow.find('li.UICTabIconReq').addClass('disabled');
+                            newRow.find('ul.UICTabDesign li:not(.UICTabIconReq) a').trigger('click');
+                            newIconSrc.attr('class','fas fa-search UICIconEmpty');
+                            newIconSrc.css({'color':''});
+                        }else{
+                            newRow.find('ul.UICTabDesign li.UICTabIconReq').removeClass('disabled');
+                            newIconSrc.attr('class',newicon);
+                            newIconSrc.css({'color':newcolor});
                         }
-                    },true)
+                        if (self.previewOn){
+                             // Update
+                            var rowData = self.buildCustomTabsSave();
+                            self.set_mainTabsCustomize(true,rowData);
+                        }
+                    },true,true,newIconSrc)
                 ).attr('Title','Click to change icon');
 
-                // Change icon alignment
-                newRow.find('ul.UICTabIconAlign li a').off('click').on('click',function(){
-                    newRow.find('ul.UICTabIconAlign li.active').removeClass('active');
-                    $(this).parent().addClass('active');
-                    if($(this).data('align')){
-                        newRow.find('.UICTabIconPos').text('Left');
-                    }else{
-                        newRow.find('.UICTabIconPos').text('Right');
+
+                // Change icon design
+                newRow.find('button.dropdown-toggle').off('click').on('click',function(){
+                     // Hide all popovers
+                    $('button.UICTabIcon').popover('hide');
+                });
+                newRow.find('ul.UICTabDesign li a').off('click').on('click',function(){
+                    if ($(this).parent().hasClass('disabled')){
+                        return true;
                     }
+                    newRow.find('ul.UICTabDesign li.active').removeClass('active');
+                    $(this).parent().addClass('active');
+                    newRow.find('span.UICTabIconPos').html($(this).html());
                     if (self.previewOn){
-                        // Dont align blank icons
-                        var iconsrc = newRow.find('button.UICTabIcon >i');
-                        if (iconsrc.hasClass('UICIconEmpty')){
-                            return true;
-                        }
-                        var cloneobj = $.extend(true,{},localObj);
-                        cloneobj[4] = $(this).data('align');
-                        // add icon also to make sure we get it all
-                        cloneobj[3] =  iconsrc.attr('class');
-                        self.buildCustomTab(cloneobj);
+                        // Update
+                        var rowData = self.buildCustomTabsSave();
+                        self.set_mainTabsCustomize(true,rowData);
                     }
                 });
 
+                // Add to the UI
                 $('#settings_uicustomizer_tabs_look ').append(newRow);
+
+                // update selector
+                newRow.find('ul.UICTabDesign li a[data-design="'+localObj[4]+'"]').trigger('click');
             })
 
             // sort the tabs
@@ -1715,7 +1846,7 @@ $(function() {
                     $('#drop_overlay').removeClass('UICHideHard in');
                     if (self.previewOn){
                         var rowData = self.buildCustomTabsSave();
-                        self.set_mainTabsCustomize(settingsPlugin.mainTabsCustomize(),rowData);
+                        self.set_mainTabsCustomize(true,rowData);
                     }
                 }
             })
@@ -2034,6 +2165,9 @@ $(function() {
 
             // Fix on close settings
             self.set_navbarplugintempfix(self.settings.settings.plugins.uicustomizer.navbarplugintempfix());
+
+            // Trigger
+            $('#tabs').trigger('resize');
 
             // Disable event listners
             $('#settings_plugin_uicustomizer input').off('input.uicus change.uicus click.uicus');

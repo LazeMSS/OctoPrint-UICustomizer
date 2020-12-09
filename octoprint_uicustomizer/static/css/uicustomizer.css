@@ -24,12 +24,13 @@
     /* compact menu instead of full width top bar menu*/
     body.UICResponsiveMode .UICCompactMenu {
         position: absolute;
-        right: 0px;
+        right: 5px;
         top: 42px;
         z-index: 1000;
         border-bottom-right-radius: 5px;
         border-bottom-left-radius: 5px;
         background-color: #ebebeb;
+        box-shadow: -3px 5px 7px #00000026;
     }
 
     .UICHeaderIcons.CenterMe{
@@ -67,24 +68,6 @@
     }
 }
 
-/* center icons */
-.UICHeaderIcons.CenterMe{
-    float: unset !important;
-    position: absolute !important;
-    left: 50% !important;
-    -webkit-transform: translateX(-50%);
-    -moz-transform: translateX(-50%);
-    -ms-transform: translateX(-50%);
-    transform: translateX(-50%);
-    top: 1px;
-}
-
-.UICHeaderIcons{
-    height: 41px;
-    overflow: hidden;
-    float: right !important;
-}
-
 /* tiny screns aka mobile */
 @media (max-width: 767px){
     /*fix input fields broken*/
@@ -94,6 +77,14 @@
     /* fix the margin of the seting dialog to make even more space */
     body.UICResponsiveMode #settings_dialog_content div.tab-pane{
         margin-right: -25px !important;
+    }
+    div#settings_uicustomizer_tabs_look div.btn-group button{
+        min-width: 70px !important;
+    }
+    div#settings_uicustomizer_tabs_look ul.UICTabDesign{
+        left: -3px;
+        min-width: 70px !important;
+        text-align: center;
     }
 }
 
@@ -130,6 +121,26 @@ body.UICPreviewON div#settings_dialog {
 /* make the modal backdrop transparent in preview*/
 body.UICPreviewON div.modal-backdrop.fade.in {
     opacity: 0.3;
+}
+
+
+/* center icons */
+.UICHeaderIcons.CenterMe{
+    float: unset !important;
+    position: absolute !important;
+    left: 50% !important;
+    -webkit-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%);
+    top: 1px;
+}
+
+.UICHeaderIcons{
+    height: 40px;
+    overflow: hidden;
+    white-space: nowrap;
+    float: right !important;
 }
 
 /* fix tabs bottom spacing*/
@@ -225,11 +236,13 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
 }
 
 #settings_plugin_uicustomizer .UICReportBug{
-    position: absolute;
-    bottom: 0px;
-    right: 20px;
+    position: relative;
+    top: 15px;
     overflow: hidden;
-    margin-bottom: 10px;
+    width: 100%;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+    height: 30px;
 }
 
 #settings_plugin_uicustomizer #UICReportBug:hover i{
@@ -237,20 +250,21 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
     animation: fa-spin 1s steps(8) infinite;
     padding-right: 20px;
     color: #000;
-    margin-right: 5px;
+    margin-right: 10px;
 }
 
 #settings_plugin_uicustomizer #UICReportBug:hover{
-    width: 110px;
+    width: 100px;
 }
 
 #settings_plugin_uicustomizer #UICReportBug{
     transition: width 1s;
-    width: 90px;
+    width: 80px;
     height: 22px;
     text-align:right;
     overflow:hidden;
     white-space: nowrap;
+    float:right;
 }
 
 #settings_plugin_uicustomizer form.form-horizontal div.span6 .controls{
@@ -265,13 +279,15 @@ div#settings_uicustomizer_tabs_look .UICTabToggle, div#settings_uicustomizer_tab
     min-width: 45px;
 }
 div#settings_uicustomizer_tabs_look div.btn-group button{
-    min-width: 70px;
+    min-width: 100px;
     text-align: left;
 }
 div#settings_uicustomizer_tabs_look div.btn-group span.caret{
     float: right;
+    margin-right: -5px;
 }
 
+/* icon search */
 .UICiconSearchResults {
     font-size: 12px;
     overflow-y: auto;
@@ -286,7 +302,7 @@ div#settings_uicustomizer_tabs_look div.btn-group span.caret{
     width: 25px;
     height: 20px;
     padding: 8px;
-    margin: 0 12px 12px 0;
+    margin: 0 6px 6px 0;
     text-align: center;
     cursor: pointer;
     border-radius: 3px;
@@ -307,7 +323,7 @@ div#settings_uicustomizer_tabs_look div.btn-group span.caret{
 }
 
 .UICiconSearchResults a.UICIconSelected {
-    background-color: #000;
+    background-color: #08c;
     color: #fff
 }
 
@@ -318,20 +334,69 @@ div#settings_uicustomizer_tabs_look div.btn-group span.caret{
 .UICiconSearchFilter{
     width: 65% !important;
 }
+
 .UICiconSearchClose{
-    position:relative;
-    top: -50px;
-    right: -25px;
+    position: absolute;
+    top: -10px;
+    right: -10px;
     box-shadow: 2px 2px 4px #00000040;
 }
+
 .UICiconSearchInfo {
     font-size : 15px;
+    color: #000;
 }
 
+.UICIconPickHeader{
+    width: 100%;
+}
+
+.UICIconPickHeader .UICTabIconColor{
+    visibility: hidden;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 20px;
+    height: 20px;
+}
+.UICIconPickHeader .UICTabIconColorLbl{
+    width: 20px;
+    position: relative;
+    display: inline-block;
+    height: 20px;
+    padding: 4px 6px;
+}
+.UICIconPickHeader .UICTabIconColorLbl i{
+    pointer-events: none;
+}
+.UICIconPickHeader .UICTabIconColorLbl i:before{
+    text-shadow: 1px 1px 5px #333;
+}
+
+.UICIconPickHeader button{
+    width: 34px;
+    padding: 4px 6px;
+}
+
+/* css3 magic :) */
+.UICIconPickHeader .UICiconSearchFilter:only-child {
+    max-width: 95% !important;
+}
+.UICIconPickHeader .UICiconSearchFilter:first-child:nth-last-child(2){
+    max-width: 70% !important;
+}
+.UICIconPickHeader .UICiconSearchFilter:first-child:nth-last-child(3){
+    max-width: 60% !important;
+}
+
+
+#settings_uicustomizer_tabs div.popover h3.popover-title{
+    overflow: hidden;
+}
 #settings_uicustomizer_tabs div.popover.left{
     margin-top: 22px;
-    margin-left: 26px;
-    width: 205px;
+    margin-left: 0px;
+    width: 235px;
 }
 #settings_uicustomizer_tabs div.popover.left div.arrow{
     top: 26px;
