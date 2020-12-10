@@ -1198,6 +1198,8 @@ $(function() {
                 return true;
             }
             if (enabled){
+                OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.navbartemp.useShortNames(true);
+                OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.navbartemp.makeMoreRoom(true);
                 $('#navbar_plugin_navbartemp').addClass('UICIconHack');
                 $('#navbar_plugin_navbartemp.UICIconHack >div > span').wrap('<div></div>');
             }else{
@@ -1381,18 +1383,18 @@ $(function() {
                 }
             }
             // Set color
+            var colorclass = {};
             if (data[5] != undefined){
-                $(newtabcontent).css({'color':data[5]});
+                colorclass ={'color':data[5]};
             }
             // On the right or the left hand side icon only
             if (data[4] === true && data[3] != ''){
-                $(newtabcontent).prepend('<i class="UICPadRight hidden-tablet '+data[3]+'"></i>');
+                $(newtabcontent).prepend($('<i class="UICPadRight hidden-tablet '+data[3]+'"></i>').css(colorclass));
             }else if (data[4] === false && data[3] != ''){
-                $(newtabcontent).append('<i class="UICPadLeft hidden-tablet '+data[3]+'"></i>');
+                $(newtabcontent).append($('<i class="UICPadLeft hidden-tablet '+data[3]+'"></i>').css(colorclass));
             }else if (data[4] == "iconOnly" && data[3] != ''){
-                $(newtabcontent).append('<i class="'+data[3]+'"></i>');
+                $(newtabcontent).append($('<i class="'+data[3]+'"></i>').css(colorclass));
             }
-
             $(target).html(newtabcontent.html()).attr('title',title);
         }
 
