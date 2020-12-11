@@ -97,11 +97,18 @@
 }
 
 /* super tiny hack*/
-@media (max-width: 500px){
+@media (max-width: 600px){
 	body.UICResponsiveMode #navbar a.brand{
 		width: 5px;
 		overflow: hidden;
 	}
+    .UICHeaderIcons.CenterMe{
+        left: 50px !important;
+        -webkit-transform: none;
+        -moz-transform: none;
+        -ms-transform: none;
+        transform: none;
+    }
 }
 
 body.UICfixedFooter{
