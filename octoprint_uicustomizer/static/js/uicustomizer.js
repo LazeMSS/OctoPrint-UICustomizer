@@ -197,11 +197,11 @@ $(function() {
             // Run in responsive mode
             self.set_responsiveMode(settingsPlugin.responsiveMode());
 
-            // Fix temp bar plugin
-            self.set_navbarplugintempfix(settingsPlugin.navbarplugintempfix());
-
             // Center the icons
             self.set_centerTopIcons(settingsPlugin.centerTopIcons());
+
+            // Fix temp bar plugin
+            self.set_navbarplugintempfix(settingsPlugin.navbarplugintempfix());
 
             // Compact menus
             self.set_compactMenu(settingsPlugin.compactMenu());
@@ -1057,7 +1057,7 @@ $(function() {
 
 
                 // Add title to menu items
-                $('div.UICMainMenu > ul.nav > li > a').each(function(){
+                $('div.UICMainMenu > ul.nav > li:not([id^="navbar_plugin"]) > a,#navbar_plugin_announcements > a').each(function(){
                     var title= $(this).attr('title');
                     if (title != undefined){
                         $(this).append('<span class="UICHideDesktop">'+title+'</span>');
@@ -1201,9 +1201,7 @@ $(function() {
                 OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.navbartemp.useShortNames(true);
                 OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.navbartemp.makeMoreRoom(true);
                 $('#navbar_plugin_navbartemp').addClass('UICIconHack');
-                $('#navbar_plugin_navbartemp.UICIconHack >div > span').wrap('<div></div>');
             }else{
-                $('#navbar_plugin_navbartemp.UICIconHack >div > div > span').unwrap('div');
                 $('#navbar_plugin_navbartemp').removeClass('UICIconHack');
             }
         }
@@ -1659,11 +1657,6 @@ $(function() {
             self.previewHasBeenOn = false;
             var settingsPlugin = self.settings.settings.plugins.uicustomizer;
 
-            // Fix on load
-            window.setTimeout(function(){
-                self.set_navbarplugintempfix(settingsPlugin.navbarplugintempfix());
-            },500);
-
             // Check for navbar
             if (typeof OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.navbartemp !== "undefined"){
                 $('#settings_uicustomizer_general input[data-settingtype="navbarplugintempfix"]').prop( "disabled", false );
@@ -2084,24 +2077,36 @@ $(function() {
          // ------------------------------------------------------------------------------------------------------------------------
         // Add an item to settings UI
         self.addToSorter = function(row,item,visible){
-            var title = $(item+' div.accordion-heading a.accordion-toggle').html();
-            if (title == undefined){
-                if (self.nameLookup.hasOwnProperty(item)){
-                    title = self.nameLookup[item];
-                }else{
-                    title = item;
-                }
+            var accord = $(item+' div.accordion-heading a.accordion-toggle').clone();
+            var icon = accord.find('i');
+            var title = $.trim(accord.text());
+            if (title == "" && self.nameLookup.hasOwnProperty(item)){
+                accord = $('<a>').append(self.nameLookup[item]);
+                icon = accord.find('i');
+                title = $.trim(accord.text());
             }
+
+             // Set checkbox and eye icon
             var checked = '';
             var checkclass = 'fa-eye-slash'
             if (visible){
                 checked = ' checked';
                 checkclass = 'fa-eye';
             }
-            // Add to sort rows in settings
-            $($('#UICSortRows ul')[row]).append($('<li data-id="'+item+'"><a>'+title+'<i class="pull-right fas '+checkclass+' UICToggleVis"></i></a><input class="hide" type="checkbox"'+checked+'></li>'));
-        }
 
+            // Main tabs can't be skinned
+            if (item == "div.UICmainTabs"){
+                // Add to sort rows in settings
+                $($('#UICSortRows ul')[row]).append(
+                    $('<li data-id="'+item+'"><a><i class="'+icon.attr('class')+' UICPadRight"></i>'+title+'<i class="pull-right fas '+checkclass+' UICToggleVis"></i></a><input class="hide" type="checkbox"'+checked+'></li>')
+                );
+            }else{
+                // Add to sort rows in settings
+                $($('#UICSortRows ul')[row]).append(
+                    $('<li data-id="'+item+'"><a><i class="'+icon.attr('class')+' UICPadRight"></i>'+title+'<i class="pull-right fas '+checkclass+' UICToggleVis"></i></a><input class="hide" type="checkbox"'+checked+'></li>')
+                );
+            }
+        }
 
         // ------------------------------------------------------------------------------------------------------------------------
         // Save handler and update
@@ -2150,7 +2155,6 @@ $(function() {
             }
             $('body').removeClass('UICPreviewON');
 
-
             // Remove sorts
             $(self.SortableSet).each(function(){
                 this.destroy();
@@ -2165,8 +2169,6 @@ $(function() {
             $('button.UICTabIcon').popover('hide');
             $('#settings_uicustomizer_tabs div.popover').remove();
 
-            // Fix on close settings
-            self.set_navbarplugintempfix(self.settings.settings.plugins.uicustomizer.navbarplugintempfix());
 
             // Trigger
             $('#tabs').trigger('resize');
@@ -2176,12 +2178,6 @@ $(function() {
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
-        self.onStartupComplete = function (){
-            if (self.settings.settings.plugins.uicustomizer.navbarplugintempfix()){
-                // hackish - wait for the normal plugin
-                window.setTimeout(function(){self.set_navbarplugintempfix(true)},1000);
-            }
-        }
 
     }
 

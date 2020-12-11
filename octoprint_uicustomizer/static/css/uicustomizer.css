@@ -9,6 +9,9 @@
 		display: none;
 	}
 
+    .UICHeaderIcons >li > a{
+        height: 30px !important;
+    }
 }
 /* smaller than  big screens :) */
 @media (max-width: 979px){
@@ -40,6 +43,11 @@
     .UICHeaderIcons{
         top: 2px !important;
     }
+
+    .UICHeaderIcons >li > a{
+        height: 36px !important;
+    }
+
 
     body.UICfixedHeader .UICCompactMenu{
         top: 52px !important;
@@ -138,10 +146,24 @@ body.UICPreviewON div.modal-backdrop.fade.in {
 
 .UICHeaderIcons{
     height: 40px;
-    overflow: hidden;
     white-space: nowrap;
     float: right !important;
 }
+
+.UICHeaderIcons >li {
+    height: 45px;
+    margin-top: -5px;
+    padding-top: 5px;
+}
+
+.UICHeaderIcons >li > a{
+    margin-top: -5px;
+    padding-bottom: 0px !important;
+    padding-top: 15px !important;
+    display: inline-block;
+    box-sizing: inherit !important;
+}
+
 
 /* fix tabs bottom spacing*/
 #tabs_content{
@@ -551,24 +573,29 @@ body.UICResponsiveMode select{
 
 /* Compact navbar temp fixes */
 
-#navbar_plugin_navbartemp.UICIconHack > div > div{
-	position: relative;
-	overflow: hidden;
-	float: left;
-	padding-top: 8px;
-	margin-bottom: -10px;
+#navbar_plugin_navbartemp.UICIconHack > div {
+    position: relative;
+    overflow: hidden;
+    height: 40px;
 }
 
-#navbar_plugin_navbartemp.UICIconHack > div > div > span {
+#navbar_plugin_navbartemp.UICIconHack > div > span {
     position: relative;
-    margin-left: -13px;
-    margin-right: 10px;
+    display:inline-block;
+    margin-top: 2px;
+    padding-left: 27px;
+    text-indent: -40px;
+    overflow: hidden;
+    height: 40px;
+    padding-top: 8px;
+    margin-right: 6px;
 }
 #navbar_plugin_navbartemp.UICIconHack #socInfo{
-    margin-left: -31px !important;
+    max-width: 49px;
+    text-indent: -58px;
 }
 
-#navbar_plugin_navbartemp.UICIconHack > div > div > span:after{
+#navbar_plugin_navbartemp.UICIconHack > div > span:after{
     display: inline-block;
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
@@ -576,9 +603,9 @@ body.UICResponsiveMode select{
     color: #000;
     text-align: center;
     width: 100%;
-    left: 0px;
+    left: -5px;
     padding-left: 5px;
-    top: -15px;
+    top: 0px;
     opacity:0.4;
     font-style: normal;
     font-variant-ligatures: normal;
@@ -590,18 +617,19 @@ body.UICResponsiveMode select{
     font-size: inherit;
     line-height: 1;
     font-family: "Font Awesome 5 Free","FontAwesome";
+    text-indent: 0px;
 }
 
-#navbar_plugin_navbartemp.UICIconHack > div > div > #socInfo:after{
-	content:"\f2db" !important;
+#navbar_plugin_navbartemp.UICIconHack > div >  #socInfo:after{
+    content:"\f2db" !important;
 }
 
-#navbar_plugin_navbartemp.UICIconHack > div > div >  #bedInfo:after{
-	content:"\f2d1" !important;
+#navbar_plugin_navbartemp.UICIconHack > div >  #bedInfo:after{
+    content:"\f2d1" !important;
 }
 
-#navbar_plugin_navbartemp.UICIconHack > div > div > #toolInfo:after{
-	content:"\f06d" !important;
+#navbar_plugin_navbartemp.UICIconHack > div > #toolInfo:after{
+    content:"\f06d" !important;
 }
 
 /* webcam zoom/float */
