@@ -795,4 +795,9 @@ body.UICResponsiveMode select{
     width: 108px !important;
 }
 
+#files .upload-buttons >.btn{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 /* UICustomizer END */
