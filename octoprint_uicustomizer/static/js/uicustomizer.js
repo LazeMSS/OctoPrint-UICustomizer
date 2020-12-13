@@ -350,7 +350,8 @@ $(function() {
 
         // ------------------------------------------------------------------------------------------------------------------------
         self.set_addWebCamZoom = function(enable){
-            if (!enable){
+            var streamURL = self.settings.webcam_streamUrl();
+            if (!enable || (self.settings.webcam_webcamEnabled() == false || streamURL == "")){
                 $('div.UICWebCamClick').remove();
                 return true;
             }
@@ -382,7 +383,6 @@ $(function() {
             // HLS handling
             var hlsCam = false;
             var containers = ['#webcam_container','#IUCWebcamContainer > div'];
-            var streamURL = self.settings.webcam_streamUrl();
             if (/.m3u8/i.test(streamURL)){
                 hlsCam = true;
                 containers = ['#webcam_hls_container','#IUCWebcamContainer > div'];
@@ -541,10 +541,20 @@ $(function() {
                  $('#UICWebCamWidget').remove();
                  return true;
             }
+
             // Cleanup
             $('#IUCWebcamContainer > div').html('');
             var hlsCam = false;
             var streamURL = self.settings.webcam_streamUrl();
+
+            // Not configured - then do nothing
+            if (self.settings.webcam_webcamEnabled() == false || streamURL == ""){
+                OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded = self.onWebCamOrg;
+                OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored = self.onWebCamErrorOrg;
+                $('#IUCWebcamContainer > div').append('<div class="nowebcam text-center"><i class="fas fa-question"></i> <span>Webcam not configured&hellip;</span></div>');
+                return true;
+            }
+
             // BROKEN due to loading/changes not triggering at the right time: || (typeof OctoPrint.coreui.viewmodels.controlViewModel.webcamHlsEnabled == "function" && OctoPrint.coreui.viewmodels.controlViewModel.webcamHlsEnabled()
             if (/.m3u8/i.test(streamURL)){
                 self.logToConsole("HLS WebCam detected: " + streamURL);
@@ -679,7 +689,10 @@ $(function() {
 
             }else{
                 $('#webcam_hls_container').hide();
-                $('#webcam_hls')[0].pause();
+                // Pause if present
+                if ($('#webcam_hls').length){
+                    $('#webcam_hls')[0].pause();
+                }
                 $('#UICWebCamWidget').addClass('UICWebcam');
                 // Remove old just in case
                 OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored = self.onWebCamErrorOrg;
