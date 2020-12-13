@@ -436,12 +436,13 @@ $(function() {
                         self.startHLSstream(video,streamURL);
                     }else{
                         var rotated = $('#webcam_rotator').hasClass('webcam_rotated');
+                        var imgsrc = obj.find('img')[0];
                         if (rotated){
-                            var nHeight = $('#webcam_image')[0].naturalWidth;
-                            var nWidth = $('#webcam_image')[0].naturalHeight;
+                            var nHeight = imgsrc.naturalWidth;
+                            var nWidth = imgsrc.naturalHeight;
                         }else{
-                            var nWidth = $('#webcam_image')[0].naturalWidth;
-                            var nHeight = $('#webcam_image')[0].naturalHeight;
+                            var nWidth = imgsrc.naturalWidth;
+                            var nHeight = imgsrc.naturalHeight;
                         }
                         var aspect = nWidth/nHeight;
                         nWidth -= 100;
@@ -460,6 +461,7 @@ $(function() {
 
                         // Clone to fix rotation etc.
                         var clone = $('#webcam_rotator').clone();
+                        clone.find('>div:not(:first-child)').remove();
                         clone.attr('id','UICWebCamFullInnerDIV');
                         clone.find('*').removeAttr('id');
 
@@ -702,6 +704,7 @@ $(function() {
 
                 // Clone and cleanup
                 var clone = $('#webcam_rotator').clone();
+                clone.find('>div:not(:first-child)').remove();
                 // Avoid any children added
                 clone.find('>div:not(:first-child)').remove();
                 $('#IUCWebcamContainer > div').append(clone).find('*').removeAttr('id');
@@ -736,13 +739,12 @@ $(function() {
                             $('#IUCWebcamContainer div.nowebcam').remove();
                             $('.UICWebCamClick').show();
                             $('#IUCWebcamContainerInner img').show();
+                            var clone = $('#webcam_rotator').clone();
+                            clone.find('>div:not(:first-child)').remove();
                             // Compare content of the containers
-                            if ($('#IUCWebcamContainerInner').clone().wrap('<p/>').parent().find('*').removeAttr('id').removeAttr('src').html().replace(' style=""' ,'').trim() != $('#webcam_rotator').clone().wrap('<p/>').parent().find('*').removeAttr('id').removeAttr('src').html().replace(' style=""','').trim()){
+                            if ($('#IUCWebcamContainerInner').clone().wrap('<p/>').parent().find('*').removeAttr('id').removeAttr('src').html().replace(' style=""' ,'').trim() != clone.wrap('<p/>').parent().find('*').removeAttr('id').removeAttr('src').html().replace(' style=""','').trim()){
                                 self.logToConsole("WebCam updated TOTAL");
                                 $('#IUCWebcamContainerInner').remove();
-                                // Clone and cleanup
-                                var clone = $('#webcam_rotator').clone();
-                                clone.find('>div:not(:first-child)').remove();
                                 $('#IUCWebcamContainer > div').append(clone).find('*').removeAttr('id');
                                 clone.attr('id',"IUCWebcamContainerInner");
                                 // Setup error handling again
@@ -750,8 +752,6 @@ $(function() {
 
                                 // Fix the fullscreen overlay if present
                                 if ($('#UICWebCamFullInnerDIV').length){
-                                    var clone = $('#webcam_rotator').clone();
-                                    clone.find('>div:not(:first-child)').remove();
                                     clone.attr('id','UICWebCamFullInnerDIV');
                                     $('#UICWebCamFullInnerDIV').html(clone).find('*').removeAttr('id');
                                     $('#UICWebCamFull img').on('load',function(){
@@ -790,6 +790,7 @@ $(function() {
                 // Fix the fullscreen overlay if present
                 if ($('#UICWebCamFullInnerDIV').length){
                     var clone = $('#webcam_rotator').clone();
+                    clone.find('>div:not(:first-child)').remove();
                     clone.attr('id','UICWebCamFullInnerDIV');
                     $('#UICWebCamFullInnerDIV').html(clone).find('*').removeAttr('id');
                     $('#UICWebCamFull img').on('load',function(){

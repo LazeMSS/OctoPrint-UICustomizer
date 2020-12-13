@@ -640,6 +640,10 @@ body.UICResponsiveMode select{
 }
 
 /* webcam zoom/float */
+/* fixes problem with fullscreen plugin*/
+body.inlineFullscreen .UICWebCamClick{
+    display: none;
+}
 .UICWebCamClick{
     position: absolute;
     right: 0px;
