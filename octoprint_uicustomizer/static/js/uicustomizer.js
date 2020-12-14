@@ -3,7 +3,7 @@ $(function() {
     function UICustomizerViewModel(parameters) {
         var self = this;
         // Run in debug/verbose mode
-        self.debug = false;
+        self.debug = true;
 
         // Set settings
         self.settings = parameters[1];
@@ -71,6 +71,7 @@ $(function() {
             $('#sidebar').addClass('UICRow1');
             $('div.octoprint-container').addClass('UICMainCont');
             $('#navbar div.navbar-inner > div > div.nav-collapse').addClass('UICMainMenu');
+            $('#navbar_plugin_announcements').addClass('UICExcludeFromTopIcons');
 
             // Disable output off the terminal if inactive
             var oldfunction = OctoPrint.coreui.viewmodels.terminalViewModel._processCurrentLogData;
@@ -184,7 +185,6 @@ $(function() {
             // Fixed header
             self.set_fixedHeader(settingsPlugin.fixedHeader());
 
-
             // Fixed footer
             self.set_fixedFooter(settingsPlugin.fixedFooter());
 
@@ -193,6 +193,7 @@ $(function() {
 
             // Make it fluid
             self.set_fluidLayout(settingsPlugin.fluidLayout());
+
 
             // Run in responsive mode
             self.set_responsiveMode(settingsPlugin.responsiveMode());
@@ -211,6 +212,9 @@ $(function() {
 
             // Customize tabs
             self.set_mainTabsCustomize(settingsPlugin.mainTabsCustomize(),settingsPlugin.mainTabs());
+
+            // Sort top icons
+            self.set_sortTopIcons();
 
             // Hide main cams
             self.set_hideMainCam(self.settings.settings.plugins.uicustomizer.hideMainCam());
@@ -312,7 +316,34 @@ $(function() {
             $('div.UICRowDELETEME').remove();
         }
 
-         // ------------------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------------------------------------------------------------------------
+        self.set_sortTopIcons = function(enable){
+            var iconsort = ["navbar_plugin_psucontrol","navbar_plugin_navbartemp","navbar_plugin_action_command_prompt","navbar_plugin_logging_seriallog","navbar_plugin_logging_plugintimingslog","navbar_plugin_pi_support"];
+            if ($('ul.UICHeaderIcons').length){
+                self.logToConsole('Sorting top icons: UICHeaderIcons');
+                var container = $('ul.UICHeaderIcons');
+            }else{
+                self.logToConsole('Sorting top icons: UICMainMenu');
+                var container = $('div.UICMainMenu ul.nav');
+            }
+            var items = self.get_TopIcons();
+            $.each(iconsort,function(x,idx){
+                self.logToConsole('Sorting top icons - adding: '+idx);
+                container.append($('#'+idx));
+            });
+        }
+
+        self.get_TopIcons = function(){
+            if ($('ul.UICHeaderIcons').length){
+                return $('ul.UICHeaderIcons >li')
+            }else{
+                return $('div.UICMainMenu ul.nav > li[id^="navbar_plugin"]:not(.UICExcludeFromTopIcons)');
+            }
+        }
+
+
+
+        // ------------------------------------------------------------------------------------------------------------------------
         self.set_mainTabsCustomize = function(enable,tabsSource){
             if (enable){
                 var tabsData = self.initTabs(tabsSource);
@@ -634,6 +665,33 @@ $(function() {
                 visibilityChange = "webkitvisibilitychange";
             }
 
+            // Error handling
+            var webcamLoader = function(targetStreamURL){
+                self.logToConsole("webcamLoader init");
+                $('#IUCWebcamContainerInner img').off('error').on('error',function(){
+                    // Error loading
+                    $('#webcam_image').data("isLoaded",false);
+                    $('#IUCWebcamContainerInner').hide();
+                    $('.UICWebCamClick').hide();
+                    $('#IUCWebcamContainer div.nowebcam').remove();
+                    $('#IUCWebcamContainer > div').append($('<div class="nowebcam text-center"><i class="fas fa-exclamation"></i> Error loading webcam</div>').off('click.UICWebCamErrror').on('click.UICWebCamErrror',function(){
+                        $('#control_link a').trigger('click');
+                    }));
+                }).off('load').on('load',function(){
+                    // Loaded okay
+                    if ($(this).attr('src').indexOf(targetStreamURL) == 0){
+                        self.logToConsole("IUCWebcamContainerInner img loaded ok");
+                        // Turn off load
+                        $(this).off('load');
+                        // Loaded
+                        $('.UICWebCamClick').show();
+                        $('#IUCWebcamContainerInner').show();
+                        $('#IUCWebcamContainerInner img').show();
+                        $('#IUCWebcamContainer div.nowebcam').hide();
+                    }
+                });
+            };
+
             // Event handler
             var eventVIS = function(){
                 var hlsCam = false;
@@ -663,6 +721,8 @@ $(function() {
                         $('#IUCWebcamContainer > div').append('<div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate">Loading webcam&hellip;</span></div>');
                         $('#IUCWebcamContainerInner').hide();
                         $('#IUCWebcamContainer').show();
+                        // Reinit the loader
+                        webcamLoader(streamURL);
                         $('#IUCWebcamContainerInner img').attr('src',streamURL);
                     }
                 }
@@ -749,8 +809,8 @@ $(function() {
             }else{
                 $('#webcam_hls_container').hide();
                 // Pause if present
-                if ($('#webcam_hls').length){
-                    $('#webcam_hls')[0].pause();
+                if ($('#webcam_hls video').length){
+                    $('#webcam_hls video')[0].pause();
                 }
                 $('#UICWebCamWidget').addClass('UICWebcam');
                 // Remove old just in case
@@ -767,32 +827,7 @@ $(function() {
                 $('#IUCWebcamContainer > div').append(clone).find('*').removeAttr('id').removeAttr('data-bind');
                 clone.attr('id',"IUCWebcamContainerInner").hide();
 
-                // Error handling
-                var webcamLoader = function(targetStreamURL){
-                    self.logToConsole("webcamLoader init");
-                    $('#IUCWebcamContainerInner img').off('error').on('error',function(){
-                        // Error loading
-                        $('#webcam_image').data("isLoaded",false);
-                        $('#IUCWebcamContainerInner').hide();
-                        $('.UICWebCamClick').hide();
-                        $('#IUCWebcamContainer div.nowebcam').remove();
-                        $('#IUCWebcamContainer > div').append($('<div class="nowebcam text-center"><i class="fas fa-exclamation"></i> Error loading webcam</div>').off('click.UICWebCamErrror').on('click.UICWebCamErrror',function(){
-                            $('#control_link a').trigger('click');
-                        }));
-                    }).off('load').on('load',function(){
-                        // Loaded okay
-                        if ($(this).attr('src').indexOf(targetStreamURL) == 0){
-                            self.logToConsole("IUCWebcamContainerInner img loaded ok");
-                            // Turn off load
-                            $(this).off('load');
-                            // Loaded
-                            $('.UICWebCamClick').show();
-                            $('#IUCWebcamContainerInner').show();
-                            $('#IUCWebcamContainerInner img').show();
-                            $('#IUCWebcamContainer div.nowebcam').hide();
-                        }
-                    });
-                };
+                // init the handler
                 webcamLoader(streamURL);
 
                 // Event handlers
@@ -1143,7 +1178,7 @@ $(function() {
 
 
                 // Add title to menu items
-                $('div.UICMainMenu > ul.nav > li:not([id^="navbar_plugin"]) > a,#navbar_plugin_announcements > a').each(function(){
+                $('div.UICMainMenu > ul.nav > li:not([id^="navbar_plugin"]) > a,li.UICExcludeFromTopIcons > a').each(function(){
                     var title= $(this).attr('title');
                     if (title != undefined){
                         $(this).append('<span class="UICHideDesktop">'+title+'</span>');
@@ -1257,7 +1292,7 @@ $(function() {
             // Build header icons always to fix responsive or on request
             if ((enabled || $('body').hasClass('UICResponsiveMode')) && !$('ul.UICHeaderIcons').length){
                 // Move header icons out of menu
-                $('div.UICMainMenu').after($('<ul class="UICHeaderIcons nav"></ul>').append($('div.UICMainMenu ul.nav > li[id^="navbar_plugin"]:not(#navbar_plugin_announcements)')));
+                $('div.UICMainMenu').after($('<ul class="UICHeaderIcons nav"></ul>').append($('div.UICMainMenu ul.nav > li[id^="navbar_plugin"]:not(.UICExcludeFromTopIcons)')));
             }
             if (enabled){
                 $('ul.UICHeaderIcons').addClass('CenterMe');
@@ -2265,6 +2300,17 @@ $(function() {
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
+
+        self.findPluginData = function(pluginKey){
+            var returnItem = null;
+            $.each(OctoPrint.coreui.viewmodels.pluginManagerViewModel.plugins.allItems,function(x,item){
+                if (item.key == pluginKey){
+                    returnItem = item;
+                    return true;
+                }
+            });
+            return returnItem;
+        }
 
     }
 
