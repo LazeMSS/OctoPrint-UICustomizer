@@ -388,7 +388,7 @@ $(function() {
                 containers = ['#webcam_hls_container','#IUCWebcamContainer > div'];
                 // fix position of hls
                 $('#webcam_hls_container').css('position','relative');
-                $('#webcam_container img').attr('src','');
+                $('#webcam_container img').attr('src','data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
                 $('#webcam_container').hide();
             }else{
                 $('#webcam_hls_container video').attr('src','');
@@ -427,6 +427,11 @@ $(function() {
                     $('body').append('<div id="UICWebCamFull" draggable="true" class="UICWebcam"><div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate">Loading webcam&hellip;</span></div><div id="UICWebCamShrink" class="UICWebCamClick"><a href="javascript: void(0);"><i class="fas fa-compress"></i></a></div><span class="UICWebCamTarget"/></div>');
                     $('#UICWebCamShrink').hide();
 
+                    // Set top offset
+                    if ($(window).scrollTop() > 0){
+                        $('#UICWebCamFull').css('top',$(window).scrollTop()+$('#UICWebCamFull').height());
+                    }
+
                     // Set source item
                     if (hlsCam){
                         // Fix and setup video
@@ -438,6 +443,13 @@ $(function() {
                         // Add hls player
                         var video = $('#UICWebCamFull video')[0];
                         self.startHLSstream(video,streamURL);
+
+                        // Tired of waiting
+                        window.setTimeout(function(){
+                            $('#UICWebCamShrink').show();
+                            $('#UICWebCamFull div.nowebcam').remove();
+                        },5000);
+
                     }else{
                         var rotated = $('#webcam_rotator').hasClass('webcam_rotated');
                         var imgsrc = obj.find('img')[0];
@@ -450,41 +462,80 @@ $(function() {
                         }
                         var aspect = nWidth/nHeight;
                         nWidth -= 100;
-                        var wWidth = $(window).width()/1.5;
-                        var wHeight = $(window).height()/1.5;
-                        // Cam wider than screen - then fit to screen width
-                        if (nWidth > wWidth){
-                            nWidth = (wWidth - 100);
-                            nHeight = nWidth/aspect;
-                        }
+                        var fixed = false;
+                        var wWidth = $(window).width();
+                        var wHeight = $(window).height();
                         // Cam height than screen - then fit to screen height
                         if (nHeight > wHeight){
-                            nHeight = (wHeight - 50);
+                            fixed = true;
+                            nHeight = (wHeight - 120);
                             nWidth = nHeight*aspect;
                         }
+                        // Cam wider than screen - then fit to screen width
+                        if (nWidth > wWidth){
+                            fixed = true;
+                            nWidth = (wWidth - 120);
+                            nHeight = nWidth/aspect;
+                        }
+                        // Cam height than screen - then fit to screen height * 2
+                        if (nHeight > wHeight){
+                            nHeight = (nHeight - 120);
+                            nWidth = nHeight*aspect;
+                        }
+
                         // Clone to fix rotation etc.
                         var clone = $('#webcam_rotator').clone();
                         clone.find('>div:not(:first-child)').remove();
                         clone.attr('id','UICWebCamFullInnerDIV');
-                        clone.find('*').removeAttr('id');
+                        clone.find('*').removeAttr('id').removeAttr('data-bind');
+                        clone.find('img').off('load');
+                        clone.find('img').attr('src','data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
+                        $('#UICWebCamFull img').off('load');
+                        $('#UICWebCamFull span.UICWebCamTarget').html(clone.html());
 
-                        $('#UICWebCamFull span.UICWebCamTarget').replaceWith(clone);
+                        // Tired of waiting
+                        var timeoutLoad = window.setTimeout(function(){
+                            $('#UICWebCamFull img').trigger('load',[true]);
+                        },5000);
+
+                        // Fixes and hacks for firefox
                         $('#UICWebCamFull img').css({'width':nWidth});
                         $('#UICWebCamFull img').css({'height':nHeight});
-                        $('#UICWebCamFull img').off('load').on('load',function(){
+                        $('#UICWebCamFull img').off('load').on('load',function(event,forced){
+                            if (streamURL != $(this).attr('src')){
+                                if (forced){
+                                    $(this).attr('src',streamURL);
+                                }else{
+                                    return false;
+                                }
+                                return false;
+                            }else{
+                                $('#UICWebCamFull img').off('load');
+                            }
+                            if (timeoutLoad != null){
+                                window.clearTimeout(timeoutLoad);
+                                timeoutLoad = null;
+                            };
                             $('#UICWebCamShrink').show();
                             $('#UICWebCamFull img').show();
                             $('#UICWebCamFull div.nowebcam').remove();
-                            $('#UICWebCamFull img').css({'width':''});
-                            $('#UICWebCamFull img').css({'height':''});
-                            $('#UICWebCamFull').css({'max-width':$(window).width()-60});
-                            $('#UICWebCamFull').css({'max-height':$(window).height()-60});
+                            if (fixed){
+                                $('#UICWebCamFull').css({'width':nWidth+10});
+                                $('#UICWebCamFull').css({'height':nHeight+10});
+                            }else{
+                                $('#UICWebCamFull img').css({'width':''});
+                                $('#UICWebCamFull img').css({'height':''});
+                            }
+                            $('#UICWebCamFull').css({'max-width':$(window).width()-120});
+                            $('#UICWebCamFull').css({'max-height':$(window).height()-120});
                         });
                         $('#UICWebCamFull img').attr('src',streamURL);
                     }
 
                     // Fix on resize done
                     $('#UICWebCamFull').off('mouseup').on('mouseup',function(){
+                        $('#UICWebCamFull img').css({'width':''});
+                        $('#UICWebCamFull img').css({'height':''});
                         $('#UICWebCamFull').css('height','');
                     }).off('dblclick').on('dblclick',function(){
                         $('#UICWebCamShrink').trigger('click');
@@ -497,7 +548,6 @@ $(function() {
                     document.body.addEventListener('drop',drop,false);
 
                     // Close again
-                    window.setTimeout(function(){$('#UICWebCamShrink').show();},5000);
                     $('#UICWebCamShrink').one('click',function(){
                         $('.UIWebcamZoomSrc').show();
                         $('#UICWebCamFull').remove();
@@ -637,8 +687,8 @@ $(function() {
                 OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded = self.onWebCamOrg;
                 // Clone it
                 var clone = $('#webcam_hls').clone();
-                clone.removeAttr('id');
-                $('#IUCWebcamContainer > div').html(clone).find('*').removeAttr('id');
+                clone.removeAttr('id').removeAttr('data-bind');
+                $('#IUCWebcamContainer > div').html(clone).find('*').removeAttr('id').removeAttr('data-bind');
 
                 // Event handling on the main player
                 $('#IUCWebcamContainer video').off('error').on('error',function(event){
@@ -714,34 +764,47 @@ $(function() {
                 clone.find('>div:not(:first-child)').remove();
                 // Avoid any children added
                 clone.find('>div:not(:first-child)').remove();
-                $('#IUCWebcamContainer > div').append(clone).find('*').removeAttr('id');
+                $('#IUCWebcamContainer > div').append(clone).find('*').removeAttr('id').removeAttr('data-bind');
                 clone.attr('id',"IUCWebcamContainerInner").hide();
 
                 // Error handling
-                var webcamLoader = function(){
+                var webcamLoader = function(targetStreamURL){
+                    self.logToConsole("webcamLoader init");
                     $('#IUCWebcamContainerInner img').off('error').on('error',function(){
                         // Error loading
+                        $('#webcam_image').data("isLoaded",false);
                         $('#IUCWebcamContainerInner').hide();
                         $('.UICWebCamClick').hide();
                         $('#IUCWebcamContainer div.nowebcam').remove();
                         $('#IUCWebcamContainer > div').append($('<div class="nowebcam text-center"><i class="fas fa-exclamation"></i> Error loading webcam</div>').off('click.UICWebCamErrror').on('click.UICWebCamErrror',function(){
                             $('#control_link a').trigger('click');
                         }));
-                    }).on('load',function(){
-                        // Loaded
-                        $('.UICWebCamClick').show();
-                        $('#IUCWebcamContainerInner').show();
-                        $('#IUCWebcamContainerInner img').show();
-                        $('#IUCWebcamContainer div.nowebcam').hide();
+                    }).off('load').on('load',function(){
+                        // Loaded okay
+                        if ($(this).attr('src').indexOf(targetStreamURL) == 0){
+                            self.logToConsole("IUCWebcamContainerInner img loaded ok");
+                            // Turn off load
+                            $(this).off('load');
+                            // Loaded
+                            $('.UICWebCamClick').show();
+                            $('#IUCWebcamContainerInner').show();
+                            $('#IUCWebcamContainerInner img').show();
+                            $('#IUCWebcamContainer div.nowebcam').hide();
+                        }
                     });
                 };
-                webcamLoader();
+                webcamLoader(streamURL);
 
                 // Event handlers
                 OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded = (function(old) {
                     function extendWebCam() {
                         self.onWebCamOrg();
                         if ($('#IUCWebcamContainer:visible').length && $('#webcam_image').data("isHidden") !== true){
+                            if (OctoPrint.coreui.viewmodels.controlViewModel.webcamLoaded() && $('#webcam_image').data("isLoaded")){
+                                self.logToConsole("extendWebCam skipped");
+                                return true;
+                            }
+                            self.logToConsole("extendWebCam called");
                             // Remove the no webcam container
                             $('#IUCWebcamContainer div.nowebcam').remove();
                             $('.UICWebCamClick').show();
@@ -749,19 +812,19 @@ $(function() {
                             var clone = $('#webcam_rotator').clone();
                             clone.find('>div:not(:first-child)').remove();
                             // Compare content of the containers
-                            if ($('#IUCWebcamContainerInner').clone().wrap('<p/>').parent().find('*').removeAttr('id').removeAttr('src').html().replace(' style=""' ,'').trim() != clone.wrap('<p/>').parent().find('*').removeAttr('id').removeAttr('src').html().replace(' style=""','').trim()){
+                            if ($('#IUCWebcamContainerInner').clone().wrap('<p/>').parent().find('*').removeAttr('id').removeAttr('src').html().replace(' style=""' ,'').trim() != clone.wrap('<p/>').parent().find('*').removeAttr('id').removeAttr('data-bind').removeAttr('src').html().replace(' style=""','').trim()){
                                 self.logToConsole("WebCam updated TOTAL");
                                 $('#IUCWebcamContainerInner').remove();
                                 $('#IUCWebcamContainer > div').append(clone).find('*').removeAttr('id');
                                 clone.attr('id',"IUCWebcamContainerInner");
                                 // Setup error handling again
-                                webcamLoader();
+                                webcamLoader(streamURL);
 
                                 // Fix the fullscreen overlay if present
                                 if ($('#UICWebCamFullInnerDIV').length){
                                     clone.attr('id','UICWebCamFullInnerDIV');
                                     $('#UICWebCamFullInnerDIV').html(clone).find('*').removeAttr('id');
-                                    $('#UICWebCamFull img').on('load',function(){
+                                    $('#UICWebCamFull img').off('load').on('load',function(){
                                         $('#UICWebCamFull div.nowebcam').remove();
                                     });
                                     $('#UICWebCamFull img').attr('src',streamURL);
@@ -773,6 +836,7 @@ $(function() {
                             }
                             // Make sure its shown
                             $('#IUCWebcamContainer > div >div').show();
+                            $('#webcam_image').data("isLoaded",true);
                         }
                     }
                     return extendWebCam;
@@ -799,8 +863,8 @@ $(function() {
                     var clone = $('#webcam_rotator').clone();
                     clone.find('>div:not(:first-child)').remove();
                     clone.attr('id','UICWebCamFullInnerDIV');
-                    $('#UICWebCamFullInnerDIV').html(clone).find('*').removeAttr('id');
-                    $('#UICWebCamFull img').on('load',function(){
+                    $('#UICWebCamFullInnerDIV').html(clone).find('*').removeAttr('id').removeAttr('data-bind');
+                    $('#UICWebCamFull img').off('load').on('load',function(){
                         $('#UICWebCamFull div.nowebcam').remove();
                     });
                     $('#UICWebCamFull img').attr('src',streamURL);
@@ -2150,7 +2214,7 @@ $(function() {
 
                 var streamURL = self.settings.webcam_streamUrl();
                 if (/.m3u8/i.test(streamURL)){
-                    $('#webcam_container img').attr('src','');
+                    $('#webcam_container img').attr('src','data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
                     $('#webcam_container').hide();
                 }else{
                     $('#webcam_hls_container video').attr('src','');
