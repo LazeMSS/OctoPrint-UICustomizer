@@ -414,6 +414,10 @@ $(function() {
                 if (!self.previewOn){
                     zoomclick.hide();
                 }
+                // Double click
+                obj.off('dblclick').on('dblclick',function(){
+                    zoomclick.trigger('click.UICWebCamClick');
+                });
                 zoomclick.off('click.UICWebCamClick').on('click.UICWebCamClick',function(){
                     $('.UIWebcamZoomSrc').hide();
                     // Remove previous if any
@@ -455,10 +459,9 @@ $(function() {
                         }
                         // Cam height than screen - then fit to screen height
                         if (nHeight > wHeight){
-                            nHeight = (wHeight - 200);
+                            nHeight = (wHeight - 50);
                             nWidth = nHeight*aspect;
                         }
-
                         // Clone to fix rotation etc.
                         var clone = $('#webcam_rotator').clone();
                         clone.find('>div:not(:first-child)').remove();
@@ -474,6 +477,8 @@ $(function() {
                             $('#UICWebCamFull div.nowebcam').remove();
                             $('#UICWebCamFull img').css({'width':''});
                             $('#UICWebCamFull img').css({'height':''});
+                            $('#UICWebCamFull').css({'max-width':$(window).width()-60});
+                            $('#UICWebCamFull').css({'max-height':$(window).height()-60});
                         });
                         $('#UICWebCamFull img').attr('src',streamURL);
                     }
@@ -481,7 +486,9 @@ $(function() {
                     // Fix on resize done
                     $('#UICWebCamFull').off('mouseup').on('mouseup',function(){
                         $('#UICWebCamFull').css('height','');
-                    })
+                    }).off('dblclick').on('dblclick',function(){
+                        $('#UICWebCamShrink').trigger('click');
+                    });
 
                     // Start draghandler
                     var dm = document.getElementById('UICWebCamFull');

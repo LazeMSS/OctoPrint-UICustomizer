@@ -546,7 +546,8 @@ body.UICTouchDevice #settings_dialog ::-webkit-scrollbar-thumb:window-inactive {
 body.UICResponsiveMode #gcode_canvas{
     position: relative;
     width: 100% !important;
-    float: right;
+    height: 100% !important;
+    float: left;
     right: -1px;
 }
 
@@ -643,6 +644,7 @@ body.UICResponsiveMode select{
 body.inlineFullscreen .UICWebCamClick{
     display: none;
 }
+
 .UICWebCamClick{
     position: absolute;
     right: 0px;
