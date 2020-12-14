@@ -1001,6 +1001,7 @@ $(function() {
         // Set responsive
         self.set_responsiveMode = function(enabled){
             if (enabled){
+                $('.UICMainMenu').addClass('nav-collapse')
                 // Skip if active
                 if ($('body').hasClass('UICResponsiveMode')){
                     return true;
@@ -1187,6 +1188,8 @@ $(function() {
                 $('#job_pause span:not(.hidden-tablet.UICHideTablet)').addClass('hidden-tablet UICHideTablet');
 
             }else{
+                // Allow full menu when not responsive
+                $('.UICMainMenu').removeClass('nav-collapse');
                 if (!$('body').hasClass('UICResponsiveMode')){
                     return true;
                 }
@@ -1254,7 +1257,6 @@ $(function() {
             // Build header icons always to fix responsive or on request
             if ((enabled || $('body').hasClass('UICResponsiveMode')) && !$('ul.UICHeaderIcons').length){
                 // Move header icons out of menu
-                $('#navbar div.navbar-inner > div > div.nav-collapse').addClass('UICMainMenu');
                 $('div.UICMainMenu').after($('<ul class="UICHeaderIcons nav"></ul>').append($('div.UICMainMenu ul.nav > li[id^="navbar_plugin"]:not(#navbar_plugin_announcements)')));
             }
             if (enabled){
