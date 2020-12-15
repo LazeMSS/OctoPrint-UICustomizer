@@ -655,6 +655,33 @@ $(function() {
                 hlsCam = true;
             }
 
+            // Webcam loader
+            var webcamLoader = function(targetStreamURL){
+                self.logToConsole("webcamLoader init");
+                $('#IUCWebcamContainerInner img').off('error').on('error',function(){
+                    // Error loading
+                    $('#webcam_image').data("isLoaded",false);
+                    $('#IUCWebcamContainerInner').hide();
+                    $('.UICWebCamClick').hide();
+                    $('#IUCWebcamContainer div.nowebcam').remove();
+                    $('#IUCWebcamContainer > div').append($('<div class="nowebcam text-center"><i class="fas fa-exclamation"></i> Error loading webcam</div>').off('click.UICWebCamErrror').on('click.UICWebCamErrror',function(){
+                        $('#control_link a').trigger('click');
+                    }));
+                }).off('load').on('load',function(){
+                    // Loaded okay
+                    if ($(this).attr('src').indexOf(targetStreamURL) == 0){
+                        self.logToConsole("IUCWebcamContainerInner img loaded ok");
+                        // Turn off load due to it being a webcam stream firring multiple times
+                        $(this).off('load');
+                        // Loaded
+                        $('.UICWebCamClick').show();
+                        $('#IUCWebcamContainerInner').show();
+                        $('#IUCWebcamContainerInner img').show();
+                        $('#IUCWebcamContainer div.nowebcam').hide();
+                    }
+                });
+            };
+
             // Visibilty handler custom
             // https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
             var hidden, visibilityChange;
@@ -669,17 +696,19 @@ $(function() {
                 visibilityChange = "webkitvisibilitychange";
             }
 
-            // Event handler
+            // Event handler for visibility
             var eventVIS = function(){
+                // If not shown then dont do
                 if (!$('#UICWebCamWidget').length){
-                     self.logToConsole("WebCam widget not active");
-                     return true;
+                    self.logToConsole("WebCam widget not active");
+                    return true;
                 }
                 var hlsCam = false;
                 var streamURL = self.settings.webcam_streamUrl();
                 if (/.m3u8/i.test(streamURL)){
                     hlsCam = true;
                 }
+                // What to do
                 if (document[hidden]) {
                     self.logToConsole("Visibility changed to hidden");
                     $('#IUCWebcamContainer').data('pausedByVis',true);
@@ -709,7 +738,7 @@ $(function() {
                 }
             }
 
-            // Warn if the browser doesn't support addEventListener or the Page Visibility API
+            // Do we have the visibility handler?
             if (typeof document.addEventListener === "undefined" || hidden === undefined) {
                 self.logToConsole("NO event handler for visibility :( ");
             } else if($(document).data('IUCEventVis') != true){
@@ -717,33 +746,6 @@ $(function() {
                 $(document).data('IUCEventVis',true);
                 document.addEventListener(visibilityChange, eventVIS, false);
             }
-
-            // Error handling
-            var webcamLoader = function(targetStreamURL){
-                self.logToConsole("webcamLoader init");
-                $('#IUCWebcamContainerInner img').off('error').on('error',function(){
-                    // Error loading
-                    $('#webcam_image').data("isLoaded",false);
-                    $('#IUCWebcamContainerInner').hide();
-                    $('.UICWebCamClick').hide();
-                    $('#IUCWebcamContainer div.nowebcam').remove();
-                    $('#IUCWebcamContainer > div').append($('<div class="nowebcam text-center"><i class="fas fa-exclamation"></i> Error loading webcam</div>').off('click.UICWebCamErrror').on('click.UICWebCamErrror',function(){
-                        $('#control_link a').trigger('click');
-                    }));
-                }).off('load').on('load',function(){
-                    // Loaded okay
-                    if ($(this).attr('src').indexOf(targetStreamURL) == 0){
-                        self.logToConsole("IUCWebcamContainerInner img loaded ok");
-                        // Turn off load
-                        $(this).off('load');
-                        // Loaded
-                        $('.UICWebCamClick').show();
-                        $('#IUCWebcamContainerInner').show();
-                        $('#IUCWebcamContainerInner img').show();
-                        $('#IUCWebcamContainer div.nowebcam').hide();
-                    }
-                });
-            };
 
             // Set loading
             $('.UICWebCamClick').hide();
@@ -821,6 +823,7 @@ $(function() {
                     $('#webcam_hls video')[0].pause();
                 }
                 $('#UICWebCamWidget').addClass('UICWebcam');
+
                 // Remove old just in case
                 OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored = self.onWebCamErrorOrg;
 
