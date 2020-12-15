@@ -111,6 +111,12 @@
     }
 }
 
+/* fix popovers*/
+
+#navbar.navbar-static-top{
+    position: relative;
+}
+
 body.UICfixedFooter{
 	margin-bottom: 45px;
 }
