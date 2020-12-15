@@ -1781,20 +1781,31 @@ $(function() {
             $('#UICReportBug').off('click').on('click',function(){
                 $(this).find('i').toggleClass('skull-crossbones bug');
                 url = 'https://github.com/LazeMSS/OctoPrint-UICustomizer/issues/new';
-                var body = "[\n ENTER DESCRIPTION HERE- ALSO ADD SCREENSHOT IF POSSIBLE!\n Describe your problem?\n What is the problem?\n Can you recreate it?\n Did you try disabling plugins?\n Did you remeber to update the subject?\n]\n\n**Plugins installed:**\n";
-                $(Object.entries(OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins)).each(function(x,item){
-                    body += '- ' + item[0] + "\n";
+                var body = "## Description\n**ENTER DESCRIPTION HERE\nDescribe your problem?\nWhat is the problem?\nCan you recreate it?\nDid you try disabling plugins?\nDid you remember to update the subject?**\n<hr>\n\n**Plugins installed**\n";
+                // Get plugin info
+                $.each(OctoPrint.coreui.viewmodels.pluginManagerViewModel.plugins.allItems,function(x,item){
+                    if (item.enabled && item.bundled == false){
+                        var version = "";
+                        if (item.version != null){
+                            version = " v"+ item.version;
+                        }
+                        if (item.key == "uicustomizer"){
+                            body += '- **' + item.name +"["+item.key+"]" + version + "**\n";
+                        }else{
+                            body += '- ' + item.name +"["+item.key+"]" + version + "\n";
+                        }
+                    }
                 });
                 // Settings
-                body += "\n\n**Plugin settings:**\n";
+                body += "\n\n**UI Customizer settings**\n";
                 $(Object.entries(OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.uicustomizer)).each(function(x,item){
                     if (typeof item[1]() == "boolean"){
                         body += '- ' + item[0] + ": " +item[1]() + "\n";
                     }
                 });
-                body += "\n\n**Software versions:**\n- "+$('#footer_version li').map(function(){return $(this).text()}).get().join("\n- ");
-                body += "\n\n**Browser:**\n-"+navigator.userAgent.replace(/;/gi,"");
-                window.open(url+'?body='+encodeURI(body),'UICBugReport');
+                body += "\n\n**Software versions**\n- "+$('#footer_version li').map(function(){return $(this).text()}).get().join("\n- ");
+                body += "\n\n**Browser**\n- "+navigator.userAgent
+                window.open(url+'?body='+encodeURIComponent(body),'UICBugReport');
                 $(this).blur();
             });
             // Widgets found
