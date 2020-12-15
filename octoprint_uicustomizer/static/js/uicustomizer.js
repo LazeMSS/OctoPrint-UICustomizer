@@ -1841,7 +1841,7 @@ $(function() {
                 }else{
                     var name = pdata.name.toLowerCase();
                 }
-                tiCon.append($('<div class="accordion-group" data-tid="'+tid+'"><div class="accordion-heading">'+icon+'<span class="UICTopIconLbl">'+name+'</span></div></div>'));
+                tiCon.append($('<div class="accordion-group" data-tid="'+tid+'"><div class="accordion-heading"><button class="UICDragVHandle btn btn-small" type="button" title="Sort item"><i class="fas fa-arrows-alt-v"></i></button><span class="UICPadLeft UICTopIconLbl">'+name+'</span>'+icon+'</div></div>'));
             }
 
             // Get the data
