@@ -32,7 +32,7 @@ or manually using this URL:
 The configuration is split into 5 tabs - all have an preview option
 
 ### General
-![](extras/s1.png)
+![](extras/s1.png)<br/><br/>
 * Improve mobile/responsive - enable the improved responsive modes including settings for mobile screens etc.
 * Fluid/full width layout - should the entire screen width be used or not
 * Fixed header/topbar - should the top menubar stay fixed when scrolling or not
@@ -44,13 +44,13 @@ The configuration is split into 5 tabs - all have an preview option
 
 
 ### Layout
-![](extras/s2.png)
+![](extras/s2.png)<br/><br/>
 The layout of the screen can be made into 1,2 or 3 columns and the size of the columns can be adjusted. The total width of the columns added together must not be greater than 12. Each column can contain zero or more widgets, widgets are the diffent "containers" for all the user interface, ie. the webcam, files etc.
 If you want a two or one column layout then just drag the "widgets" all the widgets into the left hand side columns.
 Each widget can be moved by draging. The widgets can also be hidden by clicking the eye on the right hand side of the widget.
 
 ### Main tabs
-![](extras/s3.png)
+![](extras/s3.png)<br/><br/>
 The main/center tabs can be changed using this settings panel.
 * The up and down arrow is used to change the order of the tabs when they are displayed
 * The first field is for entering a custom name for the tab, if left blank it will use default.
@@ -60,14 +60,15 @@ The main/center tabs can be changed using this settings panel.
 
 
 ### Top icons
-![](extras/s4.png)
+![](extras/s4.png)<br/><br/>
 This allows you to change the look & feel of the top icons in top menu
 * Compact ["Navbar temperature plugin"](https://plugins.octoprint.org/plugins/navbartemp/) - will add icons and shrink the temperature display on this awesome plugin
 * Center topbar icons - will horizontal center the extra plugins/top icons in the topbar
 * Icon order - change the order in which the icons are displayed in the top menu bar - notice some icons can be hidden. Turn on "Preview" to see them
 
 ### Advanced
-![](extras/s5.png)
+
+![](extras/s5.png)<br/><br/>
 * Disable terminal when hidden - Disables the terminal update when the terminal tab is in the background - gives a small perfomance boost.
 
 ## Screenshots/Video
