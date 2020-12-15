@@ -306,6 +306,9 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
     color: #000;
     margin-right: 10px;
 }
+#settings_plugin_uicustomizer #UICReportBug.disabled{
+    cursor: progress;
+}
 
 #settings_plugin_uicustomizer #UICReportBug:hover{
     width: 100px;

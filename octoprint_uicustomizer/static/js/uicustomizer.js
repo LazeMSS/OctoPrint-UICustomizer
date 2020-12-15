@@ -1778,7 +1778,49 @@ $(function() {
         // Settings handler
         self.onSettingsShown = function() {
             self.settingsBeenShown = true;
+            $('#UICReportBug').removeData('updateCheck');
             $('#UICReportBug').off('click').on('click',function(){
+                var $this = $(this);
+                if ($this.data('updateCheck') == "pending"){
+                    return true;
+                }
+
+                if ($this.data('updateCheck') != "done"){
+                    self.logToConsole("Checking for updates to myself");
+                    $this.attr('disabled',true).addClass('disabled');
+                    $this.data('updateCheck',"pending");
+                    // Check for updates
+                    $.get("/plugin/softwareupdate/check?force=true", function(data) {
+                        // We have an update then show the real dialog
+                        if (data.hasOwnProperty('information') && data.information.hasOwnProperty('uicustomizer') && data.information.uicustomizer.updateAvailable){
+                            self.logToConsole("Updates found");
+                            new PNotify({
+                                title: 'Update UI Customizer<i class="fas fa-download pull-right"></i>',
+                                text: 'Before sending in a bug report please update to the latest version...\nThanks<i class="far fa-smile-wink"></i>',
+                                type: "notice",
+                                hide: false
+                            });
+                            // Trigger the update dialog
+                            OctoPrint.coreui.viewmodels.softwareUpdateViewModel.performCheck(true,true,true);
+                        }else{
+                            self.logToConsole("No updates found");
+                            $this.data('updateCheck','done');
+                            $this.attr('disabled',false).removeClass('disabled');
+                            $this.trigger('click');
+                        }
+                    }).fail(function(){
+                        self.logToConsole("Update check failed");
+                        $this.data('updateCheck','done');
+                        $this.attr('disabled',false).removeClass('disabled');
+                        $this.trigger('click');
+                    }).always(function() {
+                        $this.data('updateCheck','done');
+                        $this.attr('disabled',false).removeClass('disabled');
+                    });
+                    return true;
+                }
+
+                // Send the bug report from here
                 $(this).find('i').toggleClass('skull-crossbones bug');
                 url = 'https://github.com/LazeMSS/OctoPrint-UICustomizer/issues/new';
                 var body = "## Description\n**ENTER DESCRIPTION HERE\nDescribe your problem?\nWhat is the problem?\nCan you recreate it?\nDid you try disabling plugins?\nDid you remember to update the subject?**\n<hr>\n\n**Plugins installed**\n";
@@ -1808,6 +1850,7 @@ $(function() {
                 window.open(url+'?body='+encodeURIComponent(body),'UICBugReport');
                 $(this).blur();
             });
+
             // Widgets found
             var sidebarItems = ['div.UICmainTabs'];
             $('#sidebar div.accordion-group').each(function(){
