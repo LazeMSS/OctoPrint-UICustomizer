@@ -1772,8 +1772,16 @@ $(function() {
                 var body = "[\n ENTER DESCRIPTION HERE- ALSO ADD SCREENSHOT IF POSSIBLE!\n Describe your problem?\n What is the problem?\n Can you recreate it?\n Did you try disabling plugins?\n Did you remeber to update the subject?\n]\n\n**Plugins installed:**\n";
                 $(Object.entries(OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins)).each(function(x,item){
                     body += '- ' + item[0] + "\n";
-                })
+                });
+                // Settings
+                body += "\n\n**Plugin settings:**\n";
+                $(Object.entries(OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.uicustomizer)).each(function(x,item){
+                    if (typeof item[1]() == "boolean"){
+                        body += '- ' + item[0] + ": " +item[1]() + "\n";
+                    }
+                });
                 body += "\n\n**Software versions:**\n- "+$('#footer_version li').map(function(){return $(this).text()}).get().join("\n- ");
+                body += "\n\n**Browser:**\n-"+navigator.userAgent.replace(/;/gi,"");
                 window.open(url+'?body='+encodeURI(body),'UICBugReport');
                 $(this).blur();
             });
