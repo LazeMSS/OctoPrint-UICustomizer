@@ -57,7 +57,8 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                 ['timelapse_link',True,False,'fas fa-film',True,'#000000'],
                 ['term_link',True,False,'fas fa-terminal',True,'#000000'],
                 ['gcode_link',True,False,'fab fa-codepen',True,'#000000'],
-            ]
+            ],
+            "topIconSort" : []
         }
 
     def get_template_configs(self):

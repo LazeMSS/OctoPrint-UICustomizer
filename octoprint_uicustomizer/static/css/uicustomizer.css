@@ -217,6 +217,25 @@ body.UICResponsiveMode .search-query-with-clear .search-clear{
 }
 
 /*UIC settings */
+.UICDragVHandle{
+    cursor: grab;
+}
+
+#settings_uicustomizer_topicons_container .UICTopIconLbl{
+    text-transform: capitalize;
+}
+
+#settings_uicustomizer_topicons_container .accordion-heading{
+    display: block;
+    padding: 8px 15px;
+    cursor: grab;
+}
+
+#settings_uicustomizer_topicons_container .accordion-heading > i{
+    float: right;
+    margin-top: 4px;
+}
+
 #UICSortRows input[type=range]{
 	width: 85%;
 }
@@ -810,5 +829,7 @@ body.inlineFullscreen .UICWebCamClick{
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+
 
 /* UICustomizer END */
