@@ -496,25 +496,22 @@ $(function() {
                             var nHeight = imgsrc.naturalHeight;
                         }
                         var aspect = nWidth/nHeight;
+                        // Resize a bit
                         nWidth -= 100;
+                        nHeight = nWidth/aspect;
+                        // Inside window or not?
                         var fixed = false;
                         var wWidth = $(window).width();
                         var wHeight = $(window).height();
-                        // Cam height than screen - then fit to screen height
-                        if (nHeight > wHeight){
-                            fixed = true;
-                            nHeight = (wHeight - 120);
-                            nWidth = nHeight*aspect;
-                        }
                         // Cam wider than screen - then fit to screen width
                         if (nWidth > wWidth){
                             fixed = true;
                             nWidth = (wWidth - 120);
                             nHeight = nWidth/aspect;
                         }
-                        // Cam height than screen - then fit to screen height * 2
                         if (nHeight > wHeight){
-                            nHeight = (nHeight - 120);
+                            fixed = true;
+                            nHeight = (wHeight - 120);
                             nWidth = nHeight*aspect;
                         }
 
@@ -533,9 +530,16 @@ $(function() {
                             $('#UICWebCamFull img').trigger('load',[true]);
                         },5000);
 
-                        // Fixes and hacks for firefox
+                        // Fix sizing
                         $('#UICWebCamFull img').css({'width':nWidth});
                         $('#UICWebCamFull img').css({'height':nHeight});
+
+                        // Set max if needed
+                        if (!fixed){
+                            $('#UICWebCamFull img').css({'max-width':$(window).width()-120});
+                            $('#UICWebCamFull img').css({'max-height':$(window).height()-120});
+                        }
+                        // Load it
                         $('#UICWebCamFull img').off('load').on('load',function(event,forced){
                             if (streamURL != $(this).attr('src')){
                                 if (forced){
@@ -554,15 +558,12 @@ $(function() {
                             $('#UICWebCamShrink').show();
                             $('#UICWebCamFull img').show();
                             $('#UICWebCamFull div.nowebcam').remove();
+                            // Set the size i running a fixed size
                             if (fixed){
                                 $('#UICWebCamFull').css({'width':nWidth+10});
-                                $('#UICWebCamFull').css({'height':nHeight+10});
-                            }else{
-                                $('#UICWebCamFull img').css({'width':''});
-                                $('#UICWebCamFull img').css({'height':''});
                             }
-                            $('#UICWebCamFull').css({'max-width':$(window).width()-120});
-                            $('#UICWebCamFull').css({'max-height':$(window).height()-120});
+                            $('#UICWebCamFull img').css({'width':''});
+                            $('#UICWebCamFull img').css({'height':''});
                         });
                         $('#UICWebCamFull img').attr('src',streamURL);
                     }
@@ -574,6 +575,14 @@ $(function() {
                         $('#UICWebCamFull').css('height','');
                     }).off('dblclick').on('dblclick',function(){
                         $('#UICWebCamShrink').trigger('click');
+                    }).off('resize').on('resize',function(){
+                        // Resize timer
+                        if ($(this).data("resizeTimer") != undefined){
+                            clearTimeout($(this).data("resizeTimer"));
+                        }
+                        $(this).data("resizeTimer",window.setTimeout(function(){
+                            $('#UICWebCamFull').trigger('mouseup');
+                        },500));
                     });
 
                     // Start draghandler
