@@ -1807,7 +1807,6 @@ $(function() {
                     return true;
                 }
                 var key = tid.replace('navbar_plugin_',"");
-                console.log(key);
                 var icon = $thisIcon.find('i:first');
                 // Add an icon or not?
                 if (icon.length){
