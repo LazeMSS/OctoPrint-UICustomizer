@@ -290,6 +290,9 @@ $(function() {
                         return c.replace(/(^|\s)span\d+/g, '');
                     });
                     $('div.UICRow'+keyoffset).addClass('span'+spanW);
+                    if (spanW >= 6){
+                        $('div.UICRow'+keyoffset).addClass('UICLargeSpan');
+                    }
                 }
 
                 // Add items

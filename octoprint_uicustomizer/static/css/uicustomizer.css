@@ -12,7 +12,36 @@
     .UICHeaderIcons >li > a{
         height: 30px !important;
     }
+
+    /*fix for files in large row - these are replicated in the max-width: 767px section*/
+    body.UICResponsiveMode div.UICLargeSpan #files div.gcode_files .action-buttons{
+        top: 5px;
+        bottom: inherit !important
+    }
+
+    body.UICResponsiveMode div.UICLargeSpan #files div.gcode_files div.title{
+        margin-left: 25px;
+    }
+    body.UICResponsiveMode div.UICLargeSpan #files div.gcode_files div.toggleAdditionalData{
+        position: absolute;
+        left: 5px;
+    }
+    body.UICResponsiveMode div.UICLargeSpan #files div.scroll-wrapper{
+        height: auto !important;
+        padding-bottom: 30px;
+    }
+
+    body.UICResponsiveMode div.UICLargeSpan #files .gcode_files .entry .additionalInfo{
+        padding-bottom: 5px !important;
+    }
+    body.UICResponsiveMode div.UICLargeSpan #files .gcode_files .entry .uploaded{
+        float:right;
+    }
+    body.UICResponsiveMode div.UICLargeSpan #files .gcode_files .entry .uploaded, #files .gcode_files .entry .size{
+        margin-top:3px;
+    }
 }
+
 /* smaller than  big screens :) */
 @media (max-width: 979px){
 	.UICHideDesktop{
@@ -93,6 +122,34 @@
         left: -3px;
         min-width: 70px !important;
         text-align: center;
+    }
+
+    /*fix for files in large row - this small gives us full width*/
+    body.UICResponsiveMode div.UICLargeSpan #files div.gcode_files .action-buttons{
+        top: 5px;
+        bottom: inherit !important
+    }
+
+    body.UICResponsiveMode div.UICLargeSpan #files div.gcode_files div.title{
+        margin-left: 25px;
+    }
+    body.UICResponsiveMode div.UICLargeSpan #files div.gcode_files div.toggleAdditionalData{
+        position: absolute;
+        left: 5px;
+    }
+    body.UICResponsiveMode div.UICLargeSpan #files div.scroll-wrapper{
+        height: auto !important;
+        padding-bottom: 30px;
+    }
+
+    body.UICResponsiveMode div.UICLargeSpan #files .gcode_files .entry .additionalInfo{
+        padding-bottom: 5px !important;
+    }
+    body.UICResponsiveMode div.UICLargeSpan #files .gcode_files .entry .uploaded{
+        float:right;
+    }
+    body.UICResponsiveMode div.UICLargeSpan #files .gcode_files .entry .uploaded, #files .gcode_files .entry .size{
+        margin-top:3px;
     }
 }
 
@@ -326,6 +383,7 @@ div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
 #settings_plugin_uicustomizer form.form-horizontal div.span6 .controls{
 	margin-left: 45px !important;
 }
+
 #settings_plugin_uicustomizer > form.form-horizontal > ul.nav.nav-pills{
     margin-bottom: 0px;
     border-bottom: 1px solid #eeee;
