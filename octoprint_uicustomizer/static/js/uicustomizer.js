@@ -639,6 +639,11 @@ $(function() {
 
             // Disable it all
             if (!enable){
+                 // Remove subscribe
+                 if ($('body').data("webcamSubscribed") != undefined){
+                    $('body').data("webcamSubscribed").dispose();
+                    $('body').removeData("webcamSubscribed");
+                 }
                  OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded = self.onWebCamOrg;
                  OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored = self.onWebCamErrorOrg;
                  $('#UICWebCamWidget').remove();
@@ -652,9 +657,8 @@ $(function() {
 
             // Not configured - then do nothing
             if (self.settings.webcam_webcamEnabled() == false || streamURL == ""){
-                OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded = self.onWebCamOrg;
-                OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored = self.onWebCamErrorOrg;
                 $('#IUCWebcamContainer > div').append('<div class="nowebcam text-center"><i class="fas fa-question"></i> <span>Webcam not configured&hellip;</span></div>');
+                self.CustomW_initWebCam(false);
                 return true;
             }
 
@@ -663,6 +667,52 @@ $(function() {
                 self.logToConsole("HLS WebCam detected: " + streamURL);
                 hlsCam = true;
             }
+
+            // Fix changes - this fixes also multicam etc.
+            if ($('body').data("webcamSubscribed") == undefined){
+                var subs = OctoPrint.coreui.viewmodels.settingsViewModel.webcam_streamUrl.subscribe(function(streamURL) {
+                    if ($('#settings_dialog:visible').length){
+                        self.logToConsole("Webcam url changed inside settings - skipping!");
+                        return true;
+                    }
+                    self.logToConsole("Webcam URL changed to: "+streamURL);
+                    if (/.m3u8/i.test(streamURL)){
+                        // We are switching to HLS or not?
+                        if (!$('#IUCWebcamContainer video').length){
+                            self.logToConsole("Webcam is switching from IMG to HLS format");
+                            self.CustomW_initWebCam(enable);
+                            return true;
+                        }
+                        if ($('#IUCWebcamContainer video').data('streamURL').indexOf(streamURL) != 0){
+                            self.logToConsole("Webcam HLS stream triggered - Starting: " + streamURL);
+                            $('#IUCWebcamContainer video').data('streamURL',streamURL);
+                            $('#IUCWebcamContainer video').data('playing',true);
+                            // Start HLS player - a seperate stream is better - tried canvas copy etc.
+                            var video = $('#IUCWebcamContainer video')[0];
+                            self.startHLSstream(video,streamURL);
+                        }else{
+                            self.logToConsole("Webcam HLS stream triggered same URL: " + streamURL + "/"+$('#IUCWebcamContainer video').data('streamURL'));
+                        }
+                    }else{
+                        var imgsrc = $('#IUCWebcamContainerInner img');
+                        // We are switching to HLS or not?
+                        if (!imgsrc.length){
+                            self.logToConsole("Webcam is switching from HLS to IMG format");
+                            self.CustomW_initWebCam(enable);
+                            return true;
+                        }
+                        if (imgsrc.attr('src').indexOf(streamURL) != 0){
+                            self.logToConsole("Webcam IMG stream triggered - Starting: " + streamURL);
+                            webcamLoader(streamURL);
+                            imgsrc.attr('src',streamURL);
+                        }else{
+                            self.logToConsole("Webcam IMG stream triggered same URL: " +streamURL + "/"+imgsrc.attr('src'));
+                        }
+                    }
+                });
+                $('body').data("webcamSubscribed",subs);
+            }
+
 
             // Webcam loader
             var webcamLoader = function(targetStreamURL){
@@ -949,6 +999,9 @@ $(function() {
                 var video = $('#IUCWebcamContainer video')[0];
                 self.startHLSstream(video,streamURL);
             }
+
+            // Fix zoom overlay
+            self.set_addWebCamZoom(self.settings.settings.plugins.uicustomizer.addWebCamZoom());
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
