@@ -832,6 +832,28 @@ body.inlineFullscreen .UICWebCamClick{
     white-space: nowrap;
 }
 
+/*multicam selector*/
+.UICMultiCamSelector{
+    margin-top: 5px;
+    margin-right: 5px;
+    float: right;
+}
+
+.UICMultiCamSelector span.caret{
+    margin-left: 5px;
+}
+
+.UICMultiCamSelector a.btn.btn-small.dropdown-toggle {
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.UICRow3 #UICWebCamWidget ul.dropdown-menu {
+    right: 0;
+    left: auto;
+}
 
 
 /* UICustomizer END */

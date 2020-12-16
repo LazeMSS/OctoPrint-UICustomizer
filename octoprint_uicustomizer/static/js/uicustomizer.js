@@ -662,6 +662,30 @@ $(function() {
                 return true;
             }
 
+            // Check for multicam
+            if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('multicam') && !$('.UICMultiCamSelector').length){
+                var multicamSelector = $('<div class="btn-group UICMultiCamSelector"><a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#"><span id="UICMultiCamLbl">Cam</span><span class="caret"></span></a><ul class="dropdown-menu"></ul></div>');
+                var ulCamSel = multicamSelector.find('ul');
+                $.each(OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.multicam.multicam_profiles(),function(idx,item){
+                    // Set the label
+                    var className = '';
+                    if (idx == 0){
+                        multicamSelector.find('span:first').text(item.name());
+                        className = ' class="active" ';
+                    }
+                    // Build the selector
+                    ulCamSel.append($('<li'+className+' data-streamURL="'+item.URL()+'"><a href="#">'+item.name()+'</a></li>').on('click','a',function(event,dontLoad){
+                        $('.UICMultiCamSelector li.active').removeClass('active');
+                        $(this).parent().addClass('active');
+                        $('#UICMultiCamLbl').text(item.name());
+                        if(dontLoad !== true){
+                            OctoPrint.coreui.viewmodels.multiCamViewModel.loadWebcam(item);
+                        }
+                    }));
+                })
+                $('#UICWebCamWidget div.accordion-heading').append(multicamSelector);
+            }
+
             // BROKEN due to loading/changes not triggering at the right time: || (typeof OctoPrint.coreui.viewmodels.controlViewModel.webcamHlsEnabled == "function" && OctoPrint.coreui.viewmodels.controlViewModel.webcamHlsEnabled()
             if (/.m3u8/i.test(streamURL)){
                 self.logToConsole("HLS WebCam detected: " + streamURL);
@@ -675,6 +699,14 @@ $(function() {
                         self.logToConsole("Webcam url changed inside settings - skipping!");
                         return true;
                     }
+
+                    // Update dropdown for multicam
+                    if ($('.UICMultiCamSelector').length){
+                        $('.UICMultiCamSelector li.active').removeClass('active');
+                        $('.UICMultiCamSelector li[data-streamurl="'+streamURL+'"]:first a').trigger('click',[true]);
+                    }
+
+                    // Change URL
                     self.logToConsole("Webcam URL changed to: "+streamURL);
                     if (/.m3u8/i.test(streamURL)){
                         // We are switching to HLS or not?
