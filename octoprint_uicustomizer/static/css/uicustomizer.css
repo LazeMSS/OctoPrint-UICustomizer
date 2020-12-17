@@ -632,9 +632,12 @@ body.UICResponsiveMode #gcode_canvas{
     position: relative;
     width: 100% !important;
     height: 100% !important;
-    float: left;
-    right: -1px;
 }
+
+#canvas_container{
+    text-align: center;
+}
+
 
 #gcode div.UICToolTipLeft{
     left: -120px !important;
