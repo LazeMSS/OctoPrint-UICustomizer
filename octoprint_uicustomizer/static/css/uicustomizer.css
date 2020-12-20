@@ -172,6 +172,7 @@
 
 #navbar.navbar-static-top{
     position: relative;
+    z-index: 1030;
 }
 
 body.UICfixedFooter{
