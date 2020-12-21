@@ -462,7 +462,7 @@ $(function() {
                     $('#UICWebCamFull').remove();
 
                     // Append floating cam to body
-                    $('body').append('<div id="UICWebCamFull" draggable="true" class="UICWebcam"><div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate">Loading webcam&hellip;</span></div><div id="UICWebCamShrink" class="UICWebCamClick"><a href="javascript: void(0);"><i class="fas fa-compress"></i></a></div><span class="UICWebCamTarget"/></div>');
+                    $('body').append('<div id="UICWebCamFull" draggable="true" class="UICWebcam"><div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate">Loading webcam&hellip;</span></div><div id="UICWebCamShrink" class="UICWebCamClick"><a href="javascript: void(0);"><i class="fas fa-compress"></i></a></div><div class="UICWebCamTarget"></div></div>');
                     $('#UICWebCamShrink').hide();
 
                     // Set top offset
@@ -473,7 +473,7 @@ $(function() {
                     // Set source item
                     if (hlsCam){
                         // Fix and setup video
-                        $('#UICWebCamFull span.UICWebCamTarget').replaceWith('<video muted="" autoplay=""></video>');
+                        $('#UICWebCamFull div.UICWebCamTarget').replaceWith('<video muted="" autoplay=""></video>');
                         $('#UICWebCamFull video').off('playing.UICCam').on('playing.UICCam',function(event){
                             $('#UICWebCamShrink').show();
                             $('#UICWebCamFull div.nowebcam').remove();
@@ -518,7 +518,6 @@ $(function() {
                             nWidth = nHeight*aspect;
                         }
 
-                        // Clone to fix rotation etc.
                         var clone = $('#webcam_rotator').clone();
                         clone.find('>div:not(:first-child)').remove();
                         clone.attr('id','UICWebCamFullInnerDIV');
@@ -526,7 +525,12 @@ $(function() {
                         clone.find('img').off('load');
                         clone.find('img').attr('src','data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
                         $('#UICWebCamFull img').off('load');
-                        $('#UICWebCamFull span.UICWebCamTarget').html(clone.html());
+                        $('#UICWebCamFull div.UICWebCamTarget').html(clone.html());
+                        if (rotated){
+                            $('#UICWebCamFull div.UICWebCamTarget').addClass('webcam_rotated');
+                            $('#UICWebCamFull').css('max-height','initial');
+                            $('#UICWebCamFull').css('max-width','initial');
+                        }
 
                         // Tired of waiting
                         var timeoutLoad = window.setTimeout(function(){
