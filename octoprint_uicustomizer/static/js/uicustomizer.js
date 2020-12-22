@@ -2008,11 +2008,10 @@ $(function() {
                 }
                 var key = tid.replace('navbar_plugin_',"");
                 var icon = $thisIcon.find('i:first');
+                var iconstr = '';
                 // Add an icon or not?
                 if (icon.length){
-                    icon = icon.wrap('<p>').parent().html()
-                }else{
-                    icon = '';
+                    iconstr = icon.clone().wrap('<p>').parent().html();
                 }
                 // Get plugin data
                 var pdata = self.findPluginData(key);
@@ -2021,7 +2020,7 @@ $(function() {
                 }else{
                     var name = pdata.name.toLowerCase();
                 }
-                tiCon.append($('<div class="accordion-group" data-tid="'+tid+'"><div class="accordion-heading"><button class="UICDragVHandle btn btn-small" type="button" title="Sort item"><i class="fas fa-arrows-alt-v"></i></button><span class="UICPadLeft UICTopIconLbl">'+name+'</span>'+icon+'</div></div>'));
+                tiCon.append($('<div class="accordion-group" data-tid="'+tid+'"><div class="accordion-heading"><button class="UICDragVHandle btn btn-small" type="button" title="Sort item"><i class="fas fa-arrows-alt-v"></i></button><span class="UICPadLeft UICTopIconLbl">'+name+'</span>'+iconstr+'</div></div>'));
             }
 
             // Get the data
