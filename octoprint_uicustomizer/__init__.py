@@ -34,6 +34,7 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                 },
                 {
                     "#UICWebCamWidget": True,
+                    "#UICGcodeVWidget": True,
                     "#state_wrapper": True,
                     "#sidebar_plugin_action_command_notification_wrapper": True
                 }

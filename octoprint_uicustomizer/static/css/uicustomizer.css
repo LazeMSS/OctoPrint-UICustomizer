@@ -631,8 +631,8 @@ body.UICTouchDevice #settings_dialog ::-webkit-scrollbar-thumb:window-inactive {
 /* Fix gcode for responsive*/
 body.UICResponsiveMode #gcode_canvas{
     position: relative;
-    width: 100% !important;
-    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
 }
 
 #canvas_container{
@@ -651,7 +651,11 @@ body.UICResponsiveMode #canvas_container div.slider-horizontal, body.UICResponsi
 	width: 100% !important;
 }
 
-body.UICResponsiveMode #gcode #gcode_layer_slider{
+body.UICResponsiveMode #gcode_layer_slider.slider-vertical .slider-handle{
+    margin-left: -8px !important;
+}
+
+body.UICResponsiveMode #gcode_layer_slider{
     height: 100% !important;
     height: calc(100% - 30px) !important;
     z-index: 1000;
@@ -894,28 +898,36 @@ body.inlineFullscreen .UICWebCamClick{
     white-space: nowrap;
 }
 
-/*multicam selector*/
-.UICMultiCamSelector{
+/*generic dropdown selector for widgets*/
+.UICWidgetSelector{
     margin-top: 5px;
     margin-right: 5px;
     float: right;
 }
 
-.UICMultiCamSelector span.caret{
+.UICWidgetSelector span.caret{
     margin-left: 5px;
 }
 
-.UICMultiCamSelector a.btn.btn-small.dropdown-toggle {
+.UICWidgetSelector a.btn.btn-small.dropdown-toggle {
     max-width: 80px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.UICRow3 #UICWebCamWidget ul.dropdown-menu {
+.UICRow3 .UICWidgetSelector ul.dropdown-menu {
     right: 0;
     left: auto;
 }
 
+/* gcoce viewer widget*/
+#UICGcodeVWidgetContainer div {
+    text-align: center;
+}
+
+#UICGcodeVWidgetContainer canvas{
+    border: 1px solid #eee;
+}
 
 /* UICustomizer END */

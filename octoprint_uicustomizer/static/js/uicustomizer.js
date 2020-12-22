@@ -6,8 +6,7 @@ $(function() {
         self.debug = false;
 
         // Set settings
-        self.settings = parameters[1];
-
+        self.settings = parameters[0];
         // max rows
         self.maxRows = 12;
 
@@ -18,28 +17,47 @@ $(function() {
         self.previewHasBeenOn = false;
         self.settingsBeenShown = false;
 
+        self.getReturnData = false;
+
         // timer for resize fix modal
         self.modalTimer = null;
 
         self.nameLookup = {
             'div.UICmainTabs' : '<i class="fas fa-columns"></i> Main tabs',
-            '#UICWebCamWidget' : '<i class="fas fa-camera"></i> Webcam'
+            '#UICWebCamWidget' : '<i class="fas fa-camera"></i> Webcam',
+            '#UICGcodeVWidget' : '<i class="fab icon-black fa-codepen"></i> Gcode'
         }
 
         self.customWidgets = {
             '#UICWebCamWidget' : {
                 'dom': '<div id="UICWebCamWidget" class="accordion-group " data-bind="visible: loginState.hasAnyPermissionKo(access.permissions.WEBCAM)">\
                             <div class="accordion-heading">\
-                                <a class="accordion-toggle" data-toggle="collapse" data-test-id="sidebar-IUCWebcam-toggle" data-target="#IUCWebcamContainer">\
+                                <a class="accordion-toggle" data-toggle="collapse" data-target="#IUCWebcamContainer">\
                                     <i class="fas icon-black fa-camera"></i> Webcam\
                                 </a>\
                             </div>\
                             <div id="IUCWebcamContainer" class="accordion-body in collapse">\
-                                <div class="accordion-inner" data-test-id="sidebar-IUCWebcam-content">\
+                                <div class="accordion-inner">\
                                 </div>\
                             </div>\
                         </div>',
                 'init' : 'CustomW_initWebCam',
+            },
+            '#UICGcodeVWidget' : {
+                'dom': '<div id="UICGcodeVWidget" class="accordion-group " data-bind="allowBindings: true, visible: loginState.hasAllPermissionsKo(access.permissions.GCODE_VIEWER, access.permissions.FILES_DOWNLOAD)">\
+                            <div class="accordion-heading">\
+                                <a class="accordion-toggle" data-toggle="collapse" data-target="#UICGcodeVWidgetContainer">\
+                                    <i class="fab icon-black fa-codepen"></i> Gcode\
+                                </a>\
+                                <div class="btn-group UICWidgetSelector"><a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">Zoom:<span id="UICGcodeVWidgetZL"></span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="#">4</a></li><li><a href="#">3</a></li><li><a href="#">2</a></li><li><a href="#">1</a></li></ul></div>\
+                            </div>\
+                            <div id="UICGcodeVWidgetContainer" class="accordion-body in collapse">\
+                                <div class="accordion-inner">\
+                                    <canvas id="UICGcodeVWidgetCan"/>\
+                                </div>\
+                            </div>\
+                        </div>',
+                'init' : 'CustomW_initGcode',
             }
         }
 
@@ -56,7 +74,9 @@ $(function() {
             if (!self.debug){
                 return true;
             }
-            console.log('UICustomizer:',msg)
+            if (typeof console.log == "function"){
+                console.log('UICustomizer:',msg)
+            }
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
@@ -637,6 +657,20 @@ $(function() {
             }
         }
 
+        self.CustomW_initGcode = function(enable){
+            self.getReturnData = enable;
+            if (enable){
+                $('#UICGcodeVWidget ul.dropdown-menu a').off('click').on('click',function(event,dontLoad){
+                    $('#UICGcodeVWidget  ul.dropdown-menu li.active').removeClass('active');
+                    $(this).parent().addClass('active');
+                    $('#UICGcodeVWidgetZL').text($(this).text());
+                    $('#UICGcodeVWidget').data('zoomlvl',$(this).text());
+                });
+                // Pick the first one as default
+                $('#UICGcodeVWidget ul.dropdown-menu a:first').trigger('click');
+            }
+        }
+
         // ------------------------------------------------------------------------------------------------------------------------
         self.CustomW_initWebCam = function(enable){
             self.logToConsole('WebCam custom init');
@@ -671,7 +705,7 @@ $(function() {
 
             // Check for multicam
             if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('multicam') && !$('.UICMultiCamSelector').length){
-                var multicamSelector = $('<div class="btn-group UICMultiCamSelector"><a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#"><span id="UICMultiCamLbl">Cam</span><span class="caret"></span></a><ul class="dropdown-menu"></ul></div>');
+                var multicamSelector = $('<div class="btn-group UICMultiCamSelector UICWidgetSelector"><a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#"><span id="UICMultiCamLbl">Cam</span><span class="caret"></span></a><ul class="dropdown-menu"></ul></div>');
                 var ulCamSel = multicamSelector.find('ul');
                 $.each(OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.multicam.multicam_profiles(),function(idx,item){
                     // Set the label
@@ -2526,6 +2560,31 @@ $(function() {
             }
         }
 
+        self.fromCurrentData = function(data){
+            if (!self.getReturnData) return;
+
+            // Gcode widget on and visible
+            if (!$('#UICGcodeVWidgetContainer.collapse.in').length || !$('#gcode_canvas').length || typeof OctoPrint.coreui.viewmodels != "object") return
+
+            // load the file is needed
+            if (OctoPrint.coreui.viewmodels.gcodeViewModel.needsLoad){
+                OctoPrint.coreui.viewmodels.gcodeViewModel.loadFile(OctoPrint.coreui.viewmodels.gcodeViewModel.selectedFile.path(), OctoPrint.coreui.viewmodels.gcodeViewModel.selectedFile.date());
+            }
+
+            // Update if gcode if not centered
+            if (OctoPrint.coreui.selectedTab !== "#gcode") OctoPrint.coreui.viewmodels.gcodeViewModel._renderPercentage(data.progress.completion);
+
+            // Make a clone and parse to
+            var clone = $('#UICGcodeVWidgetCan')[0];
+            var clonecon = clone.getContext('2d');
+            var source = $('#gcode_canvas')[0];
+            var factor = $('#UICGcodeVWidget').data('zoomlvl');
+            clone.width =  source.width/factor
+            clone.height =  source.height/factor
+            clonecon.drawImage( source, 0, 0, clone.width, clone.height);
+        }
+
+
         // ------------------------------------------------------------------------------------------------------------------------
         // When settings are hidden
         self.onSettingsHidden = function() {
@@ -2589,7 +2648,7 @@ $(function() {
         // This is a list of dependencies to inject into the plugin, the order which you request here is the order
         // in which the dependencies will be injected into your view model upon instantiation via the parameters
         // argument
-        ["loginStateViewModel", "settingsViewModel"],
+        ["settingsViewModel"],
 
         // Finally, this is the list of all elements we want this view model to be bound to.
         []
