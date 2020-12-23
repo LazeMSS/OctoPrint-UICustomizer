@@ -48,6 +48,9 @@ The configuration is split into 5 tabs - all have an preview option
 The layout of the screen can be made into 1,2 or 3 columns and the size of the columns can be adjusted. The total width of the columns added together must not be greater than 12. Each column can contain zero or more widgets, widgets are the diffent "containers" for all the user interface, ie. the webcam, files etc.
 If you want a two or one column layout then just drag the "widgets" all the widgets into the left hand side columns.
 Each widget can be moved by draging. The widgets can also be hidden by clicking the eye on the right hand side of the widget.
+Notice there is 2 extras widgets include with UI Customizer:
+- Webcam widget which allows you to have a webcam outside the main tabs
+- Gcode widget which allows you to have a gcode viewer outside the main tabs
 
 ### Main tabs
 ![](extras/s3.png)<br/><br/>
