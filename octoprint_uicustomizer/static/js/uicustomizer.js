@@ -197,6 +197,7 @@ $(function() {
         // ------------------------------------------------------------------------------------------------------------------------
         // Update the entire layout
         self.UpdateLayout= function(settingsPlugin){
+
             self.logToConsole('Updating UI/layout');
             // Remove widths if any
             $('div.UICmainTabs').removeClass('span8');
@@ -241,6 +242,23 @@ $(function() {
 
             // addWebCamZoom
             self.set_addWebCamZoom(settingsPlugin.addWebCamZoom());
+
+            // set the theme if using default octoprint apperaence settings and we have a footer
+            if ($('body').hasClass('UICfixedFooter')){
+                if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.appearance.color() != "default"){
+                    // Clone the important parts to the footer
+                    $('#page-container-main > div.footer  > div.navbar-inner').css('background-image',$('#navbar > div.navbar-inner').css('background-image'));
+                    $('#page-container-main > div.footer  > div.navbar-inner').css('background-repeat',$('#navbar > div.navbar-inner').css('background-repeat'));
+                    $('#page-container-main > div.footer  > div.navbar-inner li, #page-container-main > div.footer  > div.navbar-inner a').css('text-shadow',$('#navbar .navbar-inner .brand').css('text-shadow'));
+                    $('#page-container-main > div.footer  > div.navbar-inner li, #page-container-main > div.footer  > div.navbar-inner a').css('color',$('#navbar .navbar-inner .brand').css('color'));
+                }else{
+                    // Reset
+                    $('#page-container-main > div.footer  > div.navbar-inner').css('background-image','');
+                    $('#page-container-main > div.footer  > div.navbar-inner').css('background-repeat','');
+                    $('#page-container-main > div.footer  > div.navbar-inner li, #page-container-main > div.footer  > div.navbar-inner a').css('text-shadow','');
+                    $('#page-container-main > div.footer  > div.navbar-inner li, #page-container-main > div.footer  > div.navbar-inner a').css('color','');
+                }
+            }
         }
 
         // ------------------------------------------------------------------------------------------------------------------------

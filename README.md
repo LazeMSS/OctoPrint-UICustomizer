@@ -14,6 +14,7 @@ It also features a lot of other fixes and improvements:
 * Hide temperature background graphics
 * Zoomed/Floating webcam option
 * Extra Webcam "widget"
+* Extra Gcode viewer "widget"
 * [Compact Navbar temp](https://plugins.octoprint.org/plugins/navbartemp/) icons
 * Hide widgets
 * Hide main camera
