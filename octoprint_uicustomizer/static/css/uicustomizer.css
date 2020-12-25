@@ -9,7 +9,7 @@
 		display: none;
 	}
 
-    .UICHeaderIcons >li > a{
+    #navbar div.navbar-inner.default .UICHeaderIcons >li > a{
         height: 30px !important;
     }
 
@@ -213,6 +213,7 @@ body.UICPreviewON div.modal-backdrop.fade.in {
     -ms-transform: translateX(-50%);
     transform: translateX(-50%);
     top: 1px;
+    z-index: 1030;
 }
 
 .UICHeaderIcons{
