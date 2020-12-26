@@ -12,6 +12,10 @@
     #navbar div.navbar-inner.default .UICHeaderIcons >li > a{
         height: 30px !important;
     }
+    #navbar div.navbar-inner:not(.default) .UICHeaderIcons >li > a{
+        height: 29px !important;
+    }
+
 
     /*fix for files in large row - these are replicated in the max-width: 767px section*/
     body.UICResponsiveMode div.UICLargeSpan #files div.gcode_files .action-buttons{
@@ -61,9 +65,13 @@
         z-index: 1000;
         border-bottom-right-radius: 5px;
         border-bottom-left-radius: 5px;
-        background-color: #ebebeb;
         box-shadow: -3px 5px 7px #00000026;
     }
+    /* apply colors when standard theme*/
+    html.UICDefaultTheme body.UICResponsiveMode .UICCompactMenu{
+        background-color: #ebebeb;
+    }
+
 
     .UICHeaderIcons.CenterMe{
         top: 5px !important;
@@ -77,14 +85,16 @@
         height: 36px !important;
     }
 
-
-    body.UICfixedHeader .UICCompactMenu{
+    body.UICfixedHeader #navbar div.navbar-inner.default .UICCompactMenu{
         top: 52px !important;
     }
+    body.UICfixedHeader #navbar div.navbar-inner:not(.default) .UICCompactMenu{
+        top: 50px !important;
+    }
 
-    body.UICResponsiveMode #navbar .navbar-inner .nav>li>a:hover,
-    body.UICResponsiveMode #navbar .navbar-inner .nav>li.dropdown.open>.dropdown-toggle{
-         background: #dedede;
+    html.UICDefaultTheme body.UICResponsiveMode #navbar .navbar-inner .nav>li>a:hover,
+    html.UICDefaultTheme body.UICResponsiveMode #navbar .navbar-inner .nav>li.dropdown.open>.dropdown-toggle{
+         background-color: #dedede;
     }
 
     /*fix modals on small screens*/
@@ -326,7 +336,7 @@ body.UICResponsiveMode .search-query-with-clear .search-clear{
     position: absolute;
     right: 3px;
     padding-top: 8px;
-    background: #fff;
+    background-color: #fff;
     margin-top: -7px;
     padding-bottom: 10px;
     width: 25px;
@@ -540,7 +550,7 @@ div.UICHackResponseActive {
 	margin-bottom: 0px;
 	z-index: 1000;
 	padding: 10px 0px 15px 0px;
-	background: rgb(255,255,255);
+	background-color: rgb(255,255,255);
     background: linear-gradient(180deg, rgba(255,255,255,1) 0px, rgba(255,255,255,1) 55px, rgba(255,255,255,0) 100%);
 }
 .UICscrollMenu{
@@ -592,11 +602,11 @@ body.UICTouchDevice #settings_dialog ::-webkit-scrollbar-track {
 body.UICTouchDevice #settings_dialog ::-webkit-scrollbar-thumb {
     -webkit-border-radius: 10px !important;
     border-radius: 10px !important;
-    background: #006dcc !important;
+    background-color: #006dcc !important;
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5) !important;
 }
 body.UICTouchDevice #settings_dialog ::-webkit-scrollbar-thumb:window-inactive {
-    background: #999999 !important;
+    background-color: #999999 !important;
 }
 
 #UICRealPrevCheck a{
@@ -762,7 +772,7 @@ body.inlineFullscreen .UICWebCamClick{
     transform: translate(-50%, -50%);
     width: calc(100% - 200px);
     z-index: 1045;
-    background: rgba(255,255,255,0.66);
+    background-color: rgba(255,255,255,0.66);
     border: 2px  solid rgba(0,0,0,0.5);
     border-radius: 4px; padding: 8px;
     min-height: 100px;

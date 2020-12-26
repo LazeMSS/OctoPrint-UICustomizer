@@ -124,6 +124,11 @@ $(function() {
                 }, 1000);
             }
 
+            // Observe theme changes
+            OctoPrint.coreui.viewmodels.settingsViewModel.appearance_color.subscribe(function(color) {
+                self.updateStandardTheme(color);
+            });
+
             // Check these plugins
             var knowPluginIssues = {
                 'widescreen' : {
@@ -243,21 +248,46 @@ $(function() {
             // addWebCamZoom
             self.set_addWebCamZoom(settingsPlugin.addWebCamZoom());
 
-            // set the theme if using default octoprint apperaence settings and we have a footer
-            if ($('body').hasClass('UICfixedFooter')){
-                if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.appearance.color() != "default"){
-                    // Clone the important parts to the footer
-                    $('#page-container-main > div.footer  > div.navbar-inner').css('background-image',$('#navbar > div.navbar-inner').css('background-image'));
-                    $('#page-container-main > div.footer  > div.navbar-inner').css('background-repeat',$('#navbar > div.navbar-inner').css('background-repeat'));
-                    $('#page-container-main > div.footer  > div.navbar-inner li, #page-container-main > div.footer  > div.navbar-inner a').css('text-shadow',$('#navbar .navbar-inner .brand').css('text-shadow'));
-                    $('#page-container-main > div.footer  > div.navbar-inner li, #page-container-main > div.footer  > div.navbar-inner a').css('color',$('#navbar .navbar-inner .brand').css('color'));
+            self.updateStandardTheme(OctoPrint.coreui.viewmodels.settingsViewModel.settings.appearance.color());
+
+        }
+
+        self.updateStandardTheme = function(curTheme){
+            if (curTheme == "default"){
+                // Cleanup
+                self.logToConsole("Removing standard theme mods");
+                $('html').addClass('UICDefaultTheme');
+                $('#UICCustStandardTheme').remove();
+            }else{
+                $('html').removeClass('UICDefaultTheme');
+                self.logToConsole("Standard theme is: " + curTheme);
+                if ($('#UICCustStandardTheme').length){
+                    self.logToConsole("Standard theme mods founnd");
                 }else{
-                    // Reset
-                    $('#page-container-main > div.footer  > div.navbar-inner').css('background-image','');
-                    $('#page-container-main > div.footer  > div.navbar-inner').css('background-repeat','');
-                    $('#page-container-main > div.footer  > div.navbar-inner li, #page-container-main > div.footer  > div.navbar-inner a').css('text-shadow','');
-                    $('#page-container-main > div.footer  > div.navbar-inner li, #page-container-main > div.footer  > div.navbar-inner a').css('color','');
+                    self.logToConsole("Standard theme added");
+                    $('head').append('<style type="text/css" id="UICCustStandardTheme"/>');
                 }
+                var headStyle = $('#UICCustStandardTheme');
+                // Find the style sheet
+                var hasCompact = $('div.UICMainMenu').hasClass('UICCompactMenu');
+                var hasResponsive = $('body').hasClass('UICResponsiveMode');
+                var cleanRep = new RegExp('\.'+curTheme, "gi")
+                var newStyle = '';
+                $.each($('link[href="/static/css/octoprint.css"][rel="stylesheet"]')[0].sheet.cssRules,function(){
+                    var cssSel = this.selectorText;
+                    if (cssSel != undefined && cssSel.indexOf('#navbar .navbar-inner.'+curTheme) != -1){
+                        newStyle += this.cssText.replace(/#navbar/gi,'#page-container-main > div.footer').replace(cleanRep,'');
+                        if (hasCompact){
+                            newStyle += this.cssText.replace(/#navbar \.navbar-inner/gi,'div.UICMainMenu.UICCompactMenu').replace(cleanRep,'');
+                        }
+                        if (hasResponsive){
+                            newStyle += this.cssText.replace(/#navbar/gi,'#UICsettingsMenuNav').replace(cleanRep,'');
+                        }
+                    };
+                });
+                self.logToConsole(newStyle);
+                headStyle.text(newStyle)
+                delete newStyle;
             }
         }
 
