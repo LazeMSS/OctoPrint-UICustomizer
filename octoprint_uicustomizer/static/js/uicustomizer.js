@@ -7,8 +7,8 @@ $(function() {
 
         // Set settings
         self.settings = parameters[0];
-        // max rows
-        self.maxRows = 12;
+        // max column width
+        self.maxCWidth = 12;
 
         self.saved = false;
 
@@ -87,8 +87,8 @@ $(function() {
             self.onWebCamErrorOrg = OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored;
 
             // Set names
-            $('div.octoprint-container div.tabbable').addClass('UICmainTabs').wrap( '<div class="UICRow2"></div>');
-            $('#sidebar').addClass('UICRow1');
+            $('div.octoprint-container div.tabbable').addClass('UICmainTabs').wrap( '<div class="UICCol2"></div>');
+            $('#sidebar').addClass('UICCol1');
             $('div.octoprint-container').addClass('UICMainCont');
             $('#navbar div.navbar-inner > div > div.nav-collapse').addClass('UICMainMenu');
             $('#navbar_plugin_announcements').addClass('UICExcludeFromTopIcons');
@@ -233,8 +233,8 @@ $(function() {
             // Compact menus
             self.set_compactMenu(settingsPlugin.compactMenu());
 
-            // BUild the rows layout
-            self.set_rowsLayout(settingsPlugin);
+            // BUild the main layout
+            self.set_mainLayout(settingsPlugin);
 
             // Customize tabs
             self.set_mainTabsCustomize(settingsPlugin.mainTabsCustomize(),settingsPlugin.mainTabs());
@@ -292,15 +292,15 @@ $(function() {
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
-        self.set_rowsLayout = function(settingsPlugin){
+        self.set_mainLayout = function(settingsPlugin){
             // Fix layout and width - using magic
-            var TempRows = [...settingsPlugin.rows()];
+            var TempCols = [...settingsPlugin.rows()];
             var widths = settingsPlugin.widths();
 
             // Build only visible items in a simple array
-            var CleanedRows = [];
-            $.each(TempRows,function(rowid,items){
-                CleanedRows[rowid] = [];
+            var CleanedCols = [];
+            $.each(TempCols,function(colID,items){
+                CleanedCols[colID] = [];
                 $.each(items, function(widgetid,shown){
                     // Fix function missing
                     if (typeof shown == "function"){
@@ -312,10 +312,10 @@ $(function() {
                         widgetid = widgetid.slice(3);
                         self.logToConsole("new widgetid: " + widgetid);
                     }
-                    self.logToConsole("Building row " +rowid + ": " + widgetid + (shown?" Adding":" Hiding"));
+                    self.logToConsole("Building collumn " +colID + ": " + widgetid + (shown?" Adding":" Hiding"));
                     // Add the widgets if visible or in custom list
                     if (shown && ($(widgetid).length || self.customWidgets.hasOwnProperty(widgetid))){
-                        CleanedRows[rowid].push(widgetid);
+                        CleanedCols[colID].push(widgetid);
                         $(widgetid).removeClass('UICHide');
                     }else{
                         // Hide the widget if not requested to be shown
@@ -324,55 +324,55 @@ $(function() {
                     }
                 });
             });
-            // Remove empty right siderows and bit of magic
-            var rows = [];
-            var rowfound = false;
-            CleanedRows.reverse();
-            $(CleanedRows).each(function(key,val){
-                if (val.length > 0 || rowfound){
-                    rowfound = true;
-                    rows.push(val);
+            // Remove empty right cols and bit of magic
+            var cols = [];
+            var colFound = false;
+            CleanedCols.reverse();
+            $(CleanedCols).each(function(key,val){
+                if (val.length > 0 || colFound){
+                    colFound = true;
+                    cols.push(val);
                 }else{
-                    // Find the row index in the reversed order and mark them for deletion - we can just delete empty ones because we can have an empty filler
+                    // Find the column index in the reversed order and mark them for deletion - we can just delete empty ones because we can have an empty filler
                     var keyRevFix = Math.abs(2-key)+1;
-                    $('div.UICRow'+keyRevFix).addClass('UICRowDELETEME');
+                    $('div.UICCol'+keyRevFix).addClass('UICColDELETEME');
                 }
             });
-            rows.reverse();
-            self.logToConsole('Building '+rows.length+ ' row layouts:' + JSON.stringify(rows));
+            cols.reverse();
+            self.logToConsole('Building '+cols.length+ ' columns layouts:' + JSON.stringify(cols));
 
             // Build the layout requested
-            $(rows).each(function(key,val){
+            $(cols).each(function(key,val){
                 var keyoffset = key+1;
                 // Set width
                 var spanW = widths[key];
 
-                // Add row if not built yet
-                if ($('div.UICRow'+keyoffset).length == 0){
-                    $('div.UICMainCont > div:first').append('<div class="accordion UICRow'+keyoffset+'"></div>');
+                // Add if not built yet
+                if ($('div.UICCol'+keyoffset).length == 0){
+                    $('div.UICMainCont > div:first').append('<div class="accordion UICCol'+keyoffset+'"></div>');
                 }
 
-                // Remove and set span for the rows
-                if (!$('div.UICRow'+keyoffset).hasClass('span'+spanW)){
-                    $('div.UICRow'+keyoffset).attr('class', function(i, c){
+                // Remove and set span width
+                if (!$('div.UICCol'+keyoffset).hasClass('span'+spanW)){
+                    $('div.UICCol'+keyoffset).attr('class', function(i, c){
                         return c.replace(/(^|\s)span\d+/g, '');
                     });
-                    $('div.UICRow'+keyoffset).addClass('span'+spanW);
+                    $('div.UICCol'+keyoffset).addClass('span'+spanW);
                     if (spanW >= 6){
-                        $('div.UICRow'+keyoffset).addClass('UICLargeSpan');
+                        $('div.UICCol'+keyoffset).addClass('UICLargeSpan');
                     }
                 }
 
                 // Add items
                 $(val).each(function(key2,val2){
                     if ($(val2).length){
-                        // Append to UI row
-                        self.logToConsole('Adding standard widget "'+val2+'" to row '+keyoffset);
-                        $(val2).appendTo('div.UICRow'+keyoffset);
+                        // Append to UI
+                        self.logToConsole('Adding standard widget "'+val2+'" to column '+keyoffset);
+                        $(val2).appendTo('div.UICCol'+keyoffset);
                     // Append custom widgets
                     }else if (self.customWidgets.hasOwnProperty(val2)){
-                        self.logToConsole('Adding custom widget "'+val2+'" to row '+keyoffset);
-                        $(self.customWidgets[val2].dom).appendTo('div.UICRow'+keyoffset);
+                        self.logToConsole('Adding custom widget "'+val2+'" to column '+keyoffset);
+                        $(self.customWidgets[val2].dom).appendTo('div.UICCol'+keyoffset);
                     }
 
                     // Init custom widget
@@ -384,7 +384,7 @@ $(function() {
             });
 
             // Remove marked for delition
-            $('div.UICRowDELETEME').remove();
+            $('div.UICColDELETEME').remove();
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
@@ -1597,12 +1597,12 @@ $(function() {
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
-        // Build row layout and width
-        self.buildRows = function(prefix){
+        // Build columns layout and width
+        self.buildColumns = function(prefix){
             var prefixItem = '';
-            var rowsSave = [];
-            $('#UICSortRows ul').each(function(key,val){
-                rowsSave[key] = {};
+            var colsSave = [];
+            $('#UICSortCols ul').each(function(key,val){
+                colsSave[key] = {};
                 $(this).find('li').each(function(key2,val2){
                     if (prefix){
                         if (key2 < 10){
@@ -1613,16 +1613,16 @@ $(function() {
                     }
                     // Hidden or shown
                     if ($(this).find('input:checkbox').is(":checked")){
-                        rowsSave[key][prefixItem+$(this).data('id')] = true;
+                        colsSave[key][prefixItem+$(this).data('id')] = true;
                     }else{
-                        rowsSave[key][prefixItem+$(this).data('id')] = false;
+                        colsSave[key][prefixItem+$(this).data('id')] = false;
                     }
                 });
             });
-            self.logToConsole("Built these rows:"+JSON.stringify(rowsSave));
+            self.logToConsole("Built these cols:"+JSON.stringify(colsSave));
 
-            var widths = $('#UICSortRows input.uicrowwidth').map(function(){return $(this).val();}).get();
-            return [ko.observableArray(rowsSave), ko.observableArray(widths)];
+            var widths = $('#UICSortCols input.uiccolwidth').map(function(){return $(this).val();}).get();
+            return [ko.observableArray(colsSave), ko.observableArray(widths)];
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
@@ -2128,7 +2128,7 @@ $(function() {
                 var orgName = target.data('orgName');
                 var localObj = indexobj[val];
 
-                // Build settings for the rows
+                // Build settings for the cols
                 var classVis = 'fa-eye';
                 if (localObj[1] == false){
                     classVis = "fa-eye-slash";
@@ -2156,8 +2156,8 @@ $(function() {
                 }
 
 
-                // BVuild new row
-                var newRow = $('\
+                // Build new tabs
+                var newTab = $('\
                     <div class="control-group row-fluid UICRemoveFluidRow" data-tabid="'+val+'">\
                         <label class="control-label">'+orgName+'</label>\
                         <div class="controls">\
@@ -2178,15 +2178,15 @@ $(function() {
                     </div>');
 
                 // Toggle tabs on/off
-                newRow.find('button.UICTabToggle').off('click').on('click',function(){
+                newTab.find('button.UICTabToggle').off('click').on('click',function(){
                     // Hide all popovers
                     $('button.UICTabIcon').popover('hide');
                     var icon = $(this).find('i');
                     icon.toggleClass('fa-eye fa-eye-slash');
                     if (self.previewOn){
                         // Update
-                        var rowData = self.buildCustomTabsSave();
-                        self.set_mainTabsCustomize(true,rowData);
+                        var tabData = self.buildCustomTabsSave();
+                        self.set_mainTabsCustomize(true,tabData);
                         if (icon.hasClass('fa-eye')){
                             // Remove all other active
                             $('.UICmainTabs .tab-pane.active').removeClass('active');
@@ -2201,19 +2201,19 @@ $(function() {
                 });
 
                 // Change tab text
-                newRow.find('input.UICTabNameInput').off('blur keyup').on('blur keyup',function(){
+                newTab.find('input.UICTabNameInput').off('blur keyup').on('blur keyup',function(){
                     // Hide all popovers
                     $('button.UICTabIcon').popover('hide');
                     if (self.previewOn){
                         // Update
-                        var rowData = self.buildCustomTabsSave();
-                        self.set_mainTabsCustomize(true,rowData);
+                        var tabData = self.buildCustomTabsSave();
+                        self.set_mainTabsCustomize(true,tabData);
                     }
                 });
 
                 // Change tab icon
-                var newIconSrc = newRow.find('button.UICTabIcon >i');
-                newRow.find('button.UICTabIcon').removeData("frun").popover(
+                var newIconSrc = newTab.find('button.UICTabIcon >i');
+                newTab.find('button.UICTabIcon').removeData("frun").popover(
                     self.iconSearchPopover(newIconSrc,function(newicon,newcolor){
                         if (newcolor == null || newicon == false){
                             newcolor = '#000000';
@@ -2221,48 +2221,48 @@ $(function() {
                         newIconSrc.data('color',newcolor);
                         // Delete
                         if (newicon === false){
-                            newRow.find('li.UICTabIconReq').addClass('disabled');
-                            newRow.find('ul.UICTabDesign li:not(.UICTabIconReq) a').trigger('click');
+                            newTab.find('li.UICTabIconReq').addClass('disabled');
+                            newTab.find('ul.UICTabDesign li:not(.UICTabIconReq) a').trigger('click');
                             newIconSrc.attr('class','fas fa-search UICIconEmpty');
                             newIconSrc.css({'color':''});
                         }else{
-                            newRow.find('ul.UICTabDesign li.UICTabIconReq').removeClass('disabled');
+                            newTab.find('ul.UICTabDesign li.UICTabIconReq').removeClass('disabled');
                             newIconSrc.attr('class',newicon);
                             newIconSrc.css({'color':newcolor});
                         }
                         if (self.previewOn){
                              // Update
-                            var rowData = self.buildCustomTabsSave();
-                            self.set_mainTabsCustomize(true,rowData);
+                            var tabData = self.buildCustomTabsSave();
+                            self.set_mainTabsCustomize(true,tabData);
                         }
                     },true,true,newIconSrc)
                 ).attr('Title','Click to change icon');
 
 
                 // Change icon design
-                newRow.find('button.dropdown-toggle').off('click').on('click',function(){
+                newTab.find('button.dropdown-toggle').off('click').on('click',function(){
                      // Hide all popovers
                     $('button.UICTabIcon').popover('hide');
                 });
-                newRow.find('ul.UICTabDesign li a').off('click').on('click',function(){
+                newTab.find('ul.UICTabDesign li a').off('click').on('click',function(){
                     if ($(this).parent().hasClass('disabled')){
                         return true;
                     }
-                    newRow.find('ul.UICTabDesign li.active').removeClass('active');
+                    newTab.find('ul.UICTabDesign li.active').removeClass('active');
                     $(this).parent().addClass('active');
-                    newRow.find('span.UICTabIconPos').html($(this).html());
+                    newTab.find('span.UICTabIconPos').html($(this).html());
                     if (self.previewOn){
                         // Update
-                        var rowData = self.buildCustomTabsSave();
-                        self.set_mainTabsCustomize(true,rowData);
+                        var tabData = self.buildCustomTabsSave();
+                        self.set_mainTabsCustomize(true,tabData);
                     }
                 });
 
                 // Add to the UI
-                $('#settings_uicustomizer_tabs_look ').append(newRow);
+                $('#settings_uicustomizer_tabs_look ').append(newTab);
 
                 // update selector
-                newRow.find('ul.UICTabDesign li a[data-design="'+localObj[4]+'"]').trigger('click');
+                newTab.find('ul.UICTabDesign li a[data-design="'+localObj[4]+'"]').trigger('click');
             })
 
             // sort the tabs
@@ -2282,8 +2282,8 @@ $(function() {
                 onEnd: function(evt){
                     $('#drop_overlay').removeClass('UICHideHard in');
                     if (self.previewOn){
-                        var rowData = self.buildCustomTabsSave();
-                        self.set_mainTabsCustomize(true,rowData);
+                        var tabData = self.buildCustomTabsSave();
+                        self.set_mainTabsCustomize(true,tabData);
                     }
                 }
             })
@@ -2303,8 +2303,8 @@ $(function() {
                     $('#settings_uicustomizer_tabs_look').fadeTo(300,1);
                     $('#settings_uicustomizer_tabs_look :input').prop( "disabled", false );
                     if (self.previewOn){
-                        var rowData = self.buildCustomTabsSave();
-                        self.set_mainTabsCustomize(true,rowData);
+                        var tabData = self.buildCustomTabsSave();
+                        self.set_mainTabsCustomize(true,tabData);
                     }
                 }else{
                     $('.UICthemeifyAlert').hide();
@@ -2328,15 +2328,15 @@ $(function() {
                 });
             }
 
-            /// ---------------------- ROWS LAYOUT
+            /// ---------------------- COLS LAYOUT
 
 
             // Cleanup
-            $('#UICSortRows ul li').remove();
-            $('#UICSortRows ul').addClass('nav-tabs'); // hack due to this: https://github.com/OctoPrint/OctoPrint/blob/3ab84ed7e4c3aaaf71fe0f184b465f25d689f929/src/octoprint/static/js/app/main.js#L737
+            $('#UICSortCols ul li').remove();
+            $('#UICSortCols ul').addClass('nav-tabs'); // hack due to this: https://github.com/OctoPrint/OctoPrint/blob/3ab84ed7e4c3aaaf71fe0f184b465f25d689f929/src/octoprint/static/js/app/main.js#L737
 
             // Build the sorter to make it ready
-            var rows = settingsPlugin.rows();
+            var colsTemp = settingsPlugin.rows();
 
             // Join and filter on unique values
             sidebarItems = sidebarItems.concat(Object.keys(self.customWidgets)).filter(function(value, index, self) {
@@ -2344,8 +2344,8 @@ $(function() {
             });
             self.logToConsole("Sidebar and custom widgets:" + JSON.stringify([...sidebarItems]));
 
-            // Run trough each row
-            $(rows).each(function(rowid,items){
+            // Run trough each col
+            $(colsTemp).each(function(colid,items){
                 // add to the editor
                 $.each(items, function(widgetid,shown){
                     // prefix removal
@@ -2355,7 +2355,7 @@ $(function() {
                         self.logToConsole("new widgetid: " + widgetid);
                     }
                     self.logToConsole('Adding widget "' + widgetid + '"('+shown() + ") to selector");
-                    self.addToSorter(rowid,widgetid,shown());
+                    self.addToSorter(colid,widgetid,shown());
                     // Remove from add defaults
                     var arpos = $.inArray(widgetid,sidebarItems);
                     if (arpos >= 0){
@@ -2374,7 +2374,7 @@ $(function() {
             }
 
             // Hide/show widget
-            $('#UICSortRows ul > li> a  > i.UICToggleVis').off('click').on('click',function(event){
+            $('#UICSortCols ul > li> a  > i.UICToggleVis').off('click').on('click',function(event){
                 $(this).toggleClass('fa-eye fa-eye-slash');
                 var granpar = $(this).parent().parent();
                 // Change checkbox
@@ -2391,16 +2391,16 @@ $(function() {
             // Update min max
             var fixMinMax = function(){
                 // Update min/max for all items and disable the last one
-                $('#UICSortRows ul:empty').parent().find('input.uicrowwidth').attr('min',0);
-                $('#UICSortRows ul:not(:empty)').parent().find('input.uicrowwidth').attr('min',1);
-                $('#UICSortRows ul').parent().find('input.uicrowwidth').attr('max',(10+$('#UICSortRows ul:empty').length));
-                $('#UICSortRows ul:last:empty').parent().find('input.uicrowwidth').val(0).prop('disabled',true);
-                $('#UICSortRows ul:last:not(:empty)').parent().find('input.uicrowwidth').prop('disabled',false);
-                $('#settings_plugin_uicustomizer input.uicrowwidth').trigger('input');
+                $('#UICSortCols ul:empty').parent().find('input.uiccolwidth').attr('min',0);
+                $('#UICSortCols ul:not(:empty)').parent().find('input.uiccolwidth').attr('min',1);
+                $('#UICSortCols ul').parent().find('input.uiccolwidth').attr('max',(10+$('#UICSortCols ul:empty').length));
+                $('#UICSortCols ul:last:empty').parent().find('input.uiccolwidth').val(0).prop('disabled',true);
+                $('#UICSortCols ul:last:not(:empty)').parent().find('input.uiccolwidth').prop('disabled',false);
+                $('#settings_plugin_uicustomizer input.uiccolwidth').trigger('input');
             }
 
             // Sort/draghandler layout
-            $('#UICSortRows ul').each(function(key,val){
+            $('#UICSortCols ul').each(function(key,val){
                 self.SortableSet[key] = Sortable.create(this,{
                     group: 'UICsortList',
                     draggable: 'li',
@@ -2418,30 +2418,30 @@ $(function() {
                         fixMinMax();
                         // Preview
                         if (self.previewOn){
-                            var rowData = self.buildRows(false);
-                            self.set_rowsLayout({'rows': rowData[0],'widths':rowData[1]});
+                            var colData = self.buildColumns(false);
+                            self.set_mainLayout({'rows': colData[0],'widths':colData[1]});
                         }
                     }
                 });
             });
 
             // width settings updater
-            $('#settings_plugin_uicustomizer input.uicrowwidth').off('input.uicus').on('input.uicus',function(){
+            $('#settings_plugin_uicustomizer input.uiccolwidth').off('input.uicus').on('input.uicus',function(){
                 $(this).next().html($(this).val());
             });
 
             // Keep the maxium width
-            $('#settings_plugin_uicustomizer input.uicrowwidth').off('change.uicus').on('change.uicus',function(){
+            $('#settings_plugin_uicustomizer input.uiccolwidth').off('change.uicus').on('change.uicus',function(){
                 var thisItem = this;
-                var spanW = $('#UICSortRows input.uicrowwidth');
+                var spanW = $('#UICSortCols input.uiccolwidth');
 
                 var totalspan = spanW.map(function(){return $(this).val();}).get().reduce(function(a, b){
                     return parseInt(a,10) + parseInt(b,10);
                 }, 0);
 
                 // Over?
-                if (totalspan > self.maxRows){
-                    var diff = totalspan - self.maxRows;
+                if (totalspan > self.maxCWidth){
+                    var diff = totalspan - self.maxCWidth;
                     $(spanW).each(function(key,item){
                         if (item != thisItem){
                             var thisVal = parseInt($(item).val(),10);
@@ -2465,8 +2465,8 @@ $(function() {
                 }
                 // Preview
                 if (self.previewOn){
-                    var rowData = self.buildRows(false);
-                    self.set_rowsLayout({'rows': rowData[0],'widths':rowData[1]});
+                    var colData = self.buildColumns(false);
+                    self.set_mainLayout({'rows': colData[0],'widths':colData[1]});
                 }
             });
 
@@ -2487,8 +2487,8 @@ $(function() {
                     self.previewHasBeenOn = true;
                     // Update all
                     $('#settings_plugin_uicustomizer input:checkbox[data-settingtype]').trigger('change.uicus');
-                    var rowData = self.buildRows(false);
-                    self.set_rowsLayout({'rows': rowData[0],'widths':rowData[1]});
+                    var colData = self.buildColumns(false);
+                    self.set_mainLayout({'rows': colData[0],'widths':colData[1]});
 
                     // Trigger us self if checking anything but our own menu item
                     $('#settingsTabs a, #UICsettingsMenu a:not(.dropdown-toggle)').not('#settings_plugin_uicustomizer_link a').off('click.uicusPrev').one('click.uicusPrev',function(){
@@ -2540,7 +2540,7 @@ $(function() {
 
          // ------------------------------------------------------------------------------------------------------------------------
         // Add an item to settings UI
-        self.addToSorter = function(row,item,visible){
+        self.addToSorter = function(col,item,visible){
             var accord = $(item+' div.accordion-heading a.accordion-toggle').clone();
             var icon = accord.find('i');
             var title = $.trim(accord.text());
@@ -2560,13 +2560,11 @@ $(function() {
 
             // Main tabs can't be skinned
             if (item == "div.UICmainTabs"){
-                // Add to sort rows in settings
-                $($('#UICSortRows ul')[row]).append(
+               $($('#UICSortCols ul')[col]).append(
                     $('<li data-id="'+item+'" data-orgvis="'+visible+'"><a><i class="'+icon.attr('class')+' UICPadRight"></i>'+title+'<i class="pull-right fas '+checkclass+' UICToggleVis"></i></a><input class="hide" type="checkbox"'+checked+'></li>')
                 );
             }else{
-                // Add to sort rows in settings
-                $($('#UICSortRows ul')[row]).append(
+                $($('#UICSortCols ul')[col]).append(
                     $('<li data-id="'+item+'" data-orgvis="'+visible+'"><a><i class="'+icon.attr('class')+' UICPadRight"></i>'+title+'<i class="pull-right fas '+checkclass+' UICToggleVis"></i></a><input class="hide" type="checkbox"'+checked+'></li>')
                 );
             }
@@ -2583,13 +2581,13 @@ $(function() {
 
                 // Get the data
                 self.saved = true;
-                var rowData = self.buildRows(true);
+                var colData = self.buildColumns(true);
                 var topIconsSort = $('#settings_uicustomizer_topicons_container > div').map(function(){return $(this).data('tid')}).get();
 
                 // Save and update
                 self.settings.settings.plugins.uicustomizer.topIconSort = ko.observableArray(topIconsSort);
-                self.settings.settings.plugins.uicustomizer.rows = rowData[0];
-                self.settings.settings.plugins.uicustomizer.widths = rowData[1];
+                self.settings.settings.plugins.uicustomizer.rows = colData[0];
+                self.settings.settings.plugins.uicustomizer.widths = colData[1];
                 self.settings.settings.plugins.uicustomizer.mainTabsCustomize = ko.observable($('#UICMainTabCustomizerToggle').is(':checked'));
                 self.settings.settings.plugins.uicustomizer.mainTabs = ko.observableArray(self.buildCustomTabsSave());
                 self.UpdateLayout(self.settings.settings.plugins.uicustomizer);

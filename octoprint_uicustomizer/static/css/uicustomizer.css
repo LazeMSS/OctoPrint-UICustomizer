@@ -17,7 +17,7 @@
     }
 
 
-    /*fix for files in large row - these are replicated in the max-width: 767px section*/
+    /*fix for files in large cols - these are replicated in the max-width: 767px section*/
     body.UICResponsiveMode div.UICLargeSpan #files div.gcode_files .action-buttons{
         top: 5px;
         bottom: inherit !important
@@ -134,7 +134,7 @@
         text-align: center;
     }
 
-    /*fix for files in large row - this small gives us full width*/
+    /*fix for files in large cols - this small gives us full width*/
     body.UICResponsiveMode div.UICLargeSpan #files div.gcode_files .action-buttons{
         top: 5px;
         bottom: inherit !important
@@ -304,11 +304,11 @@ body.UICResponsiveMode .search-query-with-clear .search-clear{
     margin-top: 4px;
 }
 
-#UICSortRows input[type=range]{
+#UICSortCols input[type=range]{
 	width: 85%;
 }
 
-#UICSortRows ul {
+#UICSortCols ul {
 	clear: both;
     padding-bottom: 40px;
     background-color: #eee;
@@ -322,12 +322,12 @@ body.UICResponsiveMode .search-query-with-clear .search-clear{
 	                  supported by Chrome, Edge, Opera and Firefox */
 }
 
-#UICSortRows ul li{
+#UICSortCols ul li{
 	background-color: #fff;
 	cursor: grab;
 }
 
-#UICSortRows {
+#UICSortCols {
     margin: 10px 0px;
 }
 
@@ -343,7 +343,7 @@ body.UICResponsiveMode .search-query-with-clear .search-clear{
     text-align: center;
 }
 
-div#UICSortRows li a:hover .UICToggleVis, .UICToggleVis:hover {
+div#UICSortCols li a:hover .UICToggleVis, .UICToggleVis:hover {
     background-color: #eee;
     color: #000;
 }
@@ -927,7 +927,7 @@ body.inlineFullscreen .UICWebCamClick{
     text-overflow: ellipsis;
 }
 
-.UICRow3 .UICWidgetSelector ul.dropdown-menu {
+.UICCol3 .UICWidgetSelector ul.dropdown-menu {
     right: 0;
     left: auto;
 }
