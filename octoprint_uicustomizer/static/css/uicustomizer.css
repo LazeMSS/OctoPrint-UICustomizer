@@ -311,7 +311,6 @@ body.UICResponsiveMode .search-query-with-clear .search-clear{
 #UICSortCols ul {
 	clear: both;
     padding-bottom: 40px;
-    background-color: #eee;
     border-radius: 4px;
 	-webkit-touch-callout: none; /* iOS Safari */
 	-webkit-user-select: none; /* Safari */
@@ -323,7 +322,6 @@ body.UICResponsiveMode .search-query-with-clear .search-clear{
 }
 
 #UICSortCols ul li{
-	background-color: #fff;
 	cursor: grab;
 }
 
@@ -336,7 +334,6 @@ body.UICResponsiveMode .search-query-with-clear .search-clear{
     position: absolute;
     right: 3px;
     padding-top: 8px;
-    background-color: #fff;
     margin-top: -7px;
     padding-bottom: 10px;
     width: 25px;
@@ -344,12 +341,11 @@ body.UICResponsiveMode .search-query-with-clear .search-clear{
 }
 
 div#UICSortCols li a:hover .UICToggleVis, .UICToggleVis:hover {
-    background-color: #eee;
     color: #000;
 }
 
 .UICToggleVis:hover {
-    background-color: #fff !important;
+    backdrop-filter: brightness(500%);
     border: 1px solid #aaa;
     box-sizing: border-box;
     -moz-box-sizing: border-box;

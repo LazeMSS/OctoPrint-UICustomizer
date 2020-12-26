@@ -2330,7 +2330,6 @@ $(function() {
 
             /// ---------------------- COLS LAYOUT
 
-
             // Cleanup
             $('#UICSortCols ul li').remove();
             $('#UICSortCols ul').addClass('nav-tabs'); // hack due to this: https://github.com/OctoPrint/OctoPrint/blob/3ab84ed7e4c3aaaf71fe0f184b465f25d689f929/src/octoprint/static/js/app/main.js#L737
@@ -2548,6 +2547,12 @@ $(function() {
                 accord = $('<a>').append(self.nameLookup[item]);
                 icon = accord.find('i');
                 title = $.trim(accord.text());
+            }
+            if (title == ""){
+                title = $(item).attr('id');
+            }
+            if (title.length > 25){
+                title = title.slice(0,25)+"&hellip;";
             }
 
              // Set checkbox and eye icon
