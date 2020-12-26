@@ -2640,9 +2640,11 @@ $(function() {
                 // Cancel the data to revert settings
                 OctoPrint.coreui.viewmodels.settingsViewModel.cancelData();
                 self.UpdateLayout(self.settings.settings.plugins.uicustomizer);
-                $('.UICpreviewHide').hide();
-                $('.UICpreviewHide').removeClass('UICpreviewHide');
             }
+            // Always hide previewed stuff
+            $('.UICpreviewHide').hide();
+            $('.UICpreviewHide').removeClass('UICpreviewHide');
+            // Remove preview
             $('body').removeClass('UICPreviewON');
 
             // Remove sorts
