@@ -287,7 +287,17 @@ $(function() {
                 var hasResponsive = $('body').hasClass('UICResponsiveMode');
                 var cleanRep = new RegExp('\.'+curTheme, "gi");
                 var newStyle = '';
-                $.each($('link[href="/static/css/octoprint.css"][rel="stylesheet"]')[0].sheet.cssRules,function(){
+                var styleSrc = false;
+                if ($('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]').length){
+                    styleSrc = $('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]');
+                }else if ($('link[href="/static/css/octoprint.css"][rel="stylesheet"]').length){
+                    styleSrc = $('link[href="/static/css/octoprint.css"][rel="stylesheet"]');
+                }
+                if (styleSrc == false){
+                    self.logToConsole("Standard theme css src not found!");
+                    return;
+                }
+                $.each(styleSrc[0].sheet.cssRules,function(){
                     var cssSel = this.selectorText;
                     if (cssSel != undefined && cssSel.indexOf('#navbar .navbar-inner.'+curTheme) != -1){
                         newStyle += this.cssText.replace(/#navbar/gi,'#page-container-main > div.footer').replace(cleanRep,'');
@@ -337,8 +347,17 @@ $(function() {
             var navbarClean = new RegExp('\.themeify\.'+curTheme+' #navbar', "gi");
             var newStyle = '';
             var bgcolor = '';
-            // Todo fix for compacted
-            $.each($('link[href="/plugin/themeify/static/dist/themeify.min.css"][rel="stylesheet"]')[0].sheet.cssRules,function(){
+            var styleSrc = false;
+            if ($('link[href^="/static/webassets/packed_plugins.css"][rel="stylesheet"]').length){
+                styleSrc = $('link[href^="/static/webassets/packed_plugins.css"][rel="stylesheet"]');
+            }else if ($('link[href="/plugin/themeify/static/dist/themeify.min.css"][rel="stylesheet"]').length){
+                styleSrc = $('link[href="/plugin/themeify/static/dist/themeify.min.css"][rel="stylesheet"]');
+            }
+            if (styleSrc == false){
+                self.logToConsole("Themeify css src not found!");
+                return;
+            }
+            $.each(styleSrc[0].sheet.cssRules,function(){
                 var cssSel = this.selectorText;
                 if (cssSel != undefined && cssSel.indexOf('.themeify.'+curTheme+' #navbar .navbar-inner') != -1){
                     newStyle += this.cssText.replace(navbarClean,'#page-container-main > div.footer').replace(cleanRep,'');
