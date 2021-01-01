@@ -42,6 +42,7 @@ The configuration is split into 5 tabs - all have an preview option
 * Hide main camera - should the main camera be hidden - only acive if the webcam widget is enabled
 * Compact menu - should the "dropdown" menu be a single compact menu
 * Zoom/float webcam icon - will add an zoom icon to the webcam live feed that will popup out the webcam video feed into a floating resizeable overlay
+* Gcode full-size - maximize the main gcode viewer to take up as much space as possible
 
 
 ### Layout
