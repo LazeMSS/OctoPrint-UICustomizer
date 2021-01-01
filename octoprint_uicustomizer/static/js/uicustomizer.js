@@ -128,6 +128,14 @@ $(function() {
             OctoPrint.coreui.viewmodels.settingsViewModel.appearance_color.subscribe(function(color) {
                 self.updateStandardTheme(color);
             });
+            if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('themeify')){
+                OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.theme.subscribe(function(theme) {
+                    self.updateThemify(theme);
+                });
+                OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.enabled.subscribe(function(enabled) {
+                    self.updateThemify(OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.theme());
+                });
+            }
 
             // Check these plugins
             var knowPluginIssues = {
@@ -248,10 +256,14 @@ $(function() {
             // addWebCamZoom
             self.set_addWebCamZoom(settingsPlugin.addWebCamZoom());
 
-            self.updateStandardTheme(OctoPrint.coreui.viewmodels.settingsViewModel.settings.appearance.color());
+            // Update themes
+            if (self.updateThemify(null) == false){
+                self.updateStandardTheme(OctoPrint.coreui.viewmodels.settingsViewModel.settings.appearance.color());
+            };
 
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
         self.updateStandardTheme = function(curTheme){
             if (curTheme == "default"){
                 // Cleanup
@@ -264,14 +276,13 @@ $(function() {
                 if ($('#UICCustStandardTheme').length){
                     self.logToConsole("Standard theme mods founnd");
                 }else{
-                    self.logToConsole("Standard theme added");
+                    self.logToConsole("Standard theme mods added");
                     $('head').append('<style type="text/css" id="UICCustStandardTheme"/>');
                 }
-                var headStyle = $('#UICCustStandardTheme');
                 // Find the style sheet
                 var hasCompact = $('div.UICMainMenu').hasClass('UICCompactMenu');
                 var hasResponsive = $('body').hasClass('UICResponsiveMode');
-                var cleanRep = new RegExp('\.'+curTheme, "gi")
+                var cleanRep = new RegExp('\.'+curTheme, "gi");
                 var newStyle = '';
                 $.each($('link[href="/static/css/octoprint.css"][rel="stylesheet"]')[0].sheet.cssRules,function(){
                     var cssSel = this.selectorText;
@@ -285,10 +296,77 @@ $(function() {
                         }
                     };
                 });
-                self.logToConsole(newStyle);
-                headStyle.text(newStyle)
+                $('#UICCustStandardTheme').text(newStyle)
                 delete newStyle;
             }
+        }
+
+        // ------------------------------------------------------------------------------------------------------------------------
+        self.updateThemify = function(curTheme){
+            if (!OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('themeify') || OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.enabled() == false){
+                self.logToConsole("Removing themeify theme mods");
+                $('#UICCustThemeify').remove();
+                return false;
+            }
+
+            // Remove default theme
+            $('html').removeClass('UICDefaultTheme');
+            // remove octoprint theme mods
+            $('#UICCustStandardTheme').remove();
+
+            // Get the current theme from themify
+            if (curTheme == null){
+                curTheme = OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.theme();
+            }
+            // Build our copy
+            self.logToConsole("themeify theme is: " + curTheme);
+            if ($('#UICCustThemeify').length){
+                self.logToConsole("themeify theme mods founnd");
+            }else{
+                self.logToConsole("themeify theme mods added");
+                $('head').append('<style type="text/css" id="UICCustThemeify"/>');
+            }
+
+            // Find the style sheets
+            var hasCompact = $('div.UICMainMenu').hasClass('UICCompactMenu');
+            var hasResponsive = $('body').hasClass('UICResponsiveMode');
+            var cleanRep = new RegExp('\.'+curTheme, "gi");
+            var navbarClean = new RegExp('\.themeify\.'+curTheme+' #navbar', "gi");
+            var newStyle = '';
+            var bgcolor = '';
+            // Todo fix for compacted
+            $.each($('link[href="/plugin/themeify/static/dist/themeify.min.css"][rel="stylesheet"]')[0].sheet.cssRules,function(){
+                var cssSel = this.selectorText;
+                if (cssSel != undefined && cssSel.indexOf('.themeify.'+curTheme+' #navbar .navbar-inner') != -1){
+                    newStyle += this.cssText.replace(navbarClean,'#page-container-main > div.footer').replace(cleanRep,'');
+                    if (hasCompact){
+                        newStyle += this.cssText.replace(/#navbar \.navbar-inner/gi,'div.UICMainMenu.UICCompactMenu').replace(cleanRep,'');
+                    }
+                    if (hasResponsive){
+                        newStyle += this.cssText.replace(/#navbar/gi,'#UICsettingsMenuNav').replace(cleanRep,'');
+                    }
+                };
+                if (bgcolor == '' && cssSel != undefined && cssSel.indexOf('.themeify.'+curTheme+' .modal') != -1 && this.cssText.indexOf('background-color') != -1){
+                    var regBack = /background-color:(.*);/gmi;;
+                    var matches = regBack.exec(this.cssText);
+                    var matchstr = matches[1]+";";
+                    bgcolor = $.trim(matchstr.slice(0, matchstr.indexOf(';')));
+                };
+            });
+            if (bgcolor != ""){
+                var bgcolorClean = bgcolor.slice(bgcolor.indexOf('(')+1);
+                bgcolorClean = bgcolorClean.slice(0,bgcolorClean.indexOf(')'));
+                newStyle += '\
+                    html.'+curTheme+' #UICsettingsMenuNav{\
+                        background-color:'+bgcolor+';\
+                        background: linear-gradient(180deg, rgba('+bgcolorClean+',1) 0px, rgba('+bgcolorClean+',1) 55px, rgba('+bgcolorClean+',0) 100%);\
+                    }\
+                ';
+            }
+            $('#UICCustThemeify').text(newStyle);
+
+            delete newStyle;
+            return true;
         }
 
         // ------------------------------------------------------------------------------------------------------------------------

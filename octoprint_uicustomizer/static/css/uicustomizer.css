@@ -66,6 +66,7 @@
         border-bottom-right-radius: 5px;
         border-bottom-left-radius: 5px;
         box-shadow: -3px 5px 7px #00000026;
+        background-color: #ebebeb;
     }
     /* apply colors when standard theme*/
     html.UICDefaultTheme body.UICResponsiveMode .UICCompactMenu{
@@ -86,9 +87,9 @@
     }
 
     body.UICfixedHeader #navbar div.navbar-inner.default .UICCompactMenu{
-        top: 52px !important;
+        top: 52px;
     }
-    body.UICfixedHeader #navbar div.navbar-inner:not(.default) .UICCompactMenu{
+    body.UICfixedHeader #navbar div.navbar-inner:not(.default) .UICCompactMenu, html.themeify #navbar div.navbar-inner .UICCompactMenu{
         top: 50px !important;
     }
 
@@ -937,4 +938,13 @@ body.inlineFullscreen .UICWebCamClick{
     border: 1px solid #eee;
 }
 
+/* themify hacks :/*/
+.themeify.dyl #navbar{
+    position: absolute !important;
+}
+.themeify body.UICResponsiveMode .UICCompactMenu ul li a{
+    text-shadow: none !important;
+}
+
 /* UICustomizer END */
+
