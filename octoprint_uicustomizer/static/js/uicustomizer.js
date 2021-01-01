@@ -253,8 +253,11 @@ $(function() {
             // Hide main cams
             self.set_hideMainCam(self.settings.settings.plugins.uicustomizer.hideMainCam());
 
-            // addWebCamZoom
+            // add webcam zoom option
             self.set_addWebCamZoom(settingsPlugin.addWebCamZoom());
+
+            // Full widh Gcode
+            self.set_gcodeFullWidth(settingsPlugin.gcodeFullWidth());
 
             // Update themes
             if (self.updateThemify(null) == false){
@@ -531,6 +534,14 @@ $(function() {
             $('#tabs').trigger('resize');
         }
 
+
+        self.set_gcodeFullWidth= function(enable){
+            if (enable){
+                $('#gcode_canvas').addClass('UICMaxi');
+            }else{
+                $('#gcode_canvas').removeClass('UICMaxi');
+            }
+        }
 
         // ------------------------------------------------------------------------------------------------------------------------
         self.set_addWebCamZoom = function(enable){

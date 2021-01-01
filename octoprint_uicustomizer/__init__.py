@@ -50,6 +50,7 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
             "centerTopIcons": True,
             "compactMenu": True,
             "hideMainCam": False,
+            "gcodeFullWidth": False,
             "disableTermInactive": False,
             "mainTabsCustomize" : True,
             "mainTabs": [
