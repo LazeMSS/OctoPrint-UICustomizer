@@ -1737,7 +1737,9 @@ $(function() {
                     if (prevIcon.length){
                         prevIconName = prevIcon.attr('class');
                     }
-                    indexobj[parid] = [parid,true,false,prevIconName,true,'#000000'];
+                    // ID, Shown,Customlabel,tab design =true,false,iconOnly,textOnly
+                // 0 ,   1  ,    2      , 3, 4
+                    indexobj[parid] = [parid,true,false,prevIconName,'textOnly','#000000'];
                 }
             });
             return [indexobj,listItems];
@@ -2198,8 +2200,8 @@ $(function() {
             $.each(listItems,function(idx,val){
                 // PARAMS:
                 // [parid,true,false,'icon','left']
-                // ID, Shown,Customlabel,tab design =true,false,iconOnly,textOnly
-                // 0 ,   1  ,    2      , 3, 4
+                // ID, Shown,Customlabel,tab design =(true,false,iconOnly,textOnly), icon color
+                // 0 ,   1  ,    2      , 3, 4                                   , 5
                 // Build values
                 var target = $('#'+val).find('a');
                 var targetLink = target.attr('href');
@@ -2222,7 +2224,6 @@ $(function() {
                     colorData = localObj[5];
                     color = 'style="color:'+localObj[5]+'"';
                 }
-
                 // Default is empty icon
                 var icon = 'fas fa-search UICIconEmpty';
                 var disbaledLI = ' disabled';
@@ -2322,8 +2323,8 @@ $(function() {
                      // Hide all popovers
                     $('button.UICTabIcon').popover('hide');
                 });
-                newTab.find('ul.UICTabDesign li a').off('click').on('click',function(){
-                    if ($(this).parent().hasClass('disabled')){
+                newTab.find('ul.UICTabDesign li a').off('click').on('click',function(event,force){
+                    if (force !== true && $(this).parent().hasClass('disabled')){
                         return true;
                     }
                     newTab.find('ul.UICTabDesign li.active').removeClass('active');
@@ -2340,7 +2341,7 @@ $(function() {
                 $('#settings_uicustomizer_tabs_look ').append(newTab);
 
                 // update selector
-                newTab.find('ul.UICTabDesign li a[data-design="'+localObj[4]+'"]').trigger('click');
+                newTab.find('ul.UICTabDesign li a[data-design="'+localObj[4].toString()+'"]').trigger('click',[true]);
             })
 
             // sort the tabs
@@ -2430,6 +2431,11 @@ $(function() {
                         self.logToConsole("Slicing 3 chars of: " + widgetid);
                         widgetid = widgetid.slice(3);
                         self.logToConsole("new widgetid: " + widgetid);
+                    }
+                    // This is bad
+                    if ($(widgetid).length == 0){
+                        self.logToConsole("Skipping widgetid: " + widgetid + ", not found");
+                        return;
                     }
                     self.logToConsole('Adding widget "' + widgetid + '"('+shown() + ") to selector");
                     self.addToSorter(colid,widgetid,shown());
@@ -2627,7 +2633,11 @@ $(function() {
                 title = $.trim(accord.text());
             }
             if (title == ""){
-                title = $(item).attr('id');
+                if ($(item).attr('id') != undefined){
+                    title = $(item).attr('id');
+                }else{
+                    title= "Unknown";
+                }
             }
             if (title.length > 25){
                 title = title.slice(0,25)+"&hellip;";
@@ -2636,7 +2646,7 @@ $(function() {
              // Set checkbox and eye icon
             var checked = '';
             var checkclass = 'fa-eye-slash'
-            if (visible){
+            if (visible || $(item).is(':visible')){
                 checked = ' checked';
                 checkclass = 'fa-eye';
             }
@@ -2666,6 +2676,10 @@ $(function() {
                 self.saved = true;
                 var colData = self.buildColumns(true);
                 var topIconsSort = $('#settings_uicustomizer_topicons_container > div').map(function(){return $(this).data('tid')}).get();
+                if (colData[0]().length == 0){
+                    alert("Critical failure saving UI Customizer settings - not saved!");
+                    return true;
+                }
 
                 // Save and update
                 self.settings.settings.plugins.uicustomizer.topIconSort = ko.observableArray(topIconsSort);
