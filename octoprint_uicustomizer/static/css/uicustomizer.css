@@ -186,6 +186,10 @@
     z-index: 1030;
 }
 
+.UICCol1 > div, .UICCol2 > div, .UICCol3 > div{
+    margin-bottom: 5px;
+}
+
 body.UICfixedFooter{
 	margin-bottom: 45px;
 }
@@ -320,6 +324,9 @@ body.UICResponsiveMode .search-query-with-clear .search-clear{
 	-ms-user-select: none; /* Internet Explorer/Edge */
 	user-select: none; /* Non-prefixed version, currently
 	                  supported by Chrome, Edge, Opera and Firefox */
+}
+#UICSortCols ul:empty {
+    backdrop-filter: brightness(90%);
 }
 
 #UICSortCols ul li{

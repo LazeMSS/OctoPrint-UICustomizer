@@ -395,6 +395,13 @@ $(function() {
         self.set_mainLayout = function(settingsPlugin){
             // Fix layout and width - using magic
             var TempCols = [...settingsPlugin.rows()];
+
+            // Check for empty object
+            if($.isEmptyObject(TempCols[0])){
+                new PNotify({title:"UI Customizer failure", type: "error","text":"Failed to load proper settings for layout.\nSorry :(","hide":false});
+                console.log("UI Customizer: WARNING - BROKEN SETTINGS FOUND!");
+                return true;
+            }
             var widths = settingsPlugin.widths();
 
             // Build only visible items in a simple array
@@ -424,6 +431,7 @@ $(function() {
                     }
                 });
             });
+
             // Remove empty right cols and bit of magic
             var cols = [];
             var colFound = false;
@@ -473,6 +481,8 @@ $(function() {
                     }else if (self.customWidgets.hasOwnProperty(val2)){
                         self.logToConsole('Adding custom widget "'+val2+'" to column '+keyoffset);
                         $(self.customWidgets[val2].dom).appendTo('div.UICCol'+keyoffset);
+                    }else{
+                        self.logToConsole('Skipping widget "'+val2+'"');
                     }
 
                     // Init custom widget
@@ -2664,7 +2674,7 @@ $(function() {
             }
             if (title == ""){
                 if ($(item).attr('id') != undefined){
-                    title = $(item).attr('id');
+                    title = $(item).attr('id')+"";
                 }else{
                     title= "Unknown";
                 }
@@ -2706,9 +2716,9 @@ $(function() {
                 self.saved = true;
                 var colData = self.buildColumns(true);
                 var topIconsSort = $('#settings_uicustomizer_topicons_container > div').map(function(){return $(this).data('tid')}).get();
-                if (colData[0]().length == 0){
+                if (colData[0]().length == 0 || $.isEmptyObject(colData[0]()[0])){
                     alert("Critical failure saving UI Customizer settings - not saved!");
-                    return true;
+                    return false;
                 }
 
                 // Save and update
@@ -2717,7 +2727,6 @@ $(function() {
                 self.settings.settings.plugins.uicustomizer.widths = colData[1];
                 self.settings.settings.plugins.uicustomizer.mainTabsCustomize = ko.observable($('#UICMainTabCustomizerToggle').is(':checked'));
                 self.settings.settings.plugins.uicustomizer.mainTabs = ko.observableArray(self.buildCustomTabsSave());
-                self.UpdateLayout(self.settings.settings.plugins.uicustomizer);
 
                 var streamURL = self.settings.webcam_streamUrl();
                 if (/.m3u8/i.test(streamURL)){
@@ -2766,8 +2775,10 @@ $(function() {
                 self.previewHasBeenOn = false;
                 // Cancel the data to revert settings
                 OctoPrint.coreui.viewmodels.settingsViewModel.cancelData();
-                self.UpdateLayout(self.settings.settings.plugins.uicustomizer);
             }
+            // Update
+            self.UpdateLayout(self.settings.settings.plugins.uicustomizer);
+
             // Always hide previewed stuff
             $('.UICpreviewHide').hide();
             $('.UICpreviewHide').removeClass('UICpreviewHide');
