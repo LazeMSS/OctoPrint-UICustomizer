@@ -2745,7 +2745,7 @@ $(function() {
             if (!self.getReturnData) return;
 
             // Gcode widget on and visible
-            if (!$('#UICGcodeVWidgetContainer.collapse.in').length || !$('#gcode_canvas').length || typeof OctoPrint.coreui.viewmodels != "object") return
+            if (!$('#UICGcodeVWidgetContainer.collapse.in').length || !$('#gcode_canvas').length || typeof OctoPrint.coreui.viewmodels.gcodeViewModel != "object") return;
 
             // load the file is needed
             if (OctoPrint.coreui.viewmodels.gcodeViewModel.needsLoad){
@@ -2760,8 +2760,8 @@ $(function() {
             var clonecon = clone.getContext('2d');
             var source = $('#gcode_canvas')[0];
             var factor = $('#UICGcodeVWidget').data('zoomlvl');
-            clone.width =  source.width/factor
-            clone.height =  source.height/factor
+            clone.width = source.width/factor
+            clone.height = source.height/factor
             clonecon.drawImage( source, 0, 0, clone.width, clone.height);
         }
 
