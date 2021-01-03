@@ -707,7 +707,7 @@ body.UICResponsiveMode select{
     text-indent: -40px;
     overflow: hidden;
     height: 40px;
-    padding-top: 8px;
+    padding-top: 6px;
     margin-right: 6px;
 }
 #navbar_plugin_navbartemp.UICIconHack #socInfo{
@@ -720,13 +720,12 @@ body.UICResponsiveMode select{
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     position: absolute;
-    color: #000;
     text-align: center;
     width: 100%;
     left: -5px;
     padding-left: 5px;
-    top: 0px;
-    opacity:0.4;
+    top: 2px;
+    opacity:0.8;
     font-style: normal;
     font-variant-ligatures: normal;
     font-variant-caps: normal;
