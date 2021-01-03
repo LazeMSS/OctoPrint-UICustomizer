@@ -309,6 +309,8 @@ $(function() {
                         }
                     };
                 });
+                newStyle = newStyle.replace(/background-image: url.+?;/gmi,'');
+
                 $('#UICCustStandardTheme').text(newStyle)
                 delete newStyle;
             }

@@ -957,6 +957,9 @@ body.inlineFullscreen .UICWebCamClick{
 .themeify body.UICResponsiveMode .UICCompactMenu ul li a{
     text-shadow: none !important;
 }
+html.themeify #UICsetMenuShow{
+    text-shadow: none;
+}
 
 /* UICustomizer END */
 
