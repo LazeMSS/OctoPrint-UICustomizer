@@ -2466,8 +2466,15 @@ $(function() {
 
             // Run trough each col
             $(colsTemp).each(function(colid,items){
+                // Skip if broken
+                if (typeof items != "object"){
+                    return;
+                }
                 // add to the editor
                 $.each(items, function(widgetid,shown){
+                    if (typeof widgetid != "string"){
+                        return;
+                    }
                     // prefix removal
                     if (widgetid.charAt(0) == "_"){
                         self.logToConsole("Slicing 3 chars of: " + widgetid);
