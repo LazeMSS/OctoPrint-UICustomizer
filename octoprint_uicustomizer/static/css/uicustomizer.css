@@ -250,6 +250,10 @@ body.UICPreviewON div.modal-backdrop.fade.in {
     display: inline-block;
     box-sizing: inherit !important;
 }
+/* fix stacked icons*/
+.UICHeaderIcons >li > a .fa-stack{
+    margin-top: -5px;
+}
 
 /* fix tabs bottom spacing*/
 #tabs_content{
