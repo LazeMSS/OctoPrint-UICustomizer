@@ -1766,6 +1766,19 @@ $(function() {
                 // Append if found only
                 if ($('#'+val[0]).length){
                     indexobj[val[0]] = val;
+                    // Old data bug
+                    // No icon if not found
+                    if (indexobj[val[0]][3] == null){
+                        indexobj[val[0]][3] = false;
+                    }
+                    // Default design if not found
+                    if (indexobj[val[0]][4] == null){
+                        indexobj[val[0]][4] = 'textOnly';
+                    }
+                    // Default color if not found
+                    if (indexobj[val[0]][5] == null){
+                        indexobj[val[0]][5] = '#000000';
+                    }
                     listItems.push(val[0]);
                 }
             });
@@ -1785,14 +1798,14 @@ $(function() {
                 // Add any unknown items
                 if (!(indexobj.hasOwnProperty(parid))){
                     listItems.push(parid);
-                    // Default params
+                    // Get default icon design
                     var prevIcon = $(this).find('i');
                     var prevIconName = '';
                     if (prevIcon.length){
                         prevIconName = prevIcon.attr('class');
                     }
-                    // ID, Shown,Customlabel,tab design =true,false,iconOnly,textOnly
-                // 0 ,   1  ,    2      , 3, 4
+                    // ID, Shown,Customlabel,icon class string, tab design =(true,false,iconOnly,textOnly), icon color
+                    // 0 ,   1  ,    2      ,     3           ,      4                                    ,   5
                     indexobj[parid] = [parid,true,false,prevIconName,'textOnly','#000000'];
                 }
             });
@@ -2254,8 +2267,8 @@ $(function() {
             $.each(listItems,function(idx,val){
                 // PARAMS:
                 // [parid,true,false,'icon','left']
-                // ID, Shown,Customlabel,tab design =(true,false,iconOnly,textOnly), icon color
-                // 0 ,   1  ,    2      , 3, 4                                   , 5
+                // ID, Shown,Customlabel,icon class string, tab design =(true,false,iconOnly,textOnly), icon color
+                // 0 ,   1  ,    2      ,     3           ,      4                                    ,   5
                 // Build values
                 var target = $('#'+val).find('a');
                 var targetLink = target.attr('href');
