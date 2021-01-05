@@ -586,25 +586,27 @@ $(function() {
             var dragstart = function (event) {
                 $('#drop_overlay').addClass('UICHideHard');
                 var style = window.getComputedStyle(event.target, null);
-                event.dataTransfer.setData("text/plain",(parseInt(style.getPropertyValue("left"),10) - event.clientX) + ',' + (parseInt(style.getPropertyValue("top"),10) - event.clientY));
+                $('#drop_overlay').data('positionData',[(parseInt(style.getPropertyValue("left"),10) - event.clientX),(parseInt(style.getPropertyValue("top"),10) - event.clientY)]);
             }
-
             var drag_over = function(event) {
-                $('#drop_overlay').addClass('UICHideHard');
-                event.preventDefault();
-                return false;
+                // Avoid conflict with dropzone uploading
+                if ($('#drop_overlay').hasClass('UICHideHard')){
+                    event.preventDefault();
+                    return false;
+                }
             }
-
             var drop = function(event) {
-                var offset = event.dataTransfer.getData("text/plain").split(',');
-                var dm = document.getElementById('UICWebCamFull');
-                dm.style.left = (event.clientX + parseInt(offset[0],10)) + 'px';
-                dm.style.top = (event.clientY + parseInt(offset[1],10)) + 'px';
-                event.preventDefault();
-                $('#drop_overlay').removeClass('UICHideHard in');
-                return false;
+                // Avoid conflict with dropzone uploading
+                if(!$(event.target).hasClass('dropzone')){
+                    var offset = $('#drop_overlay').data('positionData');
+                    var dm = document.getElementById('UICWebCamFull');
+                    dm.style.left = (event.clientX + parseInt(offset[0],10)) + 'px';
+                    dm.style.top = (event.clientY + parseInt(offset[1],10)) + 'px';
+                    $('#drop_overlay').removeClass('UICHideHard in');
+                    event.preventDefault();
+                    return false;
+                }
             }
-
 
             // HLS handling
             var hlsCam = false;
@@ -782,12 +784,16 @@ $(function() {
 
                     // Start draghandler
                     var dm = document.getElementById('UICWebCamFull');
-                    dm.addEventListener('dragstart',dragstart,false);
-                    document.body.addEventListener('dragover',drag_over,false);
-                    document.body.addEventListener('drop',drop,false);
+                    $('#UICWebCamFull').on('dragstart.UICCam',dragstart);
+                    $('body').on('dragover.UICCam',drag_over);
+                    $('body').on('drop.UICCam',drop);
 
                     // Close again
                     $('#UICWebCamShrink').one('click',function(){
+                        $('#UICWebCamFull').off('dragstart.UICCam');
+                        $('body').off('dragover.UICCam');
+                        $('body').off('drop.UICCam');
+                        $('#drop_overlay').removeClass('UICHideHard in');
                         $('.UIWebcamZoomSrc').show();
                         $('#UICWebCamFull').remove();
                     });
