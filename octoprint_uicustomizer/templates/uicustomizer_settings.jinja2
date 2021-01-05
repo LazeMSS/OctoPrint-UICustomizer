@@ -36,7 +36,7 @@
                             <label class="checkbox" title="Should the main dropdown menu be a single compact menu, only used when using responsive mode"><input data-bind="checked: settings.plugins.uicustomizer.compactMenu" data-settingtype="compactMenu" type="checkbox"> {{ _('Compact menu') }}</label>
                         </div>
                         <div class="controls">
-                            <label class="checkbox" title="Maximize the main gcode viewer to take up as much space as possible"><input data-bind="checked: settings.plugins.uicustomizer.gcodeFullWidth" data-settingtype="gcodeFullWidth" type="checkbox"> {{ _('Gcode full-size') }}</label>
+                            <label class="checkbox" title="Maximize the main gcode viewer to take up as much space as possible"><input data-bind="checked: settings.plugins.uicustomizer.gcodeFullWidth" data-settingtype="gcodeFullWidth" data-previewtab="gcode_link" type="checkbox"> {{ _('Gcode full-size') }}</label>
                         </div>
                     </div>
                     <div class="span6">
@@ -44,13 +44,16 @@
                             <label class="checkbox" title="Should the entire screen width be used or not"><input data-bind="checked: settings.plugins.uicustomizer.fluidLayout" data-settingtype="fluidLayout" type="checkbox"> {{ _('Fluid/full width layout') }}</label>
                         </div>
                         <div class="controls">
-                            <label class="checkbox" title="Hide temperature background graphics"><input data-bind="checked: settings.plugins.uicustomizer.hideGraphBackground" data-clickthis="#temp_link a" data-settingtype="hideGraphBackground" type="checkbox"> {{ _('Hide temp. graph background') }}</label>
+                            <label class="checkbox" title="Hide temperature background graphics"><input data-bind="checked: settings.plugins.uicustomizer.hideGraphBackground" data-settingtype="hideGraphBackground" data-previewtab="temp_link" type="checkbox"> {{ _('Hide temp. graph background') }}</label>
                         </div>
                         <div class="controls">
-                            <label class="checkbox" title="Hide the main camera - only acive if the webcam in the wiget is enabled"><input data-bind="checked: settings.plugins.uicustomizer.hideMainCam" data-clickthis="#control_link a" data-settingtype="hideMainCam" type="checkbox"> {{ _('Hide main camera') }}</label>
+                            <label class="checkbox" title="Hide the main camera - only acive if the webcam in the wiget is enabled"><input data-bind="checked: settings.plugins.uicustomizer.hideMainCam" data-settingtype="hideMainCam" data-previewtab="control_link"  type="checkbox"> {{ _('Hide main camera') }}</label>
                         </div>
                         <div class="controls">
                             <label class="checkbox" title="Will add an zoom icon to the webcam live feed that will popup out the webcam video feed into a floating resizeable overlay"><input data-bind="checked: settings.plugins.uicustomizer.addWebCamZoom" data-settingtype="addWebCamZoom" type="checkbox"> {{ _('Zoom/float webcam icon') }}</label>
+                        </div>
+                        <div class="controls">
+                            <label class="checkbox" title="Compress the temperature controls inputs"><input data-bind="checked: settings.plugins.uicustomizer.compressTempControls" data-settingtype="compressTempControls" data-previewtab="temp_link" type="checkbox"> {{ _('Compress temp. controls') }}</label>
                         </div>
                     </div>
                 </div>

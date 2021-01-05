@@ -177,6 +177,72 @@
         -ms-transform: none;
         transform: none;
     }
+
+    /* ------------------------- small temp tables start -------------------------*/
+    #temperature-table input.input-mini, #temperature-table .add-on, #temperature-table span.input-mini {
+        height: 12px;
+        line-height: 12px;
+        top: -1px;
+        font-size: 12px;
+        max-width: 22px;
+    }
+
+    #temperature-table th,#temperature-table td {
+        padding: 4px 5px
+    }
+    #temperature-table input.input-mini, #temperature-table span.input-mini {
+        display: inline;
+    }
+    #temperature-table span.input-mini{
+        padding: 3px;
+    }
+
+    #temperature-table td.temperature_tool, #temperature-table th.temperature_tool{
+        width: initial !important;
+    }
+    #temperature-table td.temperature_actual, #temperature-table th.temperature_actual{
+        width: 60px !important;
+    }
+    #temperature-table td.temperature_target, #temperature-table th.temperature_target{
+        width: 155px !important;
+    }
+    #temperature-table td.temperature_offset, #temperature-table th.temperature_offset{
+        width: 108px !important;
+    }
+
+    /* btn mini copy from bs */
+    #temperature-table .btn [class^="icon-"],#temperature-table .btn [class*=" icon-"] {
+        margin-top: -1px
+    }
+
+    #temperature-table .btn {
+        padding: 0 6px;
+        font-size: 10.5px;
+    }
+    #temperature-table .btn button.btn, #temperature-table input[type="submit"].btn {
+        *padding-top: 1px;
+        *padding-bottom: 1px
+    }
+    #temperature-table .btn-group>.btn {
+        font-size: 10.5px
+    }
+    #temperature-table .btn-group>.btn+.dropdown-toggle {
+        *padding-top: 2px;
+        padding-right: 5px;
+        *padding-bottom: 2px;
+        padding-left: 5px
+    }
+
+    #temperature-table .btn .caret {
+        margin-top: 6px
+    }
+    #temperature-table .btn .label,#temperature-table .btn .badge {
+        top: 0
+    }
+
+    /* ------------------------- small temp tables end -------------------------*/
+
+    /* ------------------------- small temp tables end -------------------------*/
 }
 
 /* fix popovers*/
@@ -893,9 +959,8 @@ body.inlineFullscreen .UICWebCamClick{
     padding-right: 5px;
 }
 
-/* hack to fix the consolidated tabs*/
-
-#temperature-table.UICFix input.input-mini, #temperature-table.UICFix .add-on, #temperature-table.UICFix span.input-mini {
+/* ------------------------- small temp tables start -------------------------*/
+#temp.UICTempTableSmall #temperature-table input.input-mini, #temp.UICTempTableSmall #temperature-table .add-on, #temp.UICTempTableSmall #temperature-table span.input-mini {
     height: 12px;
     line-height: 12px;
     top: -1px;
@@ -903,18 +968,60 @@ body.inlineFullscreen .UICWebCamClick{
     max-width: 22px;
 }
 
-#temperature-table.UICFix td.temperature_tool, #temperature-table.UICFix th.temperature_tool{
+#temp.UICTempTableSmall #temperature-table th,#temp.UICTempTableSmall #temperature-table td {
+    padding: 4px 5px
+}
+#temp.UICTempTableSmall #temperature-table input.input-mini, #temp.UICTempTableSmall #temperature-table span.input-mini {
+    display: inline;
+}
+#temp.UICTempTableSmall #temperature-table span.input-mini{
+    padding: 3px;
+}
+
+#temp.UICTempTableSmall #temperature-table td.temperature_tool, #temp.UICTempTableSmall #temperature-table th.temperature_tool{
     width: initial !important;
 }
-#temperature-table.UICFix td.temperature_actual, #temperature-table.UICFix th.temperature_actual{
+#temp.UICTempTableSmall #temperature-table td.temperature_actual, #temp.UICTempTableSmall #temperature-table th.temperature_actual{
     width: 60px !important;
 }
-#temperature-table.UICFix td.temperature_target, #temperature-table.UICFix th.temperature_target{
-    width: 110px !important;
+#temp.UICTempTableSmall #temperature-table td.temperature_target, #temp.UICTempTableSmall #temperature-table th.temperature_target{
+    width: 155px !important;
 }
-#temperature-table.UICFix td.temperature_offset, #temperature-table.UICFix th.temperature_offset{
+#temp.UICTempTableSmall #temperature-table td.temperature_offset, #temp.UICTempTableSmall #temperature-table th.temperature_offset{
     width: 108px !important;
 }
+
+/* btn mini copy from bs */
+#temp.UICTempTableSmall #temperature-table .btn [class^="icon-"],#temp.UICTempTableSmall #temperature-table .btn [class*=" icon-"] {
+    margin-top: -1px
+}
+
+#temp.UICTempTableSmall #temperature-table .btn {
+    padding: 0 6px;
+    font-size: 10.5px;
+}
+#temp.UICTempTableSmall #temperature-table .btn button.btn, #temp.UICTempTableSmall #temperature-table input[type="submit"].btn {
+    *padding-top: 1px;
+    *padding-bottom: 1px
+}
+#temp.UICTempTableSmall #temperature-table .btn-group>.btn {
+    font-size: 10.5px
+}
+#temp.UICTempTableSmall #temperature-table .btn-group>.btn+.dropdown-toggle {
+    *padding-top: 2px;
+    padding-right: 5px;
+    *padding-bottom: 2px;
+    padding-left: 5px
+}
+
+#temp.UICTempTableSmall #temperature-table .btn .caret {
+    margin-top: 6px
+}
+#temp.UICTempTableSmall #temperature-table .btn .label, #temp.UICTempTableSmall #temperature-table .btn .badge {
+    top: 0
+}
+
+/* ------------------------- small temp tables end -------------------------*/
 
 #files .upload-buttons >.btn{
     text-overflow: ellipsis;
@@ -965,4 +1072,3 @@ html.themeify #UICsetMenuShow{
 }
 
 /* UICustomizer END */
-

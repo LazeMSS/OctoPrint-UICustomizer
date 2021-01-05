@@ -117,11 +117,6 @@ $(function() {
                 $('div.UICmainTabs').removeClass('span10');
                 $('div#tabs_content div.tab-pane:not("#tab_plugin_consolidate_temp_control") > div > div.span6').unwrap();
                 $('div#tabs_content div.tab-pane:not("#tab_plugin_consolidate_temp_control") > div.span6').children().unwrap();
-                // More hacks to keep people happy
-                window.setTimeout(function() {
-                    $('#temperature-table .btn').addClass('btn-mini');
-                    $('#temperature-table').addClass('UICFix table-condensed');
-                }, 1000);
             }
 
             // Observe theme changes
@@ -258,6 +253,9 @@ $(function() {
 
             // Full widh Gcode
             self.set_gcodeFullWidth(settingsPlugin.gcodeFullWidth());
+
+            // Compress the temperature controls
+            self.set_compressTempControls(settingsPlugin.compressTempControls());
 
             // Update themes
             if (self.updateThemify(null) == false){
@@ -571,6 +569,14 @@ $(function() {
                 $('#gcode_canvas').addClass('UICMaxi');
             }else{
                 $('#gcode_canvas').removeClass('UICMaxi');
+            }
+        }
+
+        self.set_compressTempControls= function(enable){
+            if (enable){
+                $('#temp').addClass('UICTempTableSmall');
+            }else{
+                $('#temp').removeClass('UICTempTableSmall');
             }
         }
 
@@ -2668,10 +2674,10 @@ $(function() {
             $('#settings_plugin_uicustomizer input:checkbox[data-settingtype]').on('change.uicus',function(){
                 var settingType = $(this).data('settingtype');
                 if (self.previewOn && typeof self['set_'+settingType] == "function"){
-                    if ($(this).data('clickthis') !== undefined){
-                        $($(this).data('clickthis')).trigger('click');
-                    }
                     self['set_'+settingType]($(this).is(':checked'));
+                    if ($(this).data('previewtab') !== null){
+                        $('#'+$(this).data('previewtab')+ ' a').trigger('click');
+                    }
                  }
             });
         }
