@@ -1633,9 +1633,11 @@ $(function() {
             if (enabled){
                 $('body').addClass('UICfixedHeader');
                 $('#navbar').removeClass('navbar-static-top').addClass('navbar-fixed-top')
+                $('#navbar').css('overflow','visible');
             }else{
                 $('body').removeClass('UICfixedHeader');
                 $('#navbar').addClass('navbar-static-top').removeClass('navbar-fixed-top');
+                $('#navbar').css('overflow','');
             }
         }
 
