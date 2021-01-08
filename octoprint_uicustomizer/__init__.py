@@ -15,9 +15,7 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
     def get_assets(self):
         return dict(
             js=["js/uicustomizer.js","js/Sortable.min.js"],
-            css=["css/uicustomizer.css","css/bootstrap-responsive.css"],
-            less=["less/uicustomizer.less"]
-
+            css=["css/uicustomizer.css","css/bootstrap-responsive.css"]
         )
 
     # default settings
