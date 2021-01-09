@@ -399,7 +399,7 @@ $(function() {
             // Check for empty object
             if($.isEmptyObject(TempCols[0])){
                 new PNotify({title:"UI Customizer failure", type: "error","text":"Failed to load proper settings for layout.\nSorry :(","hide":false});
-                console.log("UI Customizer: WARNING - BROKEN SETTINGS FOUND!");
+                console.log(TempCols);
                 return true;
             }
             var widths = settingsPlugin.widths();
@@ -2751,11 +2751,12 @@ $(function() {
                 // Get the data
                 self.saved = true;
                 var colData = self.buildColumns(true);
-                var topIconsSort = $('#settings_uicustomizer_topicons_container > div').map(function(){return $(this).data('tid')}).get();
                 if (colData[0]().length == 0 || $.isEmptyObject(colData[0]()[0])){
-                    alert("Critical failure saving UI Customizer settings - not saved!");
+                    console.log(colData);
+                    alert("Critical failure saving UI Customizer settings - not saved!\nPlease look in the developer console.");
                     return false;
                 }
+                var topIconsSort = $('#settings_uicustomizer_topicons_container > div').map(function(){return $(this).data('tid')}).get();
 
                 // Save and update
                 self.settings.settings.plugins.uicustomizer.topIconSort = ko.observableArray(topIconsSort);
