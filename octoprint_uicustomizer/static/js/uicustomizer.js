@@ -1847,7 +1847,7 @@ $(function() {
             }
             // Set color
             var colorclass = {};
-            if (data[5] != undefined){
+            if (data[5] != undefined && data[5] != false){
                 colorclass ={'color':data[5]};
             }
             // On the right or the left hand side icon only
@@ -1898,7 +1898,9 @@ $(function() {
         self.iconSearchPopover = function(searchNow,callback,addDelete,addColorSelector,startcolor){
             addDelete = addDelete || true;
             addColorSelector = addColorSelector || true;
-            startcolor = startcolor || '#000000';
+            if (startcolor === undefined){
+                startcolor = false;
+            }
             if (typeof searchNow == "string"){
                 searchNow = searchNow.replace(/fa-|fas |far |fal |fad |fab |fa /gi,"");
             }
@@ -1923,9 +1925,9 @@ $(function() {
                         }
                     }
                     // Convert colors from object or string
-                    var strcolor = "#000000"
+                    var strcolor = false;
                     if (typeof startcolor == "object"){
-                        if (typeof $(startcolor).data('color') == "string"){
+                        if ($(startcolor).data('color') !== undefined){
                             strcolor = $(startcolor).data('color');
                         }else if(typeof $(startcolor).css('color') == "string"){
                             var rgb = $(startcolor).css('color').match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+))?\)$/);
@@ -1934,10 +1936,10 @@ $(function() {
                             }
                             strcolor =  "#" + hexcolor(rgb[1]) + hexcolor(rgb[2]) + hexcolor(rgb[3]);
                         }else{
-                            strcolor = "#000000"
+                            strcolor = false
                         }
                     }else{
-                        var strcolor = startcolor;
+                        strcolor = startcolor;
                     }
 
                     // hide others
@@ -1982,7 +1984,7 @@ $(function() {
                                 contentType: 'application/json',
                                 dataType: 'application/json',
                                 headers: {'Accept':'application/json'},
-                                data: JSON.stringify({query: "query { search(version: \"5.13.0\", query: \""+search+"\", first: 35) { label id membership{ free } } }"}),
+                                data: JSON.stringify({query: "query { search(version: \"5.13.0\", query: \""+search+"\", first: 100) { label id membership{ free } } }"}),
                             }).always(function(data){
                                 if (data.status == 200){
                                     try {
@@ -2007,15 +2009,32 @@ $(function() {
                         return false;
                     })
                     var inputcontainer = $('<div class="UICIconPickHeader"/>').append(searchInput);;
-                     // Add color selector
+
+                    // Add color selector
                     if (addColorSelector){
-                        var colorSelector = $('<label class="btn UICTabIconColorLbl"><i class="fas fa-eye-dropper" style="color:'+strcolor+'"></i><input type="color" class="UICTabIconColor btn" value="'+strcolor+'"></label>');
+                        var colorStyle = 'style="color:'+strcolor+'"';
+                        if (strcolor == false){
+                            colorStyle = '';
+                        }
+                        var colorSelector = $('<label class="btn UICTabIconColorLbl"><i class="fas fa-eye-dropper" '+colorStyle+'></i><input type="color" class="UICTabIconColor btn" value="'+strcolor+'"></label>');
                         colorSelector.find('.UICTabIconColor').on('change input',function(){
+                            $('.UICTabIconClear').removeClass('active')
                             $(this).data('color',$(this).val());
                             $(this).prev().css('color',$(this).val());
                             $(this).closest('div.popover').find('.UICiconSearchResults').css('color',$(this).val());
                         });
                         inputcontainer.append(colorSelector);
+                        var noColor = $('<button class="btn UICTabIconClear"><span class="UIC-fa-stack"><i class="fas fa-slash"></i> <i class="fas fa-eye-dropper fa-stack-1x"></i></span></button>');
+                        noColor.on('click',function(){
+                            $('.UICTabIconColor').data('color',false);
+                            $('.UICTabIconColor').prev().css('color','inherit');
+                            $(this).addClass('active');
+                            $(this).closest('div.popover').find('.UICiconSearchResults').css('color','inherit');
+                        });
+                        if (strcolor == false){
+                            noColor.addClass('active');
+                        }
+                        inputcontainer.append(noColor);
                         inputcontainer.addClass('input-append');
                     }
                     // Delete/trash
@@ -2287,8 +2306,8 @@ $(function() {
                     custname = localObj[2];
                 }
                 // Build colors
-                var color = "";
-                var colorData = "#000000";
+                var color = '';
+                var colorData = false;
                 if (localObj[5] != undefined){
                     colorData = localObj[5];
                     color = 'style="color:'+localObj[5]+'"';
@@ -2364,7 +2383,7 @@ $(function() {
                 newTab.find('button.UICTabIcon').removeData("frun").popover(
                     self.iconSearchPopover(newIconSrc,function(newicon,newcolor){
                         if (newcolor == null || newicon == false){
-                            newcolor = '#000000';
+                            newcolor = false;
                         }
                         newIconSrc.data('color',newcolor);
                         // Delete
@@ -2376,7 +2395,11 @@ $(function() {
                         }else{
                             newTab.find('ul.UICTabDesign li.UICTabIconReq').removeClass('disabled');
                             newIconSrc.attr('class',newicon);
-                            newIconSrc.css({'color':newcolor});
+                            if (newcolor != false){
+                                newIconSrc.css({'color':newcolor});
+                            }else{
+                                newIconSrc.css({'color':''});
+                            }
                         }
                         if (self.previewOn){
                              // Update
@@ -2858,6 +2881,10 @@ $(function() {
             });
             return returnItem;
         }
+
+
+       /*$('head').append('<link rel="stylesheet" id="UICThemeCSS" href="/plugin/uicustomizer/static/css/darkTheme.css">');
+        $('html').addClass('UICDarkTheme');*/
 
     }
 
