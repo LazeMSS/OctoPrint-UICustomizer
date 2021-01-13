@@ -2536,8 +2536,11 @@ $(function() {
                         self.logToConsole("Skipping widgetid: " + widgetid + ", not found");
                         return;
                     }
-                    self.logToConsole('Adding widget "' + widgetid + '"('+shown() + ") to selector");
-                    self.addToSorter(colid,widgetid,shown());
+                    if (typeof shown == "function"){
+                        shown = shown();
+                    }
+                    self.logToConsole('Adding widget "' + widgetid + '"('+shown + ") to selector");
+                    self.addToSorter(colid,widgetid,shown);
                     // Remove from add defaults
                     var arpos = $.inArray(widgetid,sidebarItems);
                     if (arpos >= 0){
@@ -2881,10 +2884,6 @@ $(function() {
             });
             return returnItem;
         }
-
-
-       /*$('head').append('<link rel="stylesheet" id="UICThemeCSS" href="/plugin/uicustomizer/static/css/darkTheme.css">');
-        $('html').addClass('UICDarkTheme');*/
 
     }
 
