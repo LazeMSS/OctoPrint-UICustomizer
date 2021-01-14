@@ -2680,6 +2680,11 @@ $(function() {
             // Set all empty to minimum
             fixMinMax();
 
+            // Hide icon pickers
+            $('#settings_plugin_uicustomizer ul.nav.nav-pills a').off('click.uicus').on('click.uicus',function(){
+                $('.UICShowIconPicker').popover('hide');
+            });
+
             // Toggle preview on/off
             self.previewOn = false;
             $('#UICRealPrevCheck').off('click.uicusPrev').on('click.uicusPrev',function(){
@@ -2699,9 +2704,9 @@ $(function() {
 
                     // Trigger us self if checking anything but our own menu item
                     $('#settingsTabs a, #UICsettingsMenu a:not(.dropdown-toggle)').not('#settings_plugin_uicustomizer_link a').off('click.uicusPrev').one('click.uicusPrev',function(){
+                        $('.UICShowIconPicker').popover('hide');
                         if (self.previewOn){
                             $('#UICRealPrevCheck').trigger('click.uicusPrev');
-                            $('.UICShowIconPicker').popover('hide');
                         }
                     });
 
