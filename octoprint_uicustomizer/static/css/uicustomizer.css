@@ -531,8 +531,9 @@ div#settings_uicustomizer_tabs_look div.btn-group span.caret{
     opacity: 0.80;
 }
 
+/* input filters for search*/
 .UICiconSearchFilter{
-    width: 65% !important;
+    width: 95% !important;
 }
 
 .UICiconSearchClose{
@@ -547,10 +548,6 @@ div#settings_uicustomizer_tabs_look div.btn-group span.caret{
     color: #000;
 }
 
-.UICIconPickHeader{
-    width: 100%;
-}
-
 .UICIconPickHeader .UICTabIconColor{
     visibility: hidden;
     position: absolute;
@@ -559,11 +556,13 @@ div#settings_uicustomizer_tabs_look div.btn-group span.caret{
     width: 20px;
     height: 20px;
 }
+
 .UICIconPickHeader .UICTabIconClear .UIC-fa-stack{
     display: inline-block;
     position: relative;
     vertical-align: top;
 }
+
 .UICIconPickHeader .UICTabIconColorLbl{
     width: 20px;
     position: relative;
@@ -571,9 +570,11 @@ div#settings_uicustomizer_tabs_look div.btn-group span.caret{
     height: 20px;
     padding: 4px 6px;
 }
+
 .UICIconPickHeader .UICTabIconColorLbl i{
     pointer-events: none;
 }
+
 .UICIconPickHeader .UICTabIconColorLbl i:before{
     text-shadow: 1px 1px 5px #333;
 }
@@ -584,33 +585,42 @@ div#settings_uicustomizer_tabs_look div.btn-group span.caret{
 }
 
 /* css3 magic :) */
+.UICIconPickHeader{
+    width: 100%;
+}
 .UICIconPickHeader .UICiconSearchFilter:only-child {
     max-width: 95% !important;
+    border-radius: 4px;
 }
 .UICIconPickHeader .UICiconSearchFilter:first-child:nth-last-child(2){
-    max-width: 70% !important;
+    max-width: 80% !important;
 }
 .UICIconPickHeader .UICiconSearchFilter:first-child:nth-last-child(3){
-    max-width: 60% !important;
+    max-width: 65% !important;
 }
 .UICIconPickHeader .UICiconSearchFilter:first-child:nth-last-child(4){
     max-width: 55% !important;
 }
 
+/* fix arrow position */
+div.popover.UICIconPicker.left,div.popover.UICIconPicker.right{
+    margin-top: 15px;
+    margin-left: 0px;
+}
 
-#settings_uicustomizer_tabs div.popover h3.popover-title{
+div.popover.UICIconPicker h3.popover-title{
     overflow: hidden;
 }
-#settings_uicustomizer_tabs div.popover.left{
-    margin-top: 22px;
-    margin-left: 0px;
+
+div.popover.UICIconPicker{
     width: 280px;
 }
-#settings_uicustomizer_tabs div.popover.left div.arrow{
-    top: 26px;
+
+div.popover.UICIconPicker .arrow{
+    top: 30px;
 }
 
-#settings_uicustomizer_tabs div.popover form{
+div.popover.UICIconPicker form{
     margin: 0px;
     padding: 0px;
 }

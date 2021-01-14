@@ -1895,21 +1895,35 @@ $(function() {
 
         // ------------------------------------------------------------------------------------------------------------------------
         // Inspired by: https://itsjavi.com/fontawesome-iconpicker/
-        self.iconSearchPopover = function(searchNow,callback,addDelete,addColorSelector,startcolor){
-            addDelete = addDelete || true;
-            addColorSelector = addColorSelector || true;
+        self.iconSearchPopover = function(searchNow,callback,addDelete,addColorSelector,startcolor,container,placement){
+            if (addDelete === undefined){
+                addDelete = true;
+            }
+            if (addColorSelector === undefined){
+                addColorSelector = true;
+            }
+            // Set blank start color
             if (startcolor === undefined){
                 startcolor = false;
+            }
+            if (container === undefined){
+                container = 'body';
+            }
+            // Set placement
+            if (placement === undefined){
+                placement = 'left';
             }
             if (typeof searchNow == "string"){
                 searchNow = searchNow.replace(/fa-|fas |far |fal |fad |fab |fa /gi,"");
             }
             return {
                 'html': true,
-                'container': '#settings_uicustomizer_tabs',
-                'placement' : 'left',
+                'container': container,
+                'placement' : placement,
                 'title' : function(){
                     var myself = $(this);
+                    // Hack apply class to myself
+                    myself.data('popover').$tip.addClass('UICIconPicker');
                     if (myself.data("frun") != true){
                         myself.data("frun",true);
                         return false;
@@ -1943,7 +1957,7 @@ $(function() {
                     }
 
                     // hide others
-                    $('button.UICTabIcon').not(myself).popover('hide');
+                    $('.UICShowIconPicker').not(myself).popover('hide');
                     // Build main forms
                     var searchInput = $('<input type="search" autocomplete="off" class="UICiconSearchFilter form-control" value="'+defaultstr+'" placeholder="Type to search">');
                     var closebtn = $('<button type="button" class="UICiconSearchClose btn btn-mini pull-right"><i class="fas fa-times"></i></button>');
@@ -1991,11 +2005,14 @@ $(function() {
                                         var jsonObj = JSON.parse(data.responseText);
                                     }
                                     catch(err) {
+                                        target.html('<div class="text-center UICiconSearchInfo"><i class="fas fa-heart-broken"></i> Error searching&hellip;<br><code>Error: Bad JSON</code></div>');
                                         return false;
                                     }
                                     $this.data('prevSearch',search);
                                     // Trigger the icon refresher
                                     self._iconSearchBuildResults(jsonObj,target,myself,search,callback);
+                                }else{
+                                    target.html('<div class="text-center UICiconSearchInfo"><i class="fas fa-heart-broken"></i> Error searching&hellip;<br><code>Error: '+data.status+'</code></div>');
                                 }
                             })
                             $this.data('prevAjax',xhr);
@@ -2013,10 +2030,12 @@ $(function() {
                     // Add color selector
                     if (addColorSelector){
                         var colorStyle = 'style="color:'+strcolor+'"';
+                        var preColor = 'value="'+strcolor+'"';
                         if (strcolor == false){
                             colorStyle = '';
+                            preColor = '';
                         }
-                        var colorSelector = $('<label class="btn UICTabIconColorLbl"><i class="fas fa-eye-dropper" '+colorStyle+'></i><input type="color" class="UICTabIconColor btn" value="'+strcolor+'"></label>');
+                        var colorSelector = $('<label class="btn UICTabIconColorLbl"><i class="fas fa-eye-dropper" '+colorStyle+'></i><input type="color" class="UICTabIconColor btn" '+preColor+'></label>');
                         colorSelector.find('.UICTabIconColor').on('change input',function(){
                             $('.UICTabIconClear').removeClass('active')
                             $(this).data('color',$(this).val());
@@ -2332,7 +2351,7 @@ $(function() {
                                 <button class="UICDragVHandle btn" type="button" title="Sort item"><i class="fas fa-arrows-alt-v"></i></button>\
                                 <input title="Enter tab name, blank = default" class="input-medium UICTabNameInput" placeholder="Name: '+orgName+'" type="text" value="'+custname+'">\
                                 <button class="btn UICTabToggle" type="button" title="Hide/Show tab"><i class="fas '+classVis+'"></i></button>\
-                                <button class="btn UICTabIcon" type="button"><i class="'+icon+'" '+color+' data-color="'+colorData+'"></i></button><div class="btn-group">\
+                                <button class="btn UICTabIcon UICShowIconPicker" type="button"><i class="'+icon+'" '+color+' data-color="'+colorData+'"></i></button><div class="btn-group">\
                                 <ul class="dropdown-menu UICTabDesign">\
                                     <li class="UICTabIconReq'+disbaledLI+'"><a href="#" data-design="true"><span class="visible-phone"><i class="fas fa-align-left UICPadRight"></i><i class="fas fa-heading"></i></span><span class="hidden-phone">Icon+Text</span></a></li>\
                                     <li class="UICTabIconReq'+disbaledLI+'"><a href="#" data-design="false"><span class="visible-phone"><i class="fas fa-heading UICPadRight"></i><i class="fas fa-align-right"></i></span><span class="hidden-phone">Text+Icon</span></a></li>\
@@ -2406,7 +2425,7 @@ $(function() {
                             var tabData = self.buildCustomTabsSave();
                             self.set_mainTabsCustomize(true,tabData);
                         }
-                    },true,true,newIconSrc)
+                    },true,true,newIconSrc,'#settings_uicustomizer_tabs','left')
                 ).attr('Title','Click to change icon');
 
 
