@@ -614,6 +614,7 @@ div.popover.UICIconPicker h3.popover-title{
 
 div.popover.UICIconPicker{
     width: 280px;
+    z-index: 999;
 }
 
 div.popover.UICIconPicker .arrow{

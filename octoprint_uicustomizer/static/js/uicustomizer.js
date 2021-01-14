@@ -2061,7 +2061,7 @@ $(function() {
                         var delbtn = $('<button type="button" title="Dont select an icon, blank" class="btn"><i class="fas fa-trash"></i></button>');
                         delbtn.on('click',function(){
                             if (typeof callback == "function"){
-                                callback(false);
+                                callback(false,false);
                             }
                             myself.popover('hide');
                         });
@@ -2698,6 +2698,7 @@ $(function() {
                     $('#settingsTabs a, #UICsettingsMenu a:not(.dropdown-toggle)').not('#settings_plugin_uicustomizer_link a').off('click.uicusPrev').one('click.uicusPrev',function(){
                         if (self.previewOn){
                             $('#UICRealPrevCheck').trigger('click.uicusPrev');
+                            $('.UICShowIconPicker').popover('hide');
                         }
                     });
 
