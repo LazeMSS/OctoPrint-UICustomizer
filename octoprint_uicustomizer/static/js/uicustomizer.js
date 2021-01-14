@@ -1937,6 +1937,8 @@ $(function() {
                         }else{
                             defaultstr = searchNow.attr('class').replace(/fa-|fas |far |fal |fad |fab |fa /gi,"");
                         }
+                    }else if (typeof searchNow == "function"){
+                        defaultstr = searchNow();
                     }
                     // Convert colors from object or string
                     var strcolor = false;
@@ -2005,14 +2007,14 @@ $(function() {
                                         var jsonObj = JSON.parse(data.responseText);
                                     }
                                     catch(err) {
-                                        target.html('<div class="text-center UICiconSearchInfo"><i class="fas fa-heart-broken"></i> Error searching&hellip;<br><code>Error: Bad JSON</code></div>');
+                                        target.html('<div class="text-center UICiconSearchInfo"><i class="fas fa-exclamation-circle"></i> Error searching&hellip;<br><code>Error: Bad JSON</code></div>');
                                         return false;
                                     }
                                     $this.data('prevSearch',search);
                                     // Trigger the icon refresher
                                     self._iconSearchBuildResults(jsonObj,target,myself,search,callback);
                                 }else{
-                                    target.html('<div class="text-center UICiconSearchInfo"><i class="fas fa-heart-broken"></i> Error searching&hellip;<br><code>Error: '+data.status+'</code></div>');
+                                    target.html('<div class="text-center UICiconSearchInfo"><i class="fas fa-exclamation-circle"></i> Error searching&hellip;<hr/><code>Error: '+data.status +' ('+data.statusText +')</code></div>');
                                 }
                             })
                             $this.data('prevAjax',xhr);
