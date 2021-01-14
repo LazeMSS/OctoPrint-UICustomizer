@@ -1913,6 +1913,9 @@ $(function() {
             if (placement === undefined){
                 placement = 'left';
             }
+            if (typeof searchNow == "string"){
+                searchNow = searchNow.replace(/fa-|fas |far |fal |fad |fab |fa /gi,"");
+            }
             return {
                 'html': true,
                 'container': container,
@@ -1926,17 +1929,18 @@ $(function() {
                         return false;
                     }
                     // Lookup dynamic source if possible
+                    var defaultstr = searchNow;
                     if (typeof searchNow == "object"){
                         // Dont search empty icons
                         if (searchNow.hasClass('UICIconEmpty')){
-                            searchNow = '';
+                            defaultstr = '';
                         }else{
-                            searchNow = searchNow.attr('class');
+                            defaultstr = searchNow.attr('class');
                         }
                     }else if (typeof searchNow == "function"){
-                        searchNow = searchNow();
+                        defaultstr = searchNow();
                     }
-                    searchNow = searchNow.replace(/fa-|fas |far |fal |fad |fab |fa /gi,"");
+                    defaultstr = defaultstr.replace(/fa-|fas |far |fal |fad |fab |fa /gi,"");
                     // Convert colors from object or string
                     var strcolor = false;
                     if (typeof startcolor == "object"){
@@ -1958,7 +1962,7 @@ $(function() {
                     // hide others
                     $('.UICShowIconPicker').not(myself).popover('hide');
                     // Build main forms
-                    var searchInput = $('<input type="search" autocomplete="off" class="UICiconSearchFilter form-control" value="'+searchNow+'" placeholder="Type to search">');
+                    var searchInput = $('<input type="search" autocomplete="off" class="UICiconSearchFilter form-control" value="'+defaultstr+'" placeholder="Type to search">');
                     var closebtn = $('<button type="button" class="UICiconSearchClose btn btn-mini pull-right"><i class="fas fa-times"></i></button>');
                     // Close
                     closebtn.off('click').on('click',function(){
@@ -2075,7 +2079,7 @@ $(function() {
                         if (addColorSelector){
                             colorSelector.trigger('change');
                         }
-                        if (searchNow != ""){
+                        if (defaultstr != ""){
                             searchInput.trigger('keyup');
                         }
                     },200);
