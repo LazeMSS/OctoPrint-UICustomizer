@@ -2369,7 +2369,7 @@ $(function() {
                 // Toggle tabs on/off
                 newTab.find('button.UICTabToggle').off('click').on('click',function(){
                     // Hide all popovers
-                    $('button.UICTabIcon').popover('hide');
+                    $('.UICShowIconPicker').popover('hide');
                     var icon = $(this).find('i');
                     icon.toggleClass('fa-eye fa-eye-slash');
                     if (self.previewOn){
@@ -2392,7 +2392,7 @@ $(function() {
                 // Change tab text
                 newTab.find('input.UICTabNameInput').off('blur keyup').on('blur keyup',function(){
                     // Hide all popovers
-                    $('button.UICTabIcon').popover('hide');
+                    $('.UICShowIconPicker').popover('hide');
                     if (self.previewOn){
                         // Update
                         var tabData = self.buildCustomTabsSave();
@@ -2435,7 +2435,7 @@ $(function() {
                 // Change icon design
                 newTab.find('button.dropdown-toggle').off('click').on('click',function(){
                      // Hide all popovers
-                    $('button.UICTabIcon').popover('hide');
+                    $('.UICShowIconPicker').popover('hide');
                 });
                 newTab.find('ul.UICTabDesign li a').off('click').on('click',function(event,force){
                     if (force !== true && $(this).parent().hasClass('disabled')){
@@ -2884,7 +2884,7 @@ $(function() {
             // Cleanup to prevent listners etc
             $('#settings_uicustomizer_tabs_look').empty();
             // Remove popovers
-            $('button.UICTabIcon').popover('hide');
+            $('.UICShowIconPicker').popover('hide');
             $('#settings_uicustomizer_tabs div.popover').remove();
 
 
