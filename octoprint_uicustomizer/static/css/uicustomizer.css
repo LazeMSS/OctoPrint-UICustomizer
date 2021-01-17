@@ -430,6 +430,11 @@ div#UICSortCols li a:hover .UICToggleVis, .UICToggleVis:hover {
     -webkit-box-sizing: border-box;
     border-radius: 5px;
 }
+/* settings styles */
+#settings_plugin_uicustomizer li.tabdrop li.pull-right{
+    float: inherit !important;
+    width: 100%;
+}
 
 #settings_plugin_uicustomizer .UICReportBug{
     position: relative;
