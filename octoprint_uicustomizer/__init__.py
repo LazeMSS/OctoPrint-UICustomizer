@@ -59,7 +59,8 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                 ['term_link',True,False,'fas fa-terminal',True,'#000000'],
                 ['gcode_link',True,False,'fab fa-codepen',True,'#000000'],
             ],
-            "topIconSort" : []
+            "topIconSort" : [],
+            "gcodeZoom": 3
         }
 
     def get_template_configs(self):

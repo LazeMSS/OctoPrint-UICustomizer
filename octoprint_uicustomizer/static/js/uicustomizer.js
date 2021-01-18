@@ -49,7 +49,7 @@ $(function() {
                                 <a class="accordion-toggle" data-toggle="collapse" data-target="#UICGcodeVWidgetContainer">\
                                     <i class="fab icon-black fa-codepen"></i> Gcode\
                                 </a>\
-                                <div class="btn-group UICWidgetSelector"><a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">Zoom:<span id="UICGcodeVWidgetZL"></span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="#">4</a></li><li><a href="#">3</a></li><li><a href="#">2</a></li><li><a href="#">1</a></li></ul></div>\
+                                <div class="btn-group UICWidgetSelector"><a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">Zoom:<span id="UICGcodeVWidgetZL"></span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="javascript:void(0);" data-zoomlvl=4>4</a></li><li><a href="javascript:void(0);" data-zoomlvl=3>3</a></li><li><a href="javascript:void(0);" data-zoomlvl=2>2</a></li><li><a href="javascript:void(0);" data-zoomlvl=1.5>1.5</a></li><li><a href="javascript:void(0);" data-zoomlvl=1>1</a></li></ul></div>\
                             </div>\
                             <div id="UICGcodeVWidgetContainer" class="accordion-body in collapse">\
                                 <div class="accordion-inner">\
@@ -849,10 +849,15 @@ $(function() {
                     $('#UICGcodeVWidget  ul.dropdown-menu li.active').removeClass('active');
                     $(this).parent().addClass('active');
                     $('#UICGcodeVWidgetZL').text($(this).text());
-                    $('#UICGcodeVWidget').data('zoomlvl',$(this).text());
+                    $('#UICGcodeVWidget').data('zoomlvl',$(this).data('zoomlvl'));
+                    // Save the settings
+                    OctoPrint.settings.savePluginSettings('uicustomizer',{'gcodeZoom':$(this).data('zoomlvl')})
                 });
-                // Pick the first one as default
-                $('#UICGcodeVWidget ul.dropdown-menu a:first').trigger('click');
+                if (typeof self.settings.settings.plugins.uicustomizer.gcodeZoom == "undefined" && $('#UICGcodeVWidget ul.dropdown-menu a[data-zoomlvl="'+self.settings.settings.plugins.uicustomizer.gcodeZoom()+'"]').length == 0){
+                    $('#UICGcodeVWidget ul.dropdown-menu a:first').trigger('click');
+                }else{
+                    $('#UICGcodeVWidget ul.dropdown-menu a[data-zoomlvl="'+self.settings.settings.plugins.uicustomizer.gcodeZoom()+'"]').trigger('click')
+                }
             }
         }
 
