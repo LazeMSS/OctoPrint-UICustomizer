@@ -252,7 +252,8 @@
     z-index: 1030;
 }
 
-.UICCol1 > div, .UICCol2 > div, .UICCol3 > div{
+/*add margin in cols if not themed*/
+html:not(.themeify) .UICCol1 > div, html:not(.themeify) .UICCol2 > div, html:not(.themeify) .UICCol3 > div{
     margin-bottom: 5px;
 }
 
@@ -321,8 +322,8 @@ body.UICPreviewON div.modal-backdrop.fade.in {
     margin-top: -5px;
 }
 
-/* fix tabs bottom spacing*/
-#tabs_content{
+/* fix tabs bottom spacing if not running themeify*/
+html:not(.themeify) #tabs_content{
 	margin-bottom: 2px !important;
 }
 
