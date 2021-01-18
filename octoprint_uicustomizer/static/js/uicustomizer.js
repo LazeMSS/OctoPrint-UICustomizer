@@ -653,6 +653,11 @@ $(function() {
                     zoomclick.trigger('click.UICWebCamClick');
                 });
                 zoomclick.off('click.UICWebCamClick').on('click.UICWebCamClick',function(){
+                    var streamURL = self.settings.webcam_streamUrl();
+                    var hlsCam = false;
+                    if (/.m3u8/i.test(streamURL)){
+                        hlsCam = true;
+                    }
                     $('.UIWebcamZoomSrc').hide();
                     // Remove previous if any
                     $('#UICWebCamFull').remove();
@@ -884,7 +889,7 @@ $(function() {
             }
 
             // Check for multicam
-            if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('multicam') && !$('.UICMultiCamSelector').length){
+            if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('multicam') && OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.multicam.multicam_profiles().length > 1 && !$('.UICMultiCamSelector').length ){
                 var multicamSelector = $('<div class="btn-group UICMultiCamSelector UICWidgetSelector"><a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#"><span id="UICMultiCamLbl">Cam</span><span class="caret"></span></a><ul class="dropdown-menu"></ul></div>');
                 var ulCamSel = multicamSelector.find('ul');
                 $.each(OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.multicam.multicam_profiles(),function(idx,item){
