@@ -55,7 +55,7 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
             "mainTabs": [
                 ['control_link',True,False,'fas fa-expand-arrows-alt',True,False],
                 ['temp_link',True,False,'fas fa-thermometer-half',True,False],
-                ['timelapse_link',True,False,'fas fa-film',True,,False],
+                ['timelapse_link',True,False,'fas fa-film',True,False],
                 ['term_link',True,False,'fas fa-terminal',True,False],
                 ['gcode_link',True,False,'fab fa-codepen',True,False],
             ],
