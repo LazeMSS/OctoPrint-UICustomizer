@@ -2048,7 +2048,7 @@ $(function() {
                             colorStyle = '';
                             preColor = '';
                         }
-                        var colorSelector = $('<label class="btn UICTabIconColorLbl"><i class="fas fa-eye-dropper" '+colorStyle+'></i><input type="color" class="UICTabIconColor btn" '+preColor+'></label>');
+                        var colorSelector = $('<label class="btn UICTabIconColorLbl" title="Set icon color"><i class="fas fa-eye-dropper" '+colorStyle+'></i><input type="color" class="UICTabIconColor btn" '+preColor+'></label>');
                         colorSelector.find('.UICTabIconColor').on('change input',function(){
                             $('.UICTabIconClear').removeClass('active')
                             $(this).data('color',$(this).val());
@@ -2056,7 +2056,7 @@ $(function() {
                             $(this).closest('div.popover').find('.UICiconSearchResults').css('color',$(this).val());
                         });
                         inputcontainer.append(colorSelector);
-                        var noColor = $('<button class="btn UICTabIconClear"><span class="UIC-fa-stack"><i class="fas fa-slash"></i> <i class="fas fa-eye-dropper fa-stack-1x"></i></span></button>');
+                        var noColor = $('<button class="btn UICTabIconClear" title="No icon color is applied"><span class="UIC-fa-stack"><i class="fas fa-slash"></i> <i class="fas fa-eye-dropper fa-stack-1x"></i></span></button>');
                         noColor.on('click',function(){
                             $('.UICTabIconColor').data('color',false);
                             $('.UICTabIconColor').prev().css('color','inherit');
