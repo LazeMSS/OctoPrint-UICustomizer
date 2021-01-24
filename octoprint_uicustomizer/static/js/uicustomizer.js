@@ -566,9 +566,9 @@ $(function() {
 
         self.set_gcodeFullWidth= function(enable){
             if (enable){
-                $('#gcode_canvas').addClass('UICMaxi');
+                $('#canvas_container').addClass('UICMaxi');
             }else{
-                $('#gcode_canvas').removeClass('UICMaxi');
+                $('#canvas_container').removeClass('UICMaxi');
             }
         }
 

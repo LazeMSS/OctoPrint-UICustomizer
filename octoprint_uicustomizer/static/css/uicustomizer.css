@@ -746,7 +746,7 @@ body.UICResponsiveMode #gcode_canvas{
     max-height: 100% !important;
 }
 
-#gcode_canvas.UICMaxi{
+#canvas_container.UICMaxi canvas{
     width: 100% !important;
     height: 100% !important;
 }
