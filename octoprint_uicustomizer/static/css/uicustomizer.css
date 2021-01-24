@@ -644,6 +644,7 @@ div.UICHackResponseActive {
 }
 
 #UICsettingsMenuNav{
+    width: 100%;
 	position: fixed;
 	margin-top: -15px;
 	margin-bottom: 0px;
