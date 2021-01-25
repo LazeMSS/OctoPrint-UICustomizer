@@ -808,8 +808,34 @@ $(function() {
                         $('.UIWebcamZoomSrc').show();
                         $('#UICWebCamFull').remove();
                     });
+
+                    // Todo: add styling for fullscreen and add overlays with print info and gcode preview etc. https://www.w3schools.com/howto/howto_js_fullscreen.asp
+                    // self.openFullscreen(document.getElementById('UICWebCamFull'));
                 });
             });
+        }
+
+        /*https://www.w3schools.com/howto/howto_js_fullscreen.asp*/
+        /* View in fullscreen */
+        self.openFullscreen = function(elem){
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) { /* Safari */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            }
+        }
+
+        /* Close fullscreen */
+        self.closeFullscreen = function(){
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) { /* Safari */
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { /* IE11 */
+                document.msExitFullscreen();
+            }
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
