@@ -1,5 +1,5 @@
 # UI Customizer
-
+![](extras/responsive.png)
 A [OctoPrint](https://github.com/foosel/OctoPrint) plugin that allows you to customize the look and feel of the user interface.
 It also features a lot of other fixes and improvements:
 * Customize tabs: Change icon, labels, order, show/hide
