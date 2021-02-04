@@ -177,6 +177,7 @@
         -ms-transform: none !important;
         transform: none !important;
         width: calc(100vw - 120px);
+        overflow: overlay;
     }
 
     /* ------------------------- small temp tables start -------------------------*/
@@ -297,7 +298,6 @@ body.UICPreviewON div.modal-backdrop.fade.in {
     transform: translateX(-50%);
     top: 1px;
     z-index: 1030;
-    overflow: hidden;
 }
 
 .UICHeaderIcons{
