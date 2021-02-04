@@ -566,9 +566,9 @@ $(function() {
 
         self.set_gcodeFullWidth= function(enable){
             if (enable){
-                $('#gcode_canvas').addClass('UICMaxi');
+                $('#canvas_container').addClass('UICMaxi');
             }else{
-                $('#gcode_canvas').removeClass('UICMaxi');
+                $('#canvas_container').removeClass('UICMaxi');
             }
         }
 
@@ -808,8 +808,34 @@ $(function() {
                         $('.UIWebcamZoomSrc').show();
                         $('#UICWebCamFull').remove();
                     });
+
+                    // Todo: add styling for fullscreen and add overlays with print info and gcode preview etc. https://www.w3schools.com/howto/howto_js_fullscreen.asp
+                    // self.openFullscreen(document.getElementById('UICWebCamFull'));
                 });
             });
+        }
+
+        /*https://www.w3schools.com/howto/howto_js_fullscreen.asp*/
+        /* View in fullscreen */
+        self.openFullscreen = function(elem){
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) { /* Safari */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            }
+        }
+
+        /* Close fullscreen */
+        self.closeFullscreen = function(){
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) { /* Safari */
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { /* IE11 */
+                document.msExitFullscreen();
+            }
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
@@ -2048,7 +2074,7 @@ $(function() {
                             colorStyle = '';
                             preColor = '';
                         }
-                        var colorSelector = $('<label class="btn UICTabIconColorLbl"><i class="fas fa-eye-dropper" '+colorStyle+'></i><input type="color" class="UICTabIconColor btn" '+preColor+'></label>');
+                        var colorSelector = $('<label class="btn UICTabIconColorLbl" title="Set icon color"><i class="fas fa-eye-dropper" '+colorStyle+'></i><input type="color" class="UICTabIconColor btn" '+preColor+'></label>');
                         colorSelector.find('.UICTabIconColor').on('change input',function(){
                             $('.UICTabIconClear').removeClass('active')
                             $(this).data('color',$(this).val());
@@ -2056,7 +2082,7 @@ $(function() {
                             $(this).closest('div.popover').find('.UICiconSearchResults').css('color',$(this).val());
                         });
                         inputcontainer.append(colorSelector);
-                        var noColor = $('<button class="btn UICTabIconClear"><span class="UIC-fa-stack"><i class="fas fa-slash"></i> <i class="fas fa-eye-dropper fa-stack-1x"></i></span></button>');
+                        var noColor = $('<button class="btn UICTabIconClear" title="No icon color is applied"><span class="UIC-fa-stack"><i class="fas fa-slash"></i> <i class="fas fa-eye-dropper fa-stack-1x"></i></span></button>');
                         noColor.on('click',function(){
                             $('.UICTabIconColor').data('color',false);
                             $('.UICTabIconColor').prev().css('color','inherit');

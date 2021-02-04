@@ -171,11 +171,12 @@
 		overflow: hidden;
 	}
     .UICHeaderIcons.CenterMe{
-        left: 50px !important;
-        -webkit-transform: none;
-        -moz-transform: none;
-        -ms-transform: none;
-        transform: none;
+        left: 45px !important;
+        -webkit-transform: none !important;
+        -moz-transform: none !important;
+        -ms-transform: none !important;
+        transform: none !important;
+        width: calc(100vw - 120px);
     }
 
     /* ------------------------- small temp tables start -------------------------*/
@@ -287,15 +288,16 @@ body.UICPreviewON div.modal-backdrop.fade.in {
 
 /* center icons */
 .UICHeaderIcons.CenterMe{
-    float: unset !important;
-    position: absolute !important;
-    left: 50% !important;
+    float: unset;
+    position: absolute;
+    left: 50%;
     -webkit-transform: translateX(-50%);
     -moz-transform: translateX(-50%);
     -ms-transform: translateX(-50%);
     transform: translateX(-50%);
     top: 1px;
     z-index: 1030;
+    overflow: hidden;
 }
 
 .UICHeaderIcons{
@@ -644,6 +646,7 @@ div.UICHackResponseActive {
 }
 
 #UICsettingsMenuNav{
+    width: 100%;
 	position: fixed;
 	margin-top: -15px;
 	margin-bottom: 0px;
@@ -745,7 +748,7 @@ body.UICResponsiveMode #gcode_canvas{
     max-height: 100% !important;
 }
 
-#gcode_canvas.UICMaxi{
+#canvas_container.UICMaxi canvas, #canvas_container.UICMaxi .gcode_canvas_wrapper1{
     width: 100% !important;
     height: 100% !important;
 }
