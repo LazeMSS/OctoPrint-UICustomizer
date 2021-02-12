@@ -9,14 +9,6 @@
 		display: none;
 	}
 
-    #navbar div.navbar-inner.default .UICHeaderIcons >li > a{
-        height: 30px !important;
-    }
-    #navbar div.navbar-inner:not(.default) .UICHeaderIcons >li > a{
-        height: 29px !important;
-    }
-
-
     /*fix for files in large cols - these are replicated in the max-width: 767px section*/
     body.UICResponsiveMode div.UICLargeSpan #files div.gcode_files .action-buttons{
         top: 5px;
@@ -48,6 +40,9 @@
 
 /* smaller than  big screens :) */
 @media (max-width: 979px){
+    .full-sized-box {
+        position: absolute;
+    }
 	.UICHideDesktop{
 		display: inline-block !important
 	}
@@ -61,36 +56,28 @@
     body.UICResponsiveMode .UICCompactMenu {
         position: absolute;
         right: 5px;
-        top: 42px;
-        z-index: 1000;
+        top: 43px;
+        z-index: 1035;
         border-bottom-right-radius: 5px;
         border-bottom-left-radius: 5px;
         box-shadow: -3px 5px 7px #00000026;
         background-color: #ebebeb;
     }
+
     /* apply colors when standard theme*/
-    html.UICDefaultTheme body.UICResponsiveMode .UICCompactMenu{
-        background-color: #ebebeb;
+    html:not(.UICDefaultTheme) body.UICResponsiveMode .UICCompactMenu{
+        background-color: #00000094;
     }
 
-
-    .UICHeaderIcons.CenterMe{
-        top: 5px !important;
+    /* fix links height*/
+    .UICHeaderIcons.nav >li {
+        padding-top: 1px;
+        padding-bottom: 1px;
+        height: 38px;
     }
-
-    .UICHeaderIcons{
-        top: 2px !important;
-    }
-
-    .UICHeaderIcons >li > a{
-        height: 36px !important;
-    }
-
-    body.UICfixedHeader #navbar div.navbar-inner.default .UICCompactMenu{
-        top: 52px;
-    }
-    body.UICfixedHeader #navbar div.navbar-inner:not(.default) .UICCompactMenu, html.themeify #navbar div.navbar-inner .UICCompactMenu{
-        top: 50px !important;
+    .UICHeaderIcons.nav >li a{
+        margin-top: -1px;
+        padding-bottom: 11px;
     }
 
     html.UICDefaultTheme body.UICResponsiveMode #navbar .navbar-inner .nav>li>a:hover,
@@ -108,11 +95,14 @@
 
     /* small screen fix for top bar*/
     #UICsettingsMenuNav{
-        margin-top: -30px !important;
+        margin-top: -15px !important;
     }
 
     body.UICResponsiveMode #settings_dialog_content {
-        margin-top: 35px !important;
+        margin-top: 50px !important;
+    }
+    #navbar.navbar-fixed-top .navbar-inner {
+        padding: 0px 5px !important;
     }
 }
 
@@ -122,9 +112,9 @@
 	body.UICResponsiveMode .search-query-with-clear .search-clear{
 		right: 28px !important;
 	}
-    /* fix the margin of the seting dialog to make even more space */
+    /* fix the margin of the seting dialog to make even more snce */
     body.UICResponsiveMode #settings_dialog_content div.tab-pane{
-        margin-right: -25px !important;
+        margin-right: 0px !important;
     }
     div#settings_uicustomizer_tabs_look div.btn-group button{
         min-width: 70px !important;
@@ -133,6 +123,11 @@
         left: -3px;
         min-width: 70px !important;
         text-align: center;
+    }
+
+    /*Hide overflow */
+    .modal-open.page-overflow .page-container{
+        overflow-y: hidden;
     }
 
     /*fix for files in large cols - this small gives us full width*/
@@ -166,18 +161,28 @@
 
 /* super tiny hack*/
 @media (max-width: 600px){
+
 	body.UICResponsiveMode #navbar a.brand{
-		width: 5px;
+		width:22px;
 		overflow: hidden;
+        padding: 0px 0px 0px 15px;
+        display: inline-block;
+        margin-top: 10px;
 	}
+    html.UICDefaultTheme.UICResponsiveMode #navbar a.brand{
+        margin-left: 10px;
+    }
+
     .UICHeaderIcons.CenterMe{
-        left: 45px !important;
+        left: 0px !important;
         -webkit-transform: none !important;
         -moz-transform: none !important;
         -ms-transform: none !important;
         transform: none !important;
-        width: calc(100vw - 120px);
-        overflow: overlay;
+        overflow: auto;
+        min-height: 41px;
+        position: relative !important;
+        float: left !important;
     }
 
     /* ------------------------- small temp tables start -------------------------*/
@@ -247,6 +252,7 @@
     /* ------------------------- small temp tables end -------------------------*/
 }
 
+
 /* fix popovers*/
 
 #navbar.navbar-static-top{
@@ -296,29 +302,14 @@ body.UICPreviewON div.modal-backdrop.fade.in {
     -moz-transform: translateX(-50%);
     -ms-transform: translateX(-50%);
     transform: translateX(-50%);
-    top: 1px;
     z-index: 1030;
 }
 
 .UICHeaderIcons{
-    height: 40px;
     white-space: nowrap;
     float: right !important;
 }
 
-.UICHeaderIcons >li {
-    height: 45px;
-    margin-top: -5px;
-    padding-top: 5px;
-}
-
-.UICHeaderIcons >li > a{
-    margin-top: -5px;
-    padding-bottom: 0px !important;
-    padding-top: 15px !important;
-    display: inline-block;
-    box-sizing: inherit !important;
-}
 /* fix stacked icons*/
 .UICHeaderIcons >li > a .fa-stack{
     margin-top: -5px;
@@ -688,26 +679,26 @@ body.UICResponsiveMode #settings_plugin_softwareupdate_updatelist, body.UICRespo
 }
 
 /* force scrollbar */
-body.UICTouchDevice #settings_dialog ::-webkit-scrollbar {
+html.touchevents #settings_dialog ::-webkit-scrollbar {
     width: 10px !important;
     margin-right: 10px;
 }
 
  /* Track */
-body.UICTouchDevice #settings_dialog ::-webkit-scrollbar-track {
+html.touchevents #settings_dialog ::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3) !important;
     -webkit-border-radius: 10px !important;
     border-radius: 10px !important;
 }
 
  /* Handle */
-body.UICTouchDevice #settings_dialog ::-webkit-scrollbar-thumb {
+html.touchevents #settings_dialog ::-webkit-scrollbar-thumb {
     -webkit-border-radius: 10px !important;
     border-radius: 10px !important;
     background-color: #006dcc !important;
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5) !important;
 }
-body.UICTouchDevice #settings_dialog ::-webkit-scrollbar-thumb:window-inactive {
+html.touchevents #settings_dialog ::-webkit-scrollbar-thumb:window-inactive {
     background-color: #999999 !important;
 }
 
@@ -862,8 +853,9 @@ body.inlineFullscreen .UICWebCamClick{
     z-index: 900;
     background-color: #eeeeeea1;
     margin: 5px 15px 0px 0px;
-    padding: 5px 5px 3px 5px;
-    border-radius: 8px;
+    padding: 4px 5px;
+    border-radius: 3px;
+    text-align: center;
 }
 
 #IUCWebcamContainer .UICWebCamClick{

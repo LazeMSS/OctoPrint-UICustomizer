@@ -3,6 +3,9 @@
 from __future__ import absolute_import
 
 import octoprint.plugin
+import os
+import sys
+import shutil
 
 class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                        octoprint.plugin.SettingsPlugin,
@@ -15,8 +18,43 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
     def get_assets(self):
         return dict(
             js=["js/uicustomizer.js","js/Sortable.min.js"],
-            css=["css/uicustomizer.css","css/bootstrap-responsive.css"]
+            css=["css/uicustomizer.css"]
         )
+
+    def on_settings_initialized(self):
+        curTheme = self._settings.get(["theme"],merged=True,asdict=True)
+        if curTheme:
+            self._logger.info("%s is our theme",curTheme)
+            self.setThemeFile(curTheme)
+
+    def setThemeFile(self,source):
+        baseFolder = os.path.join(os.path.dirname(os.path.realpath(__file__)),'static','css','themes')
+        srcTheme = os.path.join(baseFolder,source+'.css')
+        targeTheme = os.path.join(baseFolder,'active.css')
+        if os.path.exists(baseFolder) and os.path.isfile(srcTheme):
+            self._logger.info("Setting theme: \"%s\" (%s)", source, srcTheme)
+            # remove old
+            try:
+                os.remove(targeTheme)
+            except OSError:
+                pass
+
+            # symlink on linux else we copy
+            if sys.platform.startswith("linux"):
+                os.symlink(srcTheme, targeTheme)
+            else:
+                shutil.copy2(srcTheme, targeTheme)
+
+        else:
+            self._logger.info("Unable to set the theme: %s",srcTheme)
+
+    def on_settings_save(self,data):
+        # set theme
+        if 'theme' in data:
+            self.setThemeFile(data['theme'])
+
+        # save
+        octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
 
     # default settings
     def get_settings_defaults(self):
@@ -60,7 +98,8 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                 ['gcode_link',True,False,'fab fa-codepen',True,False],
             ],
             "topIconSort" : [],
-            "gcodeZoom": 3
+            "gcodeZoom": 3,
+            "theme" : "default"
         }
 
     def get_template_configs(self):
