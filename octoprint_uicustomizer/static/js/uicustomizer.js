@@ -8,13 +8,9 @@ $('head').prepend('<meta id="UICViewport" name="viewport" content="width=device-
 var tempTheme = "default";
 if (Modernizr.localstorage){
     tempTheme = localStorage['plugin.uicustomizer.theme'];
-    if (tempTheme == undefined){
+    if (tempTheme == undefined || tempTheme == "" || tempTheme == null){
         tempTheme = "default";
     }
-    $('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/css/themes/active.css?theme='+tempTheme+'">');
-
-    // we will remove it again if user has opted out - this will just make it more clean on showing the UI
-    $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicustomizer/static/css/bootstrap-responsive.css">');
 }
 $('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/css/themes/active.css?theme='+tempTheme+'">');
 // we will remove it again if user has opted out - this will just make it more clean on showing the UI
