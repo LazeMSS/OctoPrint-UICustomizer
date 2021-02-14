@@ -75,53 +75,39 @@ table td.settings_groups_actions a.disabled,table td.settings_users_actions a.di
   cursor: not-allowed;
 }
 
+#navbar >.navbar-inner > .container-fluid{
+      margin-top: 5px;
+}
+
 /* fix hardcode headers*/
 .octoprint-container .tab-content h1 {
   color: #2c3e50;
 }
 
-
-/* fix brand/logo*/
-#navbar .navbar-inner .brand{
-  padding: 15px 20px 15px !important;
-}
-
 @media (max-width: 600px){
   body.UICResponsiveMode #navbar a.brand {
-    width: 5px;
+    width: 25px;
   }
 }
 
-#temperature-graph .flot-text{
-    color: #000 !important;
-    text-shadow: none ;
+@media (min-width: 980px){
+  body.UICfixedHeader {
+    margin-top: 75px;
+  }
 }
 
-#temperature-graph .legend > *{
-  color: #111 !important;
-}
-
-#temperature-graph .flot-base{
-  background-color: #eee;
+body.UICResponsiveMode .UICCompactMenu.in{
+  top: 51px;
 }
 
 body.UICResponsiveMode .UICCompactMenu{
-  top: 46px !important;
-  background-color: #2c3e50 !important;
+  background-color: #2c3e50;
+  background-image: -moz-linear-gradient(top,#2c3e50,#2c3e50);
+  background-image: -webkit-gradient(linear,0 0,0 100%,from(#2c3e50),to(#2c3e50));
+  background-image: -webkit-linear-gradient(top,#2c3e50,#2c3e50);
+  background-image: -o-linear-gradient(top,#2c3e50,#2c3e50);
+  background-image: linear-gradient(to bottom,#2c3e50,#2c3e50);
 }
-
-@media (max-width: 979px){
-  body.UICResponsiveMode .UICCompactMenu.in{
-    box-shadow: 0 5px 10px rgb(0 0 0 / 20%);
-    top: 65px !important;
-  }
-}
-
-body.UICfixedHeader {
-  margin-top: 70px;
-}
-
-
 
 @import url("https://fonts.googleapis.com/css?family=Lato:400,700,900,400italic");
 
@@ -6300,22 +6286,23 @@ legend {
 
 /**/
 
+#files .gcode_files .entry:hover{
+  background-color: #ecf0f1 !important;
+  border-bottom: 1px solid #1dd2af;
+
+}
+
 #UICsettingsMenuNav{
-  margin-top:-16px;
+  margin-top:-15px;
   padding-top: 5px;
   margin-left: -15px;
   background-color: #fff;
   background: linear-gradient(0deg, rgb(255 255 255 / 64%) 0px, rgb(255 255 255) 15px);
 }
 
-@media (max-width: 979px){
-  #UICsettingsMenuNav {
-      margin-top: -16px !important;
-  }
-}
-
 #UICsettingsMenuNav div.navbar-inner{
   margin-right: -30px;
+  min-height: 40px;
 }
 
 .dropdown-menu-right{

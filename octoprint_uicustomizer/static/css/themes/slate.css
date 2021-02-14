@@ -114,6 +114,9 @@ table td.settings_groups_actions a.disabled,table td.settings_users_actions a.di
     background-color: #272b30 !important;
   }
 
+  .UICHeaderIcons.nav >li a{
+    margin-top: -2px;
+  }
 }
 
 
@@ -4113,7 +4116,6 @@ input[type="submit"].btn.btn-mini {
 
 .navbar .nav > li > a {
   float: none;
-  padding: 9.5px 15px 9.5px;
   color: #c8c8c8;
   text-decoration: none;
   text-shadow: 0 1px 0 #3a3f44;
@@ -6525,11 +6527,6 @@ a.thumbnail:hover {
     background: linear-gradient(0deg, rgb(46 50 54 / 64%) 0px, rgb(46 50 54) 15px);
 }
 
-@media (max-width: 979px){
-  #UICsettingsMenuNav {
-      margin-top: -16px !important;
-  }
-}
 
 #UICsettingsMenuNav div.navbar-inner{
   margin-right: -30px;
@@ -6541,4 +6538,29 @@ a.thumbnail:hover {
 
 #footer_version{
   padding-left: 35px;
+}
+
+#files .gcode_files .entry:hover{
+  background-color: #bbbfc2 !important;
+  border-bottom: 1px solid #bbbfc2;
+}
+
+#files .gcode_files .entry:hover > * {
+  color: #000;
+}
+
+#files .gcode_files .entry div[style="font-weight: bold;"]{
+  color: #fff;
+}
+
+#files .gcode_files .entry:hover div[style="font-weight: bold;"]{
+  color: #000;
+}
+
+#tabs {
+  margin-bottom: -1px;
+}
+
+#tabs_content {
+  border-top: 1px solid #666;
 }

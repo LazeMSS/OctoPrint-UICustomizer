@@ -1,21 +1,10 @@
 /* UICustomizer START */
+
 // ALways make us able to get the viewport side
 $('head').prepend('<link rel="stylesheet" href="./plugin/uicustomizer/static/css/loader.css">');
-// Preloader
-$('head').prepend('<meta id="UICViewport" name="viewport" content="width=device-width, initial-scale=1.0">');
 
-// Get the theme
-var tempTheme = "default";
-if (Modernizr.localstorage){
-    tempTheme = localStorage['plugin.uicustomizer.theme'];
-    if (tempTheme == undefined || tempTheme == "" || tempTheme == null){
-        tempTheme = "default";
-    }
-}
-$('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/css/themes/active.css?theme='+tempTheme+'">');
-// we will remove it again if user has opted out - this will just make it more clean on showing the UI
-$('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicustomizer/static/css/bootstrap-responsive.css">');
-delete tempTheme;
+// Preloader to  make it pretty
+$('head').prepend('<meta id="UICViewport" name="viewport" content="width=device-width, initial-scale=1.0">');
 
 // Now we start
 $(function() {
@@ -28,8 +17,6 @@ $(function() {
         self.settings = parameters[0];
         // max column width
         self.maxCWidth = 12;
-
-        self.curTheme = null;
 
         self.saved = false;
 
@@ -88,6 +75,19 @@ $(function() {
 
         // Store sort
         self.SortableSet = [];
+
+        // Load theme first up when ready
+        self.curTheme = "default";
+        if (Modernizr.localstorage){
+            self.curTheme = localStorage['plugin.uicustomizer.theme'];
+            if (self.curTheme == undefined || self.curTheme == "" || self.curTheme == null){
+                self.curTheme = "default";
+            }
+        }
+        $('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/css/themes/active.css?theme='+self.curTheme+'">');
+        // we will remove it again if user has opted out - this will just make it more clean on showing the UI
+        $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicustomizer/static/css/bootstrap-responsive.css">');
+
 
         // ------------------------------------------------------------------------------------------------------------------------
         // Quick debug
@@ -319,6 +319,7 @@ $(function() {
 
         // ------------------------------------------------------------------------------------------------------------------------
         self.set_theme = function(themeName,store){
+            console.log(themeName);
             // if empty we try the others - else we cleanup from everything else
             if (themeName == "default"){
                  $('html').removeClass('UICCustomTheme');
@@ -331,11 +332,13 @@ $(function() {
             }
             if (self.curTheme != themeName){
                 self.logToConsole("Loading theme: " + themeName + " - old theme: " + self.curTheme);
+                console.log("Loading theme: " + themeName + " - old theme: " + self.curTheme)
                 // Remove previous theme and responisve - responsive is added below again if requested
                 $('link.UICThemeCSS,link.UICBSResp').remove();
                 $('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/css/themes/active.css?theme='+themeName+'">');
                 if (store){
                     self.curTheme = themeName;
+                    self.setStorage('theme',self.settings.settings.plugins.uicustomizer.theme());
                 }
             }
         }
