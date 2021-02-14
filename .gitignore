@@ -8,3 +8,5 @@ dist
 .DS_Store
 *.zip
 __pycache__
+octoprint_uicustomizer/static/css/themes/default.css
+
