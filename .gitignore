@@ -9,4 +9,3 @@ dist
 *.zip
 __pycache__
 octoprint_uicustomizer/static/css/themes/default.css
-
