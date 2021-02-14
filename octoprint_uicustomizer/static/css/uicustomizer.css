@@ -728,8 +728,22 @@ html.touchevents #settings_dialog ::-webkit-scrollbar-thumb:window-inactive {
 }
 
 .UIC-pulsate{
-	animation: pulsate_input 1s ease-out;
+	animation: uicPulseFrame 1s ease-out;
     animation-iteration-count: infinite
+}
+
+@keyframes uicPulseFrame {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.2;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
 
 /* Fix gcode for responsive*/
