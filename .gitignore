@@ -1,4 +1,4 @@
-*.pyc
+'*.pyc
 *.swp
 .idea
 *.iml
@@ -8,5 +8,3 @@ dist
 .DS_Store
 *.zip
 __pycache__
-octoprint_uicustomizer/static/css/themes/default.css
-octoprint_uicustomizer/static/themes/css/default.css

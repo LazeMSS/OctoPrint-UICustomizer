@@ -1,1 +1,44 @@
-{'xxx':'ffjjffj'}
+{
+ "cyborg":{
+    "t": "./plugin/uicustomizer/static/themes/thumbs/cyborg.png",
+    "name": "Cyborg",
+    "desc": "Jet black and electric blue.",
+    "org": "https://bootswatch.com/2/cyborg/",
+    "css": "./plugin/uicustomizer/static/themes/css/cyborg.css"
+  },
+  "slate":{
+    "t": "./plugin/uicustomizer/static/themes/thumbs/slate.png",
+    "name": "Slate",
+    "desc": "Shades of gunmetal gray",
+    "org": "https://bootswatch.com/2/slate/",
+    "css": "./plugin/uicustomizer/static/themes/css/slate.css"
+  },
+  "cosmo":{
+    "t": "./plugin/uicustomizer/static/themes/thumbs/cosmo.png",
+    "name": "Cosmo",
+    "desc": "An ode to Metro",
+    "org": "https://bootswatch.com/2/cosmo/",
+    "css": "./plugin/uicustomizer/static/themes/css/Cosmo.css"
+  },
+  "superhero":{
+    "t": "./plugin/uicustomizer/static/themes/thumbs/superhero.png",
+    "name": "Superhero",
+    "desc": "Batman meets... Aquaman?",
+    "org": "https://bootswatch.com/2/superhero/",
+    "css": "./plugin/uicustomizer/static/themes/css/superhero.css"
+  },
+  "flatly":{
+    "t": "./plugin/uicustomizer/static/themes/thumbs/flatly.png",
+    "name": "Flatly",
+    "desc": "Flat and clean",
+    "org": "https://bootswatch.com/2/flatly/",
+    "css": "./plugin/uicustomizer/static/themes/css/flatly.css"
+  },
+  "default":{
+    "t": "./plugin/uicustomizer/static/themes/thumbs/default.png",
+    "name": "Default",
+    "desc": "Clean and natural",
+    "org": "https://octoprint.org/",
+    "css": "./plugin/uicustomizer/static/themes/css/default.css"
+  }
+}

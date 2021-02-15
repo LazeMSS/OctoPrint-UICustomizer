@@ -125,9 +125,10 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
         # Get cpu temp options found on this system - allows a reload
         if command == "themes":
             themeFile = os.path.join(os.path.dirname(os.path.realpath(__file__)),'static','themes.json')
-            self._logger.info("%s",themeFile)
             if os.path.isfile(themeFile):
                 return send_file(themeFile, mimetype='application/json')
+            else:
+                return flask.make_response("Themes not found", 404)
 
     def get_update_information(self):
         # Define the configuration for your plugin to use with the Software Update

@@ -27,6 +27,8 @@ $(function() {
 
         self.getReturnData = false;
 
+        self.ThemesLoaded = false;
+
         // timer for resize fix modal
         self.modalTimer = null;
 
@@ -2261,6 +2263,11 @@ $(function() {
         // ------------------------------------------------------------------------------------------------------------------------
         // Settings handler
         self.onSettingsShown = function() {
+            // Load themes
+            if (!self.ThemesLoaded){
+                OctoPrint.simpleApiCommand("uicustomizer","themes",{}).done(function(response) {
+                });
+            }
             self.settingsBeenShown = true;
             $('#UICReportBug').removeData('updateCheck');
             $('#UICReportBug').off('click').on('click',function(){
