@@ -84,7 +84,7 @@ $(function() {
                 self.curTheme = "default";
             }
         }
-        $('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/css/themes/active.css?theme='+self.curTheme+'">');
+        $('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/themes/css/active.css?theme='+self.curTheme+'">');
         // we will remove it again if user has opted out - this will just make it more clean on showing the UI
         $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicustomizer/static/css/bootstrap-responsive.css">');
 
@@ -335,7 +335,7 @@ $(function() {
                 console.log("Loading theme: " + themeName + " - old theme: " + self.curTheme)
                 // Remove previous theme and responisve - responsive is added below again if requested
                 $('link.UICThemeCSS,link.UICBSResp').remove();
-                $('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/css/themes/active.css?theme='+themeName+'">');
+                $('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/themes/css/active.css?theme='+themeName+'">');
                 if (store){
                     self.curTheme = themeName;
                     self.setStorage('theme',self.settings.settings.plugins.uicustomizer.theme());

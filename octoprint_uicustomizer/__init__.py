@@ -1,16 +1,21 @@
 
 # coding=utf-8
 from __future__ import absolute_import
+from octoprint.server import user_permission
 
 import octoprint.plugin
 import os
+import flask
 import sys
 import shutil
+
+from flask import send_file
 
 class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                        octoprint.plugin.SettingsPlugin,
                        octoprint.plugin.AssetPlugin,
-                       octoprint.plugin.TemplatePlugin):
+                       octoprint.plugin.TemplatePlugin,
+                       octoprint.plugin.SimpleApiPlugin):
 
     def on_after_startup(self):
         self._logger.info("UI Customizer is initialized.")
@@ -28,7 +33,7 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
             self.setThemeFile(curTheme)
 
     def setThemeFile(self,source):
-        baseFolder = os.path.join(os.path.dirname(os.path.realpath(__file__)),'static','css','themes')
+        baseFolder = os.path.join(os.path.dirname(os.path.realpath(__file__)),'static','themes','css')
         srcTheme = os.path.join(baseFolder,source+'.css')
         targeTheme = os.path.join(baseFolder,'active.css')
         if os.path.exists(baseFolder) and os.path.isfile(srcTheme):
@@ -106,6 +111,23 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
         return [
             dict(type="settings", custom_bindings=False)
         ]
+
+
+    def get_api_commands(self):
+        return dict(
+            themes=[],
+        )
+
+    def on_api_command(self, command, data):
+        if not user_permission.can():
+            return flask.make_response("Insufficient rights", 403)
+
+        # Get cpu temp options found on this system - allows a reload
+        if command == "themes":
+            themeFile = os.path.join(os.path.dirname(os.path.realpath(__file__)),'static','themes.json')
+            self._logger.info("%s",themeFile)
+            if os.path.isfile(themeFile):
+                return send_file(themeFile, mimetype='application/json')
 
     def get_update_information(self):
         # Define the configuration for your plugin to use with the Software Update
