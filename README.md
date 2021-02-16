@@ -89,3 +89,7 @@ This allows you to change the look & feel of the top icons in top menu
 ### Floating webcam
 ![](extras/floating.png)
 ### Compact Navbar temp
+
+
+##Credit
+Many of the themes includes is derived from https://bootswatch.com/2/
