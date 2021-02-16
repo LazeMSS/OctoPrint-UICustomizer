@@ -7,13 +7,15 @@ $('head').prepend('<link rel="stylesheet" href="./plugin/uicustomizer/static/css
 $('head').prepend('<meta id="UICViewport" name="viewport" content="width=device-width, initial-scale=1.0">');
 
 // Set theme onload
+var UICPreLoadTheme  = "default";
 if (Modernizr.localstorage){
-    self.curTheme = localStorage['plugin.uicustomizer.theme'];
-    if (self.curTheme == undefined || self.curTheme == "" || self.curTheme == null){
-        self.curTheme = "default";
+    UICPreLoadTheme = localStorage['plugin.uicustomizer.theme'];
+    if (UICPreLoadTheme == undefined || UICPreLoadTheme == "" || UICPreLoadTheme == null){
+        UICPreLoadTheme = "default";
     }
 }
-$('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/themes/css/active.css?theme='+self.curTheme+'">');
+$('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/themes/css/active.css?theme='+UICPreLoadTheme+'">');
+delete UICPreLoadTheme;
 // we will remove it again if user has opted out - this will just make it more clean on showing the UI
 $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicustomizer/static/css/bootstrap-responsive.css">');
 
