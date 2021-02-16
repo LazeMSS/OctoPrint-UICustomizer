@@ -276,15 +276,15 @@ body.UICResponsiveMode div#settings_dialog .help-inline{
 
 /* fix the modal body to play nice in responsive - it will be resized with js*/
 body.UICPreviewON div#settings_dialog div.modal-body {
-    max-height: 300px !important;
-    min-height: 300px !important;;
-    height: 300px !important;
+    max-height: 350px !important;
+    min-height: 350px !important;;
+    height: 350px !important;
 }
 
 /* when we turn on preview lets change the position*/
 body.UICPreviewON div#settings_dialog {
     margin-top: 0px !important;
-    top: calc(100% - 450px);
+    top: calc(100% - 510px);
 }
 
 /* make the modal backdrop transparent in preview*/
@@ -292,6 +292,9 @@ body.UICPreviewON div.modal-backdrop.fade.in {
     opacity: 0.3;
 }
 
+body.UICPreviewON #settings_dialog{
+    min-height: 500px;
+}
 
 /* center icons */
 .UICHeaderIcons.CenterMe{
@@ -992,6 +995,12 @@ body.inlineFullscreen .UICWebCamClick{
     padding-right: 5px;
 }
 
+.UICMargLeft{
+    margin-left: 5px;
+}
+
+
+
 /* ------------------------- small temp tables start -------------------------*/
 #temp.UICTempTableSmall #temperature-table input.input-mini, #temp.UICTempTableSmall #temperature-table .add-on, #temp.UICTempTableSmall #temperature-table span.input-mini {
     height: 12px;
@@ -1062,7 +1071,7 @@ body.inlineFullscreen .UICWebCamClick{
 }
 
 /*generic dropdown selector for widgets*/
-.UICWidgetSelector{
+.UICWidgetSelector, .UICrightPadded{
     margin-top: 5px;
     margin-right: 5px;
     float: right;
@@ -1107,5 +1116,35 @@ html.themeify #UICsetMenuShow{
     text-shadow: none;
 }
 
+/* internal themese */
+
+.UICThemeSelected a.thumbnail:before {
+    content: "\f00c";
+    display: inline-block;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    position: absolute;
+    text-align: center;
+    font-style: normal;
+    font-variant-ligatures: normal;
+    font-variant-caps: normal;
+    font-variant-numeric: normal;
+    font-variant-east-asian: normal;
+    font-weight: 900;
+    font-stretch: normal;
+    font-size: inherit;
+    line-height: 1;
+    font-family: "Font Awesome 5 Free","FontAwesome";
+    text-indent: 0px;
+    font-size: 3em;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+#settings_uicustomizer_themesContent .span4 p {
+    margin-top: 6px;
+    height: 70px;
+    overflow: auto;
+}
 /* UICustomizer END */
 

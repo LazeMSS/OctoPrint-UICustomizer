@@ -122,7 +122,6 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
         if not user_permission.can():
             return flask.make_response("Insufficient rights", 403)
 
-        # Get cpu temp options found on this system - allows a reload
         if command == "themes":
             themeFile = os.path.join(os.path.dirname(os.path.realpath(__file__)),'static','themes.json')
             if os.path.isfile(themeFile):

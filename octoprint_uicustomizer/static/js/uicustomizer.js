@@ -6,6 +6,18 @@ $('head').prepend('<link rel="stylesheet" href="./plugin/uicustomizer/static/css
 // Preloader to  make it pretty
 $('head').prepend('<meta id="UICViewport" name="viewport" content="width=device-width, initial-scale=1.0">');
 
+// Set theme onload
+if (Modernizr.localstorage){
+    self.curTheme = localStorage['plugin.uicustomizer.theme'];
+    if (self.curTheme == undefined || self.curTheme == "" || self.curTheme == null){
+        self.curTheme = "default";
+    }
+}
+$('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/themes/css/active.css?theme='+self.curTheme+'">');
+// we will remove it again if user has opted out - this will just make it more clean on showing the UI
+$('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicustomizer/static/css/bootstrap-responsive.css">');
+
+
 // Now we start
 $(function() {
     function UICustomizerViewModel(parameters) {
@@ -80,16 +92,6 @@ $(function() {
 
         // Load theme first up when ready
         self.curTheme = "default";
-        if (Modernizr.localstorage){
-            self.curTheme = localStorage['plugin.uicustomizer.theme'];
-            if (self.curTheme == undefined || self.curTheme == "" || self.curTheme == null){
-                self.curTheme = "default";
-            }
-        }
-        $('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/themes/css/active.css?theme='+self.curTheme+'">');
-        // we will remove it again if user has opted out - this will just make it more clean on showing the UI
-        $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicustomizer/static/css/bootstrap-responsive.css">');
-
 
         // ------------------------------------------------------------------------------------------------------------------------
         // Quick debug
@@ -281,8 +283,8 @@ $(function() {
             // Make it fluid
             self.set_fluidLayout(settingsPlugin.fluidLayout());
 
-            // Handle themes
-            self.set_theme(settingsPlugin.theme(),true);
+            // Set theme on startup
+            self.set_theme(settingsPlugin.theme(),false);
 
             // Run in responsive mode
             self.set_responsiveMode(settingsPlugin.responsiveMode());
@@ -320,11 +322,10 @@ $(function() {
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
-        self.set_theme = function(themeName,store){
-            console.log(themeName);
+        self.set_theme = function(themeName,preview){
             // if empty we try the others - else we cleanup from everything else
             if (themeName == "default"){
-                 $('html').removeClass('UICCustomTheme');
+                $('html').removeClass('UICCustomTheme');
                 if (self.updateThemify(null) == false){
                     self.updateStandardTheme(OctoPrint.coreui.viewmodels.settingsViewModel.settings.appearance.color());
                 };
@@ -334,14 +335,41 @@ $(function() {
             }
             if (self.curTheme != themeName){
                 self.logToConsole("Loading theme: " + themeName + " - old theme: " + self.curTheme);
-                console.log("Loading theme: " + themeName + " - old theme: " + self.curTheme)
-                // Remove previous theme and responisve - responsive is added below again if requested
-                $('link.UICThemeCSS,link.UICBSResp').remove();
-                $('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/themes/css/active.css?theme='+themeName+'">');
-                if (store){
-                    self.curTheme = themeName;
-                    self.setStorage('theme',self.settings.settings.plugins.uicustomizer.theme());
+                // Show loading UI if slow
+                var hideLoader = null;
+                if (!$('#page-container-loading:visible').length){
+                    hideLoader = setTimeout(function(){
+                         $('#page-container-loading').show();
+                    }, 300);
+
                 }
+
+                // Remove previous theme and responisve - responsive is added again if requested
+                $('link.UICThemeCSS,link.UICBSResp').remove();
+
+                // Preview or for real?
+                if (preview){
+                    var themeURL = './plugin/uicustomizer/static/themes/css/'+themeName+'.css?theme='+themeName;
+                }else{
+                    var themeURL = './plugin/uicustomizer/static/themes/css/active.css?theme='+themeName;
+                    // Store it for easier loading
+                    self.setStorage('theme',themeName);
+                }
+                // Load style sheet
+                var styleCSS = $('<link class="UICThemeCSS" rel="stylesheet"/>');
+
+                // Load handler
+                styleCSS.on('load',function (){
+                    // Hide loader
+                    if (hideLoader != null){
+                        clearTimeout(hideLoader);
+                        hideLoader = null;
+                        $('#page-container-loading').hide();
+                    }
+                });
+                styleCSS.attr('href',themeURL);
+                $('body').append(styleCSS);
+                self.curTheme = themeName;
             }
         }
 
@@ -2260,13 +2288,80 @@ $(function() {
             });
         }
 
+
+        // Load themes
+        self.loadSettingsThemes = function(){
+            $('#settings_uicustomizer_themesContent').html('<div class="UIC-pulsate text-info text-center">Loading webcam&hellip;</div>');
+            var themesHTML = '<ul class="thumbnails">';
+            var template = '\
+            <li class="span4" data-uictheme="[key]">\
+                <a title="Click to select theme" href="#" class="UICsetTheme thumbnail"><img src="[t]"/></a>\
+                <p><a href="[org]" class="UICMargLeft pull-right btn-mini btn" target="_blank">Source</a><button class="btn-mini btn btn-primary UICsetTheme pull-right">Select</button>\
+                <strong>[name]</strong><br><small>[desc]</small>\
+                </p>\
+            </li>';
+            OctoPrint.simpleApiCommand("uicustomizer","themes",{}).done(function(response) {
+                $.each(response,function(id,theme){
+                    var addThis = template+'';
+                    addThis = addThis.replace('\[key\]',id);
+                    $.each(theme,function(key,attr){
+                        if (key == "org"){
+                            if (attr == false){
+                                attr = '#;" style="display:none" ';
+                            }else{
+                                attr = encodeURI(attr);
+                            }
+                        }else{
+                            attr = $('<div/>').text(attr).html();
+                        }
+                        addThis = addThis.replace('\['+key+'\]',attr);
+                    });
+                    themesHTML += addThis;
+                });
+                themesHTML += '</ul>';
+                $('#settings_uicustomizer_themesContent').html(themesHTML);
+
+                // Click handler
+                $('.UICsetTheme').off('click').on('click',function(event){
+                    var selectedTheme = $(this).closest('li').data('uictheme');
+                    // Update preview
+                    if (self.previewOn){
+                        var respons = $('link.UICBSResp').length;
+                        // Tell
+                        self.set_theme(selectedTheme,true);
+                        if (respons){
+                            $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicustomizer/static/css/bootstrap-responsive.css">');
+                        }
+                    }
+                    self.setThemeSelected(selectedTheme);
+                    return false;
+                });
+                self.setThemeSelected();
+            });
+
+        }
+
+        // Set theme selected
+        self.setThemeSelected = function(theme){
+            if (theme == undefined){
+                theme = self.settings.settings.plugins.uicustomizer.theme();
+            }
+            $('#settings_uicustomizer_themesContent li').removeClass('UICThemeSelected');
+            $('#settings_uicustomizer_themesContent li[data-uictheme="'+theme+'"]').addClass('UICThemeSelected');
+        }
+
         // ------------------------------------------------------------------------------------------------------------------------
         // Settings handler
         self.onSettingsShown = function() {
+            self.saved = false;
+            self.previewHasBeenOn = false;
+            var settingsPlugin = self.settings.settings.plugins.uicustomizer;
+
             // Load themes
             if (!self.ThemesLoaded){
-                OctoPrint.simpleApiCommand("uicustomizer","themes",{}).done(function(response) {
-                });
+                self.loadSettingsThemes();
+            }else{
+                self.setThemeSelected();
             }
             self.settingsBeenShown = true;
             $('#UICReportBug').removeData('updateCheck');
@@ -2348,9 +2443,6 @@ $(function() {
                 sidebarItems.push('#'+$(this).attr('id'));
             });
 
-            self.saved = false;
-            self.previewHasBeenOn = false;
-            var settingsPlugin = self.settings.settings.plugins.uicustomizer;
 
             // Check for navbar
             if (typeof OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.navbartemp !== "undefined"){
@@ -2847,9 +2939,17 @@ $(function() {
                         $('div.UICMainMenu ul.nav >li a:hidden').addClass('UICpreviewHide').show();
                     }
 
+                    // Set theme
+                    var themeSel = $('#settings_uicustomizer_themesContent li.UICThemeSelected').data('uictheme');
+                    self.set_theme(themeSel,true);
+
                 }else{
                     // Remove preview toggles and restore the views when turning preview off/on
                     if (self.previewHasBeenOn){
+                        // Restore theme
+                        self.set_theme(settingsPlugin.theme(),false);
+
+                        // Restore
                         $('.UICPreviewRestore[data-orgvis]').each(function(){
                             var item = $($(this).data('id'))
                             if ($(this).data('orgvis')){
@@ -2946,8 +3046,9 @@ $(function() {
                 self.settings.settings.plugins.uicustomizer.mainTabsCustomize = ko.observable($('#UICMainTabCustomizerToggle').is(':checked'));
                 self.settings.settings.plugins.uicustomizer.mainTabs = ko.observableArray(self.buildCustomTabsSave());
 
-                // Set theme into storage
-                self.setStorage('theme',self.settings.settings.plugins.uicustomizer.theme());
+                // Set theme into settings and storage
+                var theme = $('#settings_uicustomizer_themesContent li.UICThemeSelected').data('uictheme');
+                self.settings.settings.plugins.uicustomizer.theme(theme);
 
                 var streamURL = self.settings.webcam_streamUrl();
                 if (/.m3u8/i.test(streamURL)){
