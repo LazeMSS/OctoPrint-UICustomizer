@@ -29,7 +29,6 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
     def on_settings_initialized(self):
         curTheme = self._settings.get(["theme"],merged=True,asdict=True)
         if curTheme:
-            self._logger.info("%s is our theme",curTheme)
             self.setThemeFile(curTheme)
 
     def setThemeFile(self,source):
@@ -37,7 +36,6 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
         srcTheme = os.path.join(baseFolder,source+'.css')
         targeTheme = os.path.join(baseFolder,'active.css')
         if os.path.exists(baseFolder) and os.path.isfile(srcTheme):
-            self._logger.info("Setting theme: \"%s\" (%s)", source, srcTheme)
             # remove old
             try:
                 os.remove(targeTheme)
