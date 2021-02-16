@@ -1,4 +1,26 @@
 /* UICustomizer START */
+
+// ALways make us able to get the viewport side
+$('head').prepend('<link rel="stylesheet" href="./plugin/uicustomizer/static/css/loader.css">');
+
+// Preloader to  make it pretty
+$('head').prepend('<meta id="UICViewport" name="viewport" content="width=device-width, initial-scale=1.0">');
+
+// Set theme onload
+var UICPreLoadTheme  = "default";
+if (Modernizr.localstorage){
+    UICPreLoadTheme = localStorage['plugin.uicustomizer.theme'];
+    if (UICPreLoadTheme == undefined || UICPreLoadTheme == "" || UICPreLoadTheme == null){
+        UICPreLoadTheme = "default";
+    }
+}
+$('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/themes/css/active.css?theme='+UICPreLoadTheme+'">');
+delete UICPreLoadTheme;
+// we will remove it again if user has opted out - this will just make it more clean on showing the UI
+$('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicustomizer/static/css/bootstrap-responsive.css">');
+
+
+// Now we start
 $(function() {
     function UICustomizerViewModel(parameters) {
         var self = this;
@@ -18,6 +40,8 @@ $(function() {
         self.settingsBeenShown = false;
 
         self.getReturnData = false;
+
+        self.ThemesLoaded = false;
 
         // timer for resize fix modal
         self.modalTimer = null;
@@ -68,6 +92,9 @@ $(function() {
         // Store sort
         self.SortableSet = [];
 
+        // Load theme first up when ready
+        self.curTheme = "default";
+
         // ------------------------------------------------------------------------------------------------------------------------
         // Quick debug
         self.logToConsole = function(msg){
@@ -82,6 +109,9 @@ $(function() {
         // ------------------------------------------------------------------------------------------------------------------------
         // Initial bound and init the custom layout
         self.onAllBound = function(){
+            self.curTheme = self.getStorage('theme');
+            $('#page-container-loading').show();
+            $('#page-container-main').hide();
             // Store WebCam
             self.onWebCamOrg = OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded;
             self.onWebCamErrorOrg = OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored;
@@ -132,6 +162,29 @@ $(function() {
                 });
             }
 
+            // Remove css bootstrap hardcode css to make it easier to use skins
+            var styleSrc = false;
+            if ($('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]').length){
+                styleSrc = $('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]');
+            }else if ($('link[href="/static/css/octoprint.css"][rel="stylesheet"]').length){
+                styleSrc = $('link[href="/static/css/octoprint.css"][rel="stylesheet"]');
+            }
+            if (styleSrc != false){
+                $.each(styleSrc[0].sheet.cssRules,function(index,val){
+                    if (this.selectorText != undefined){
+                        if (this.selectorText == ".octoprint-container .accordion-heading .accordion-heading-button a"){
+                            this.selectorText = ".octoprint-container .accordion-heading .accordion-heading-button >a";
+                        }
+                        if (this.selectorText.indexOf('#navbar .navbar-inner .nav') != -1){
+                            this.selectorText = '#navbardisabledByUIC'
+                        }
+                        if (this.selectorText == "#navbar .navbar-inner"){
+                            this.selectorText = '#navbardisabledByUIC'
+                        }
+                    }
+                })
+            }
+
             // Check these plugins
             var knowPluginIssues = {
                 'widescreen' : {
@@ -143,10 +196,11 @@ $(function() {
                         }
                     }
                 },
+                /*
                 'consolidate_temp_control': {
                     'text': 'Running the plugins Consolidate Temp Control and UI Customizer together can cause problems.\n\nThe UI Customizer plugin has tried to fix these problems but there might be layout issues.',
                     'action' : null
-                },
+                },*/
             }
 
             // Notify options main options
@@ -195,10 +249,16 @@ $(function() {
                 }
             });
 
+             // Fix height problem on first run
+            $('div.UICMainMenu a.dropdown-toggle').one('click.UICMainMenu',function(){
+                $('div.UICMainMenu').css({'height':'auto'});
+            });
+
             // Refresh all
             window.setTimeout(function() {
                 $(window).trigger('resize');
             },500);
+
         }
 
 
@@ -223,6 +283,8 @@ $(function() {
             // Make it fluid
             self.set_fluidLayout(settingsPlugin.fluidLayout());
 
+            // Set theme on startup
+            self.set_theme(settingsPlugin.theme(),false);
 
             // Run in responsive mode
             self.set_responsiveMode(settingsPlugin.responsiveMode());
@@ -257,15 +319,66 @@ $(function() {
             // Compress the temperature controls
             self.set_compressTempControls(settingsPlugin.compressTempControls());
 
-            // Update themes
-            if (self.updateThemify(null) == false){
-                self.updateStandardTheme(OctoPrint.coreui.viewmodels.settingsViewModel.settings.appearance.color());
-            };
+        }
 
+        // ------------------------------------------------------------------------------------------------------------------------
+        self.set_theme = function(themeName,preview){
+            // if empty we try the others - else we cleanup from everything else
+            if (themeName == "default"){
+                $('html').removeClass('UICCustomTheme');
+                if (self.updateThemify(null) == false){
+                    self.updateStandardTheme(OctoPrint.coreui.viewmodels.settingsViewModel.settings.appearance.color());
+                };
+            }else{
+                $('html').addClass('UICDefaultTheme UICCustomTheme');
+                $('#UICCustStandardTheme,#UICCustThemeify').remove();
+            }
+            if (self.curTheme != themeName){
+                self.logToConsole("Loading theme: " + themeName + " - old theme: " + self.curTheme);
+                // Show loading UI if slow
+                var hideLoader = null;
+                if (!$('#page-container-loading:visible').length){
+                    hideLoader = setTimeout(function(){
+                         $('#page-container-loading').show();
+                    }, 300);
+
+                }
+
+                // Remove previous theme and responisve - responsive is added again if requested
+                $('link.UICThemeCSS,link.UICBSResp').remove();
+
+                // Preview or for real?
+                if (preview){
+                    var themeURL = './plugin/uicustomizer/static/themes/css/'+themeName+'.css?theme='+themeName;
+                }else{
+                    var themeURL = './plugin/uicustomizer/static/themes/css/active.css?theme='+themeName;
+                    // Store it for easier loading
+                    self.setStorage('theme',themeName);
+                }
+                // Load style sheet
+                var styleCSS = $('<link class="UICThemeCSS" rel="stylesheet"/>');
+
+                // Load handler
+                styleCSS.on('load',function (){
+                    // Hide loader
+                    if (hideLoader != null){
+                        clearTimeout(hideLoader);
+                        hideLoader = null;
+                        $('#page-container-loading').hide();
+                    }
+                });
+                styleCSS.attr('href',themeURL);
+                $('body').append(styleCSS);
+                self.curTheme = themeName;
+            }
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
         self.updateStandardTheme = function(curTheme){
+            if (self.settings.settings.plugins.uicustomizer.theme() != null && self.settings.settings.plugins.uicustomizer.theme() != "default"){
+                $('#UICCustStandardTheme').remove();
+                return;
+            }
             if (curTheme == "default"){
                 // Cleanup
                 self.logToConsole("Removing standard theme mods");
@@ -316,6 +429,10 @@ $(function() {
 
         // ------------------------------------------------------------------------------------------------------------------------
         self.updateThemify = function(curTheme){
+            if (self.settings.settings.plugins.uicustomizer.theme() != null && self.settings.settings.plugins.uicustomizer.theme() != "default"){
+                $('#UICCustThemeify').remove();
+                return;
+            }
             if (!OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('themeify') || OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.enabled() == false){
                 self.logToConsole("Removing themeify theme mods");
                 $('#UICCustThemeify').remove();
@@ -663,7 +780,7 @@ $(function() {
                     $('#UICWebCamFull').remove();
 
                     // Append floating cam to body
-                    $('body').append('<div id="UICWebCamFull" draggable="true" class="UICWebcam"><div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate">Loading webcam&hellip;</span></div><div id="UICWebCamShrink" class="UICWebCamClick"><a href="javascript: void(0);"><i class="fas fa-compress"></i></a></div><div class="UICWebCamTarget"></div></div>');
+                    $('body').append('<div id="UICWebCamFull" draggable="true" class="UICWebcam"><div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate text-info">Loading webcam&hellip;</span></div><div id="UICWebCamShrink" class="UICWebCamClick"><a href="javascript: void(0);"><i class="fas fa-compress"></i></a></div><div class="UICWebCamTarget"></div></div>');
                     $('#UICWebCamShrink').hide();
 
                     // Set top offset
@@ -1076,7 +1193,7 @@ $(function() {
                         // Reload the webcam
                         $('.UICWebCamClick').hide();
                         $('#IUCWebcamContainer div.nowebcam').remove();
-                        $('#IUCWebcamContainer > div').append('<div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate">Loading webcam&hellip;</span></div>');
+                        $('#IUCWebcamContainer > div').append('<div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate text-info">Loading webcam&hellip;</span></div>');
                         $('#IUCWebcamContainerInner').hide();
                         $('#IUCWebcamContainer').show();
                         // Reinit the loader
@@ -1097,7 +1214,7 @@ $(function() {
 
             // Set loading
             $('.UICWebCamClick').hide();
-            $('#IUCWebcamContainer > div').append('<div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate">Loading webcam&hellip;</span></div>');
+            $('#IUCWebcamContainer > div').append('<div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate text-info">Loading webcam&hellip;</span></div>');
 
             // HLS cam handling is a bit easier than normal stuff
             if(hlsCam){
@@ -1404,12 +1521,9 @@ $(function() {
                     return true;
                 }
 
-                // Add dynamic viewport
-                $('head').append('<meta id="UICViewport" name="viewport" content="width=device-width, initial-scale=1.0">');
-
-                // Check for touch
-                if (typeof Modernizr !== 'undefined' && Modernizr.touchevents) {
-                    $('body').addClass('UICTouchDevice');
+                // Append responsive
+                if (!$('link.UICBSResp').length){
+                    $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicustomizer/static/css/bootstrap-responsive.css">');
                 }
 
                 // Fix gcode
@@ -1532,12 +1646,13 @@ $(function() {
                 $('#navbar > div.navbar-inner > div:first').prepend('<a class="btn btn-navbar collapsed" data-toggle="collapse" data-target=".UICMainMenu"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a>');
 
                 // Close menu on click
-                $('div.UICMainMenu a:not(.dropdown-toggle)').off('click.UICMainMenu').on('click.UICMainMenu',function(){
+                $('div.UICMainMenu a:not(.dropdown-toggle)').off('mouseup.UICMainMenu').on('mouseup.UICMainMenu',function(event){
                     if ($('div.UICMainMenu').hasClass('in')){
-                        $('#navbar div.navbar-inner a.btn-navbar').trigger('click');
+                        $('div.UICMainMenu').css({'height':'0px'});
+                        $('div.UICMainMenu').removeClass('in');
                     }
+                    return true;
                 });
-
 
                 // Add title to menu items
                 $('div.UICMainMenu > ul.nav > li:not([id^="navbar_plugin"]) > a,li.UICExcludeFromTopIcons > a').each(function(){
@@ -1587,13 +1702,12 @@ $(function() {
             }else{
                 // Allow full menu when not responsive
                 $('.UICMainMenu').removeClass('nav-collapse');
+                $('#UICViewport').remove();
+                $('link.UICBSResp').remove();
                 if (!$('body').hasClass('UICResponsiveMode')){
                     return true;
                 }
-                // Remove meta viewport
-                $('#UICViewport').remove();
                 $('.UICHideTablet').removeClass('UICHideTablet hidden-tablet');
-                $('body').removeClass('UICTouchDevice');
 
                 // Remmove events
                 $('body').off('shown.bs.modal.UICHandler');
@@ -2174,9 +2288,81 @@ $(function() {
             });
         }
 
+
+        // Load themes
+        self.loadSettingsThemes = function(){
+            $('#settings_uicustomizer_themesContent').html('<div class="UIC-pulsate text-info text-center">Loading webcam&hellip;</div>');
+            var themesHTML = '<ul class="thumbnails">';
+            var template = '\
+            <li class="span4" data-uictheme="[key]">\
+                <a title="Click to select theme" href="#" class="UICsetTheme thumbnail"><img src="[t]"/></a>\
+                <p><a href="[org]" class="UICMargLeft pull-right btn-mini btn" target="_blank">Source</a><button class="btn-mini btn btn-primary UICsetTheme pull-right">Select</button>\
+                <strong>[name]</strong><br><small>[desc]</small>\
+                </p>\
+            </li>';
+            OctoPrint.simpleApiCommand("uicustomizer","themes",{}).done(function(response) {
+                $.each(response,function(id,theme){
+                    var addThis = template+'';
+                    addThis = addThis.replace('\[key\]',id);
+                    $.each(theme,function(key,attr){
+                        if (key == "org"){
+                            if (attr == false){
+                                attr = '#;" style="display:none" ';
+                            }else{
+                                attr = encodeURI(attr);
+                            }
+                        }else{
+                            attr = $('<div/>').text(attr).html();
+                        }
+                        addThis = addThis.replace('\['+key+'\]',attr);
+                    });
+                    themesHTML += addThis;
+                });
+                themesHTML += '</ul>';
+                $('#settings_uicustomizer_themesContent').html(themesHTML);
+
+                // Click handler
+                $('.UICsetTheme').off('click').on('click',function(event){
+                    var selectedTheme = $(this).closest('li').data('uictheme');
+                    // Update preview
+                    if (self.previewOn){
+                        var respons = $('link.UICBSResp').length;
+                        // Tell
+                        self.set_theme(selectedTheme,true);
+                        if (respons){
+                            $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicustomizer/static/css/bootstrap-responsive.css">');
+                        }
+                    }
+                    self.setThemeSelected(selectedTheme);
+                    return false;
+                });
+                self.setThemeSelected();
+            });
+
+        }
+
+        // Set theme selected
+        self.setThemeSelected = function(theme){
+            if (theme == undefined){
+                theme = self.settings.settings.plugins.uicustomizer.theme();
+            }
+            $('#settings_uicustomizer_themesContent li').removeClass('UICThemeSelected');
+            $('#settings_uicustomizer_themesContent li[data-uictheme="'+theme+'"]').addClass('UICThemeSelected');
+        }
+
         // ------------------------------------------------------------------------------------------------------------------------
         // Settings handler
         self.onSettingsShown = function() {
+            self.saved = false;
+            self.previewHasBeenOn = false;
+            var settingsPlugin = self.settings.settings.plugins.uicustomizer;
+
+            // Load themes
+            if (!self.ThemesLoaded){
+                self.loadSettingsThemes();
+            }else{
+                self.setThemeSelected();
+            }
             self.settingsBeenShown = true;
             $('#UICReportBug').removeData('updateCheck');
             $('#UICReportBug').off('click').on('click',function(){
@@ -2190,7 +2376,7 @@ $(function() {
                     $this.attr('disabled',true).addClass('disabled');
                     $this.data('updateCheck',"pending");
                     // Check for updates
-                    $.get("/plugin/softwareupdate/check?force=true", function(data) {
+                    $.get("./plugin/softwareupdate/check?force=true", function(data) {
                         // We have an update then show the real dialog
                         if (data.hasOwnProperty('information') && data.information.hasOwnProperty('uicustomizer') && data.information.uicustomizer.updateAvailable){
                             self.logToConsole("Updates found");
@@ -2257,9 +2443,6 @@ $(function() {
                 sidebarItems.push('#'+$(this).attr('id'));
             });
 
-            self.saved = false;
-            self.previewHasBeenOn = false;
-            var settingsPlugin = self.settings.settings.plugins.uicustomizer;
 
             // Check for navbar
             if (typeof OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.navbartemp !== "undefined"){
@@ -2756,9 +2939,17 @@ $(function() {
                         $('div.UICMainMenu ul.nav >li a:hidden').addClass('UICpreviewHide').show();
                     }
 
+                    // Set theme
+                    var themeSel = $('#settings_uicustomizer_themesContent li.UICThemeSelected').data('uictheme');
+                    self.set_theme(themeSel,true);
+
                 }else{
                     // Remove preview toggles and restore the views when turning preview off/on
                     if (self.previewHasBeenOn){
+                        // Restore theme
+                        self.set_theme(settingsPlugin.theme(),false);
+
+                        // Restore
                         $('.UICPreviewRestore[data-orgvis]').each(function(){
                             var item = $($(this).data('id'))
                             if ($(this).data('orgvis')){
@@ -2855,6 +3046,10 @@ $(function() {
                 self.settings.settings.plugins.uicustomizer.mainTabsCustomize = ko.observable($('#UICMainTabCustomizerToggle').is(':checked'));
                 self.settings.settings.plugins.uicustomizer.mainTabs = ko.observableArray(self.buildCustomTabsSave());
 
+                // Set theme into settings and storage
+                var theme = $('#settings_uicustomizer_themesContent li.UICThemeSelected').data('uictheme');
+                self.settings.settings.plugins.uicustomizer.theme(theme);
+
                 var streamURL = self.settings.webcam_streamUrl();
                 if (/.m3u8/i.test(streamURL)){
                     $('#webcam_container img').attr('src','data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
@@ -2938,6 +3133,16 @@ $(function() {
 
         // ------------------------------------------------------------------------------------------------------------------------
 
+        self.setStorage = function(cname,cvalue){
+            if (!Modernizr.localstorage) return;
+            localStorage['plugin.uicustomizer.'+cname] = cvalue;
+        }
+
+        self.getStorage = function(cname){
+            if (!Modernizr.localstorage) return undefined;
+            return localStorage['plugin.uicustomizer.'+cname];
+        }
+
         self.findPluginData = function(pluginKey){
             var returnItem = null;
             $.each(OctoPrint.coreui.viewmodels.pluginManagerViewModel.plugins.allItems,function(x,item){
@@ -2948,7 +3153,6 @@ $(function() {
             });
             return returnItem;
         }
-
     }
 
     // This is how our plugin registers itself with the application, by adding some configuration information to

@@ -4,6 +4,9 @@
             <a data-toggle="tab" href="#settings_uicustomizer_general">{{ _('General') }}</a>
         </li>
         <li>
+            <a data-toggle="tab" href="#settings_uicustomizer_themes">{{ _('Themes') }}</a>
+        </li>
+        <li>
             <a data-toggle="tab" href="#settings_uicustomizer_layout">{{ _('Layout') }}</a>
         </li>
         <li>
@@ -59,6 +62,10 @@
                 </div>
             </fieldset>
         </div>
+         <div class="tab-pane" id="settings_uicustomizer_themes">
+            <h4>{{ _('Themes') }}</h4>
+            <div id="settings_uicustomizer_themesContent"></div>
+        </div>
         <div class="tab-pane" id="settings_uicustomizer_layout">
             <div class="help-block pull-right">
                 {{ _('Total width cannot exceed 12') }}
@@ -89,6 +96,7 @@
                     </div>
                 </div>
             </fieldset>
+            <div class="help-block">Press and drag to arrange a item/widget between columns. Click <i class="fas fa-eye"></i> to hide/show item/widget</div>
         </div>
         <div class="tab-pane" id="settings_uicustomizer_tabs">
             <h4>{{ _('Main tabs') }}</h4>
