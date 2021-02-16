@@ -47,8 +47,9 @@ The configuration is split into 6 tabs - all have an preview option in the top r
 * Compress temp. controls - compress/minimize the temperature controls in the temperature main tab
 
 ### Themes
+Select a theme - notice you can enable preview and see the theme in a realtime preview
 ![](extras/s6.png)<br/><br/>
-* Select a theme - notice you can enable preview and see the theme in a realtime preview
+
 
 ### Layout
 ![](extras/s2.png)<br/><br/>
