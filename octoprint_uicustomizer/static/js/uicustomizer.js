@@ -2292,7 +2292,7 @@ $(function() {
             $('#settings_uicustomizer_themesContent').html('<div class="UIC-pulsate text-info text-center">Loading webcam&hellip;</div>');
             var themesHTML = '<ul class="thumbnails">';
             var template = '\
-            <li class="span4" data-uictheme="[key]">\
+            <li class="span5" data-uictheme="[key]">\
                 <a title="Click to select theme" href="#" class="UICsetTheme thumbnail"><img src="[t]"/></a>\
                 <p><a href="[org]" class="UICMargLeft pull-right btn-mini btn" target="_blank">Source</a><button class="btn-mini btn btn-primary UICsetTheme pull-right">Select</button>\
                 <strong>[name]</strong><br><small>[desc]</small>\
