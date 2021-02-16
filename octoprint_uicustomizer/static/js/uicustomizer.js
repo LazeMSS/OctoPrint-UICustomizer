@@ -160,7 +160,7 @@ $(function() {
                 });
             }
 
-            // Remove css "bugs" to make skins easier
+            // Remove css bootstrap hardcode css to make it easier to use skins
             var styleSrc = false;
             if ($('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]').length){
                 styleSrc = $('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]');
@@ -170,11 +170,9 @@ $(function() {
             if (styleSrc != false){
                 $.each(styleSrc[0].sheet.cssRules,function(index,val){
                     if (this.selectorText != undefined){
-                        // Remove broken accordin menu
                         if (this.selectorText == ".octoprint-container .accordion-heading .accordion-heading-button a"){
                             this.selectorText = ".octoprint-container .accordion-heading .accordion-heading-button >a";
                         }
-                        // Remove all static navbar assigns - they are in the default
                         if (this.selectorText.indexOf('#navbar .navbar-inner .nav') != -1){
                             this.selectorText = '#navbardisabledByUIC'
                         }

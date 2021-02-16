@@ -2,6 +2,7 @@
 ![](extras/responsive.png)
 A [OctoPrint](https://github.com/foosel/OctoPrint) plugin that allows you to customize the look and feel of the user interface.
 It also features a lot of other fixes and improvements:
+* Themes/skins - choose between 6 themes and more are coming soon
 * Customize tabs: Change icon, labels, order, show/hide
 * Change width of the columns
 * Sort the order to icons in the menu bar (top icons)
@@ -30,7 +31,7 @@ or manually using this URL:
 
 
 ## Configuration
-The configuration is split into 5 tabs - all have an preview option
+The configuration is split into 6 tabs - all have an preview option in the top right menu
 
 ### General
 ![](extras/s1.png)<br/><br/>
@@ -45,6 +46,9 @@ The configuration is split into 5 tabs - all have an preview option
 * Gcode full-size - maximize the main gcode viewer to take up as much space as possible
 * Compress temp. controls - compress/minimize the temperature controls in the temperature main tab
 
+### Themes
+![](extras/s6.png)<br/><br/>
+* Select a theme - notice you can enable preview and see the theme in a realtime preview
 
 ### Layout
 ![](extras/s2.png)<br/><br/>
@@ -79,11 +83,8 @@ This allows you to change the look & feel of the top icons in top menu
 
 ## Screenshots/Video
 [YouTube](https://youtu.be/BTiI6i1Rc5c)
-### Responsive layouts
-![](extras/responsive.png)
-### Overview with webcam widget
+### Webcam and gcode widget
 ![](extras/camwidget.png)
 ### Floating webcam
 ![](extras/floating.png)
 ### Compact Navbar temp
-![](extras/compactnav.png)
