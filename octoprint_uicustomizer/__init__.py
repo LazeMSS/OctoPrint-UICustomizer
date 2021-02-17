@@ -1,13 +1,21 @@
 
 # coding=utf-8
 from __future__ import absolute_import
+from octoprint.server import user_permission
 
 import octoprint.plugin
+import os
+import flask
+import sys
+import shutil
+
+from flask import send_file
 
 class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                        octoprint.plugin.SettingsPlugin,
                        octoprint.plugin.AssetPlugin,
-                       octoprint.plugin.TemplatePlugin):
+                       octoprint.plugin.TemplatePlugin,
+                       octoprint.plugin.SimpleApiPlugin):
 
     def on_after_startup(self):
         self._logger.info("UI Customizer is initialized.")
@@ -15,8 +23,41 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
     def get_assets(self):
         return dict(
             js=["js/uicustomizer.js","js/Sortable.min.js"],
-            css=["css/uicustomizer.css","css/bootstrap-responsive.css"]
+            css=["css/uicustomizer.css"]
         )
+
+    def on_settings_initialized(self):
+        curTheme = self._settings.get(["theme"],merged=True,asdict=True)
+        if curTheme:
+            self.setThemeFile(curTheme)
+
+    def setThemeFile(self,source):
+        baseFolder = os.path.join(os.path.dirname(os.path.realpath(__file__)),'static','themes','css')
+        srcTheme = os.path.join(baseFolder,source+'.css')
+        targeTheme = os.path.join(baseFolder,'active.css')
+        if os.path.exists(baseFolder) and os.path.isfile(srcTheme):
+            # remove old
+            try:
+                os.remove(targeTheme)
+            except OSError:
+                pass
+
+            # symlink on linux else we copy
+            if sys.platform.startswith("linux"):
+                os.symlink(srcTheme, targeTheme)
+            else:
+                shutil.copy2(srcTheme, targeTheme)
+
+        else:
+            self._logger.info("Unable to set the theme: %s",srcTheme)
+
+    def on_settings_save(self,data):
+        # set theme
+        if 'theme' in data:
+            self.setThemeFile(data['theme'])
+
+        # save
+        octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
 
     # default settings
     def get_settings_defaults(self):
@@ -60,13 +101,31 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                 ['gcode_link',True,False,'fab fa-codepen',True,False],
             ],
             "topIconSort" : [],
-            "gcodeZoom": 3
+            "gcodeZoom": 3,
+            "theme" : "default"
         }
 
     def get_template_configs(self):
         return [
             dict(type="settings", custom_bindings=False)
         ]
+
+
+    def get_api_commands(self):
+        return dict(
+            themes=[],
+        )
+
+    def on_api_command(self, command, data):
+        if not user_permission.can():
+            return flask.make_response("Insufficient rights", 403)
+
+        if command == "themes":
+            themeFile = os.path.join(os.path.dirname(os.path.realpath(__file__)),'static','themes.json')
+            if os.path.isfile(themeFile):
+                return send_file(themeFile, mimetype='application/json')
+            else:
+                return flask.make_response("Themes not found", 404)
 
     def get_update_information(self):
         # Define the configuration for your plugin to use with the Software Update

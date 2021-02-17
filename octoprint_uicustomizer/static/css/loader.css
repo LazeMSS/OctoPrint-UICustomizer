@@ -1,0 +1,67 @@
+
+/* loader */
+@keyframes UICFadeIN {
+    0% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1
+    }
+}
+
+/* use full screen size*/
+#page-container-loading{
+    width: 100vw !important;
+    height: 100vh !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: background-color 1s linear;
+}
+
+/* fade in main*/
+#page-container-main{
+    animation: UICFadeIN 1s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-iteration-count: 1;
+}
+
+/* set font size to fint screen size*/
+#page-container-loading-header, #page-container-loading-spinner{
+    font-size: max(min(2.5vw,50px),20px);
+}
+
+/* dark loading */
+@media (prefers-color-scheme: dark) {
+    #page-container-loading-header, #page-container-loading-spinner{
+        color: #fff !important;
+    }
+    #page-container-loading{
+        background: rgb(43,55,61);
+        background: linear-gradient(0deg, rgba(43,55,61,1) 0%, rgba(6,6,6,1) 100%);
+    }
+}
+
+/* add a small tag :) */
+#page-container-loading-header:after {
+    content: "UI Customizer";
+    position: absolute;
+    bottom: 10vh;
+    left: 0px;
+    width: 100%;
+    font-size: max(min(2vw,30px),15px);
+    animation: UICFadeIN 2s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-iteration-count: 1;
+}
+#page-container-loading-spinner{
+    margin-top: 3%;
+}
+#page-container-loading-spinner:before{
+    content: "\f1ce" !important;
+}
+
+/* loader end */
