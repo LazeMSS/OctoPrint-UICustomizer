@@ -113,7 +113,7 @@ table td.settings_groups_actions a.disabled,table td.settings_users_actions a.di
   }
   body.UICResponsiveMode .UICCompactMenu{
     background: rgb(15,52,96);
-    background: linear-gradient(180deg, rgba(15,52,96,1) 0%, rgba(22,33,62,1) 100%);
+    background: linear-gradient(180deg, rgba(15,52,96,1) 0%, rgba(22,33,62,1) 100%) !important;
     background-repeat: no-repeat;
     box-shadow: 1px 1px 0px 0px #194f8e;
   }
@@ -5655,7 +5655,7 @@ hr {
 
 .navbar .navbar-inner {
   background: rgb(15,52,96);
-  background: linear-gradient(180deg, rgba(15,52,96,1) 0%, rgba(22,33,62,1) 100%);
+  background: linear-gradient(180deg, rgba(15,52,96,1) 0%, rgba(22,33,62,1) 100%) !important;
   background-repeat: no-repeat;
 }
 
@@ -6506,8 +6506,11 @@ a.thumbnail:hover {
   margin-top:-16px;
   padding-top: 5px;
   margin-left: -15px;
-  background-color: #16223f;
-  background: linear-gradient(0deg, rgb(22 34 63 / 43%) 0px, rgb(22 34 63) 15px);
+  background: rgb(22,34,63);
+  background: -moz-linear-gradient(0deg, rgba(22,34,63,0) 43%, rgba(22,33,63,1) 100%);
+  background: -webkit-linear-gradient(0deg, rgba(22,34,63,0) 43%, rgba(22,33,63,1) 100%);
+  background: linear-gradient(0deg, rgba(22,34,63,0) 43%, rgba(22,33,63,1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#16223f",endColorstr="#16213f",GradientType=1);
 }
 
 

@@ -340,12 +340,11 @@ $(function() {
                 if (!$('#page-container-loading:visible').length){
                     hideLoader = setTimeout(function(){
                          $('#page-container-loading').show();
-                    }, 300);
-
+                    }, 200);
                 }
 
-                // Remove previous theme and responisve - responsive is added again if requested
-                $('link.UICThemeCSS,link.UICBSResp').remove();
+                // Remove the current css to trigger reload
+                $('link.UICThemeCSS').remove();
 
                 // Preview or for real?
                 if (preview){
@@ -355,6 +354,7 @@ $(function() {
                     // Store it for easier loading
                     self.setStorage('theme',themeName);
                 }
+
                 // Load style sheet
                 var styleCSS = $('<link class="UICThemeCSS" rel="stylesheet"/>');
 
@@ -364,11 +364,20 @@ $(function() {
                     if (hideLoader != null){
                         clearTimeout(hideLoader);
                         hideLoader = null;
-                        $('#page-container-loading').hide();
+                        setTimeout(function(){
+                            $('#page-container-loading').fadeOut()
+                        },300);
                     }
                 });
                 styleCSS.attr('href',themeURL);
-                $('body').append(styleCSS);
+
+                // Insert to the document at the right place
+                if ($('link.UICBSResp').length){
+                    styleCSS.insertBefore($('link.UICBSResp'));
+                }else{
+                    $('body').append(styleCSS);
+                }
+
                 self.curTheme = themeName;
             }
         }
@@ -1515,15 +1524,21 @@ $(function() {
         // Set responsive
         self.set_responsiveMode = function(enabled){
             if (enabled){
+                // Append responsive
+                if (!$('link.UICBSResp').length){
+                    $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicustomizer/static/css/bootstrap-responsive.css">');
+                }else{
+                    // Make sure responsive is last
+                    var allCSS = $('link[rel="stylesheet"]');
+                    if ((allCSS.length-1) > allCSS.index($('link.UICBSResp'))){
+                        $('link.UICBSResp').appendTo('body');
+                    }
+                }
+
                 $('.UICMainMenu').addClass('nav-collapse')
                 // Skip if active
                 if ($('body').hasClass('UICResponsiveMode')){
                     return true;
-                }
-
-                // Append responsive
-                if (!$('link.UICBSResp').length){
-                    $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicustomizer/static/css/bootstrap-responsive.css">');
                 }
 
                 // Fix gcode
@@ -2326,12 +2341,7 @@ $(function() {
                     var selectedTheme = $(this).closest('li').data('uictheme');
                     // Update preview
                     if (self.previewOn){
-                        var respons = $('link.UICBSResp').length;
-                        // Tell
                         self.set_theme(selectedTheme,true);
-                        if (respons){
-                            $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicustomizer/static/css/bootstrap-responsive.css">');
-                        }
                     }
                     self.setThemeSelected(selectedTheme);
                     return false;
@@ -2916,6 +2926,11 @@ $(function() {
 
                 if (self.previewOn){
                     self.previewHasBeenOn = true;
+
+                    // Set theme when updating it all
+                    var themeSel = $('#settings_uicustomizer_themesContent li.UICThemeSelected').data('uictheme');
+                    self.set_theme(themeSel,true);
+
                     // Update all
                     $('#settings_plugin_uicustomizer input:checkbox[data-settingtype]').trigger('change.uicus');
                     var colData = self.buildColumns(false);
@@ -2938,10 +2953,6 @@ $(function() {
                     }else{
                         $('div.UICMainMenu ul.nav >li a:hidden').addClass('UICpreviewHide').show();
                     }
-
-                    // Set theme
-                    var themeSel = $('#settings_uicustomizer_themesContent li.UICThemeSelected').data('uictheme');
-                    self.set_theme(themeSel,true);
 
                 }else{
                     // Remove preview toggles and restore the views when turning preview off/on
