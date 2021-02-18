@@ -2346,6 +2346,7 @@ $(function() {
                     self.setThemeSelected(selectedTheme);
                     return false;
                 });
+                // Set themes when done
                 self.setThemeSelected();
             });
 
@@ -2355,6 +2356,10 @@ $(function() {
         self.setThemeSelected = function(theme){
             if (theme == undefined){
                 theme = self.settings.settings.plugins.uicustomizer.theme();
+            }
+            // Do we have the requested theme - if not then use default
+            if (!$('#settings_uicustomizer_themesContent li[data-uictheme="'+theme+'"]').length){
+                theme = "default";
             }
             $('#settings_uicustomizer_themesContent li').removeClass('UICThemeSelected');
             $('#settings_uicustomizer_themesContent li[data-uictheme="'+theme+'"]').addClass('UICThemeSelected');
@@ -2370,6 +2375,8 @@ $(function() {
             // Load themes
             if (!self.ThemesLoaded){
                 self.loadSettingsThemes();
+                // Dont load again
+                self.ThemesLoaded = true;
             }else{
                 self.setThemeSelected();
             }

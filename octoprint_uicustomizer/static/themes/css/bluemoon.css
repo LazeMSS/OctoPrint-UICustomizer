@@ -6354,7 +6354,7 @@ textarea[disabled],
 input[readonly],
 select[readonly],
 textarea[readonly] {
-  color: #bbbfc2;
+  color: #15213f;
 }
 
 .form-actions {
