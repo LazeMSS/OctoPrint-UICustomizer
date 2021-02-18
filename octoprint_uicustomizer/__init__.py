@@ -52,12 +52,17 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
             self._logger.info("Unable to set the theme: %s",srcTheme)
 
     def on_settings_save(self,data):
-        # set theme
-        if 'theme' in data:
-            self.setThemeFile(data['theme'])
+        try:
+            # save
+            octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
 
-        # save
-        octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
+            # set theme
+            if 'theme' in data and data['theme']:
+                self.setThemeFile(str(data['theme']))
+
+        except Exception as e:
+            self._logger.exception(e)
+
 
     # default settings
     def get_settings_defaults(self):
