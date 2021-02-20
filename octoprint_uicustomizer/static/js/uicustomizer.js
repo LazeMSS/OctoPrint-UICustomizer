@@ -110,8 +110,7 @@ $(function() {
         // Initial bound and init the custom layout
         self.onAllBound = function(){
             self.curTheme = self.getStorage('theme');
-            $('#page-container-loading').show();
-            $('#page-container-main').hide();
+
             // Store WebCam
             self.onWebCamOrg = OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded;
             self.onWebCamErrorOrg = OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored;
