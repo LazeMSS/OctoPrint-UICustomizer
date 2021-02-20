@@ -36,6 +36,7 @@
     body.UICResponsiveMode div.UICLargeSpan #files .gcode_files .entry .uploaded, #files .gcode_files .entry .size{
         margin-top:3px;
     }
+
 }
 
 /* smaller than  big screens :) */
@@ -156,6 +157,11 @@
     }
     body.UICResponsiveMode div.UICLargeSpan #files .gcode_files .entry .uploaded, #files .gcode_files .entry .size{
         margin-top:3px;
+    }
+
+    body.UICResponsiveMode #files .gcode_files .scroll-wrapper.UICFullHeight{
+        height: 100%;
+        max-height: 75vh;
     }
 }
 
@@ -329,13 +335,17 @@ html:not(.themeify) #tabs_content{
     left: auto;
 }
 
-
 /* fix search more for non settings */
 #files_wrapper .input-block.search-query, body.UICResponsiveMode .input-block.search-query{
 	max-width: 90% !important;
     width: calc(100% - 28px) !important;
     margin-right: -20px;
     margin-left: -20px;
+}
+
+#files .gcode_files .scroll-wrapper.UICFullHeight{
+    height: 100%;
+    max-height: 80vh;
 }
 
 /* search in settings fix*/

@@ -315,6 +315,9 @@ $(function() {
             // Full widh Gcode
             self.set_gcodeFullWidth(settingsPlugin.gcodeFullWidth());
 
+            // Full height files
+            self.set_filesFullHeight(settingsPlugin.filesFullHeight());
+
             // Compress the temperature controls
             self.set_compressTempControls(settingsPlugin.compressTempControls());
 
@@ -694,6 +697,14 @@ $(function() {
                 $('#canvas_container').addClass('UICMaxi');
             }else{
                 $('#canvas_container').removeClass('UICMaxi');
+            }
+        }
+
+        self.set_filesFullHeight = function(enable){
+             if (enable){
+                $('#files .gcode_files .scroll-wrapper').addClass('UICFullHeight');
+            }else{
+                $('#files .gcode_files .scroll-wrapper').removeClass('UICFullHeight');
             }
         }
 
