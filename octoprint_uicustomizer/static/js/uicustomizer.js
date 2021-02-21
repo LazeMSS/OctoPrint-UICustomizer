@@ -275,6 +275,18 @@ $(function() {
                 $(window).trigger('resize');
             },500);
 
+            // Final check to make sure CSS is not broken by other plugins etc.
+            if($('link.UICBSResp').length || $('link.UICThemeCSS').length){
+                window.setTimeout(function() {
+                    // Make sure responsive and themes are last
+                    var allCSS = $('link[rel="stylesheet"]');
+                    if ((allCSS.length-1) > allCSS.index($('link.UICBSResp')) || (allCSS.length-2) > allCSS.index($('link.UICThemeCSS'))){
+                        $('link.UICThemeCSS').appendTo('body');
+                        $('link.UICBSResp').appendTo('body');
+                    };
+                },1000);
+            }
+
         }
 
 
