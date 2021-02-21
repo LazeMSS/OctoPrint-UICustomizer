@@ -2343,9 +2343,13 @@ $(function() {
                 </p>\
             </li>';
             OctoPrint.simpleApiCommand("uicustomizer","themes",{}).done(function(response) {
-                $.each(response,function(id,theme){
+                var keys = Object.keys(response);
+                keys.sort();
+                keys.push(keys.splice(keys.indexOf('default'), 1)[0]);
+                $.each(keys,function(id,key){
                     var addThis = template+'';
-                    addThis = addThis.replace('\[key\]',id);
+                    addThis = addThis.replace('\[key\]',key);
+                    theme = response[key];
                     $.each(theme,function(key,attr){
                         if (key == "org"){
                             if (attr == false){
