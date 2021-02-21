@@ -17,6 +17,12 @@
     "desc": "Shades of gunmetal gray",
     "org": "https://bootswatch.com/2/slate/"
   },
+  "prusatribute":{
+    "t": "./plugin/uicustomizer/static/themes/thumbs/prusatribute.png",
+    "name": "Prusa tribute",
+    "desc": "A tribute to Prusa",
+    "org": false
+  },
   "cosmo":{
     "t": "./plugin/uicustomizer/static/themes/thumbs/cosmo.png",
     "name": "Cosmo",
