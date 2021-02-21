@@ -35,12 +35,6 @@
     "desc": "An ode to Metro",
     "org": "https://bootswatch.com/2/cosmo/"
   },
-  "superhero":{
-    "t": "./plugin/uicustomizer/static/themes/thumbs/superhero.png",
-    "name": "Superhero",
-    "desc": "Batman meets... Aquaman?",
-    "org": "https://bootswatch.com/2/superhero/"
-  },
   "flatly":{
     "t": "./plugin/uicustomizer/static/themes/thumbs/flatly.png",
     "name": "Flatly",
