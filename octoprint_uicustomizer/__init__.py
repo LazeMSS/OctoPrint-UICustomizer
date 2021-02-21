@@ -90,6 +90,7 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
             "compactMenu": True,
             "hideMainCam": False,
             "gcodeFullWidth": False,
+            "filesFullHeight": True,
             "compressTempControls" : True,
             "disableTermInactive": False,
             "mainTabsCustomize" : True,
@@ -102,7 +103,8 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
             ],
             "topIconSort" : [],
             "gcodeZoom": 3,
-            "theme" : "default"
+            "theme" : "default",
+            "customCSS" : ""
         }
 
     def get_template_configs(self):

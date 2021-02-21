@@ -109,9 +109,25 @@ $(function() {
         // ------------------------------------------------------------------------------------------------------------------------
         // Initial bound and init the custom layout
         self.onAllBound = function(){
+            // Cleanup everything if using touch ui
+            if (typeof OctoPrint.coreui.viewmodels.touchUIViewModel != "undefined"){
+                if(window.location.hash == "#touch"){
+                    OctoPrint.coreui.viewmodels.touchUIViewModel.DOM.storage.set('active',true);
+                    $('#page-container-loading-header').html($('#page-container-loading-header').html()+ "<br><small>Disabling UI Customizer..</small>")
+                    $('link.UICThemeCSS,link.UICBSResp').remove();
+                    return;
+                }else if(OctoPrint.coreui.viewmodels.touchUIViewModel.DOM.storage.get('active') == true){
+                    $('#page-container-loading-header').html($('#page-container-loading-header').html()+ "<br><small>Disabling Touch UI and reloading...</small>")
+                    OctoPrint.coreui.viewmodels.touchUIViewModel.DOM.storage.set('active',false);
+                    document.location.hash = "";
+                    document.location.reload();
+                    return;
+                }
+            }
+
+            // Load from storage
             self.curTheme = self.getStorage('theme');
-            $('#page-container-loading').show();
-            $('#page-container-main').hide();
+
             // Store WebCam
             self.onWebCamOrg = OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded;
             self.onWebCamErrorOrg = OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored;
@@ -259,6 +275,18 @@ $(function() {
                 $(window).trigger('resize');
             },500);
 
+            // Final check to make sure CSS is not broken by other plugins etc.
+            if($('link.UICBSResp').length || $('link.UICThemeCSS').length){
+                window.setTimeout(function() {
+                    // Make sure responsive and themes are last
+                    var allCSS = $('link[rel="stylesheet"]');
+                    if ((allCSS.length-1) > allCSS.index($('link.UICBSResp')) || (allCSS.length-2) > allCSS.index($('link.UICThemeCSS'))){
+                        $('link.UICThemeCSS').appendTo('body');
+                        $('link.UICBSResp').appendTo('body');
+                    };
+                },1000);
+            }
+
         }
 
 
@@ -316,8 +344,13 @@ $(function() {
             // Full widh Gcode
             self.set_gcodeFullWidth(settingsPlugin.gcodeFullWidth());
 
+            // Full height files
+            self.set_filesFullHeight(settingsPlugin.filesFullHeight());
+
             // Compress the temperature controls
             self.set_compressTempControls(settingsPlugin.compressTempControls());
+
+            self.set_customCSS(settingsPlugin.customCSS());
 
         }
 
@@ -698,11 +731,32 @@ $(function() {
             }
         }
 
+        self.set_filesFullHeight = function(enable){
+             if (enable){
+                $('#files .gcode_files .scroll-wrapper').addClass('UICFullHeight');
+            }else{
+                $('#files .gcode_files .scroll-wrapper').removeClass('UICFullHeight');
+            }
+        }
+
         self.set_compressTempControls= function(enable){
             if (enable){
                 $('#temp').addClass('UICTempTableSmall');
             }else{
                 $('#temp').removeClass('UICTempTableSmall');
+            }
+        }
+
+        self.set_customCSS= function(cssStr){
+            if ($.trim(cssStr) != ""){
+                // Create or update
+                if ($('#UICCustomCSSS').length){
+                    $('#UICCustomCSSS').text(cssStr);
+                }else{
+                    $('<style id="UICCustomCSSS">'+cssStr+'</style>').appendTo('body');
+                }
+            }else{
+                $('#UICCustomCSSS').remove();
             }
         }
 
@@ -2316,9 +2370,13 @@ $(function() {
                 </p>\
             </li>';
             OctoPrint.simpleApiCommand("uicustomizer","themes",{}).done(function(response) {
-                $.each(response,function(id,theme){
+                var keys = Object.keys(response);
+                keys.sort();
+                keys.push(keys.splice(keys.indexOf('default'), 1)[0]);
+                $.each(keys,function(id,key){
                     var addThis = template+'';
-                    addThis = addThis.replace('\[key\]',id);
+                    addThis = addThis.replace('\[key\]',key);
+                    theme = response[key];
                     $.each(theme,function(key,attr){
                         if (key == "org"){
                             if (attr == false){
@@ -2459,7 +2517,6 @@ $(function() {
             $('#sidebar div.accordion-group').each(function(){
                 sidebarItems.push('#'+$(this).attr('id'));
             });
-
 
             // Check for navbar
             if (typeof OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.navbartemp !== "undefined"){

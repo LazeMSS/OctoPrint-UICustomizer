@@ -41,6 +41,9 @@
                         <div class="controls">
                             <label class="checkbox" title="Maximize the main gcode viewer to take up as much space as possible"><input data-bind="checked: settings.plugins.uicustomizer.gcodeFullWidth" data-settingtype="gcodeFullWidth" data-previewtab="gcode_link" type="checkbox"> {{ _('Gcode full-size') }}</label>
                         </div>
+                         <div class="controls">
+                            <label class="checkbox" title="Maximize the files selector to show as many files as possible"><input data-bind="checked: settings.plugins.uicustomizer.filesFullHeight" data-settingtype="filesFullHeight" data-previewtab="gcode_link" type="checkbox"> {{ _('Maximize Files height') }}</label>
+                        </div>
                     </div>
                     <div class="span6">
                         <div class="controls">
@@ -138,6 +141,9 @@
                     </div>
                 </div>
             </div>
+            <br>
+            <label>Custom CSS</label>
+            <textarea class="UICCustomCSS" class="block monospace" data-bind="value: settings.plugins.uicustomizer.customCSS"></textarea>
         </div>
     </div>
     <div class="UICReportBug"><a class="btn btn-mini btn-info" id="UICReportBug"><i class="fas fa-bug UICPadRight"></i>Report a bug</a></div>

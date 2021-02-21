@@ -23,17 +23,17 @@
     "desc": "Shades of gunmetal gray",
     "org": "https://bootswatch.com/2/slate/"
   },
+  "prusatribute":{
+    "t": "./plugin/uicustomizer/static/themes/thumbs/prusatribute.png",
+    "name": "Prusa tribute",
+    "desc": "A tribute to Prusa",
+    "org": false
+  },
   "cosmo":{
     "t": "./plugin/uicustomizer/static/themes/thumbs/cosmo.png",
     "name": "Cosmo",
     "desc": "An ode to Metro",
     "org": "https://bootswatch.com/2/cosmo/"
-  },
-  "superhero":{
-    "t": "./plugin/uicustomizer/static/themes/thumbs/superhero.png",
-    "name": "Superhero",
-    "desc": "Batman meets... Aquaman?",
-    "org": "https://bootswatch.com/2/superhero/"
   },
   "flatly":{
     "t": "./plugin/uicustomizer/static/themes/thumbs/flatly.png",
