@@ -1,4 +1,10 @@
 {
+  "red-night":{
+    "t": "./plugin/uicustomizer/static/themes/thumbs/red-night.png",
+    "name": "Red night",
+    "desc": "A dark theme with a red accent",
+    "org": false
+  },
   "bluemoon":{
     "t": "./plugin/uicustomizer/static/themes/thumbs/bluemoon.png",
     "name": "Blue moon",
