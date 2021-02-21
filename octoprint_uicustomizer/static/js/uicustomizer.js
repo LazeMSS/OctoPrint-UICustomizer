@@ -350,6 +350,8 @@ $(function() {
             // Compress the temperature controls
             self.set_compressTempControls(settingsPlugin.compressTempControls());
 
+            self.set_customCSS(settingsPlugin.customCSS());
+
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
@@ -742,6 +744,19 @@ $(function() {
                 $('#temp').addClass('UICTempTableSmall');
             }else{
                 $('#temp').removeClass('UICTempTableSmall');
+            }
+        }
+
+        self.set_customCSS= function(cssStr){
+            if ($.trim(cssStr) != ""){
+                // Create or update
+                if ($('#UICCustomCSSS').length){
+                    $('#UICCustomCSSS').text(cssStr);
+                }else{
+                    $('<style id="UICCustomCSSS">'+cssStr+'</style>').appendTo('body');
+                }
+            }else{
+                $('#UICCustomCSSS').remove();
             }
         }
 
@@ -2502,7 +2517,6 @@ $(function() {
             $('#sidebar div.accordion-group').each(function(){
                 sidebarItems.push('#'+$(this).attr('id'));
             });
-
 
             // Check for navbar
             if (typeof OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.navbartemp !== "undefined"){

@@ -103,7 +103,8 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
             ],
             "topIconSort" : [],
             "gcodeZoom": 3,
-            "theme" : "default"
+            "theme" : "default",
+            "customCSS" : ""
         }
 
     def get_template_configs(self):

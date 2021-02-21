@@ -371,6 +371,12 @@ body.UICResponsiveMode .search-query-with-clear .search-clear{
     cursor: grab;
 }
 
+textarea.UICCustomCSS{
+    width: 100%;
+    resize: vertical;
+    min-height: 200px;
+}
+
 #settings_uicustomizer_topicons_container .UICTopIconLbl{
     text-transform: capitalize;
 }
