@@ -193,27 +193,37 @@ $(function() {
                 });
             }
 
-            // Remove css bootstrap hardcode css to make it easier to use skins
-            var styleSrc = false;
+            // Remove hardcode css to make it easier to use skins
+            var styleSrcs = [];
             if ($('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]').length){
-                styleSrc = $('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]');
-            }else if ($('link[href="/static/css/octoprint.css"][rel="stylesheet"]').length){
-                styleSrc = $('link[href="/static/css/octoprint.css"][rel="stylesheet"]');
+                styleSrcs.push($('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]')[0]);
             }
-            if (styleSrc != false){
-                $.each(styleSrc[0].sheet.cssRules,function(index,val){
-                    if (this.selectorText != undefined){
-                        if (this.selectorText == ".octoprint-container .accordion-heading .accordion-heading-button a"){
-                            this.selectorText = ".octoprint-container .accordion-heading .accordion-heading-button >a";
+            if ($('link[href="/static/css/octoprint.css"][rel="stylesheet"]').length){
+                styleSrcs.push($('link[href="/static/css/octoprint.css"][rel="stylesheet"]')[0]);
+            }
+            if ($('link[href="/plugin/navbartemp/static/css/navbartemp.css"][rel="stylesheet"]').length){
+                styleSrcs.push($('link[href="/plugin/navbartemp/static/css/navbartemp.css"][rel="stylesheet"]')[0]);
+            }
+            if (styleSrcs.length){
+                $.each(styleSrcs,function(idx,styleSrc){
+                    $.each(styleSrc.sheet.cssRules,function(index,val){
+                        if (this.selectorText != undefined){
+                            if (this.selectorText == ".octoprint-container .accordion-heading .accordion-heading-button a"){
+                                this.selectorText = ".octoprint-container .accordion-heading .accordion-heading-button >a";
+                            }
+                            if (this.selectorText.indexOf('#navbar .navbar-inner .nav') != -1){
+                                this.selectorText = '#navbardisabledByUIC'
+                            }
+                            if (this.selectorText == "#navbar .navbar-inner"){
+                                this.selectorText = '#navbardisabledByUIC'
+                            }
+                            // Fix coding for navbar temp
+                            if (this.selectorText == "#navbar_plugin_navbartemp .navbar-text"){
+                                this.selectorText = '#navbardisabledByUIC'
+                            }
                         }
-                        if (this.selectorText.indexOf('#navbar .navbar-inner .nav') != -1){
-                            this.selectorText = '#navbardisabledByUIC'
-                        }
-                        if (this.selectorText == "#navbar .navbar-inner"){
-                            this.selectorText = '#navbardisabledByUIC'
-                        }
-                    }
-                })
+                    })
+                });
             }
 
             // Check these plugins
