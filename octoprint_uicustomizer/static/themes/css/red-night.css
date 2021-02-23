@@ -23,6 +23,13 @@
     --icon-quiteWhite-Filter: hue-rotate(0deg) saturate(0) brightness(96.8627451%);
 }
 
+/* fix hardcode headers*/
+.octoprint-container .tab-content h1 {
+    color: var(--white);
+    border-bottom-color: #d32f2f;
+}
+
+
 body {
     background-color: var(--background);
     color: var(--quiteWhite);
@@ -49,6 +56,7 @@ a:hover {
     -moz-box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, .75);
     box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, .75);
 }
+
 
 .octoprint-container .accordion-heading .accordion-heading-button a {
     color: inherit;
