@@ -1429,10 +1429,14 @@ $(function() {
                                     $('#UICWebCamFull img').attr('src',streamURL);
                                 }
 
-                            }else if($('#IUCWebcamContainerInner img').attr('src') != streamURL){
+                            }
+
+                            // Check if the url is right - on first load this sometimes breaks on fast webcam streams: https://github.com/LazeMSS/OctoPrint-UICustomizer/issues/82
+                            if($('#IUCWebcamContainerInner img').attr('src') != streamURL){
                                 self.logToConsole("WebCam updated SRC");
                                 $('#IUCWebcamContainerInner img').attr('src',streamURL);
                             }
+
                             // Make sure its shown
                             $('#IUCWebcamContainer > div >div').show();
                             $('#webcam_image').data("isLoaded",true);
