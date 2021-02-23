@@ -1153,6 +1153,7 @@ html.themeify #UICsetMenuShow{
     font-size: 3em;
     margin-left: 5px;
     margin-top: 5px;
+    text-shadow: 0 0px 4px #000000;
 }
 
 #settings_uicustomizer_themesContent .span4 p {

@@ -14,8 +14,7 @@ from flask import send_file
 class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                        octoprint.plugin.SettingsPlugin,
                        octoprint.plugin.AssetPlugin,
-                       octoprint.plugin.TemplatePlugin,
-                       octoprint.plugin.SimpleApiPlugin):
+                       octoprint.plugin.TemplatePlugin):
 
     def on_after_startup(self):
         self._logger.info("UI Customizer is initialized.")
@@ -111,23 +110,6 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
         return [
             dict(type="settings", custom_bindings=False)
         ]
-
-
-    def get_api_commands(self):
-        return dict(
-            themes=[],
-        )
-
-    def on_api_command(self, command, data):
-        if not user_permission.can():
-            return flask.make_response("Insufficient rights", 403)
-
-        if command == "themes":
-            themeFile = os.path.join(os.path.dirname(os.path.realpath(__file__)),'static','themes.json')
-            if os.path.isfile(themeFile):
-                return send_file(themeFile, mimetype='application/json')
-            else:
-                return flask.make_response("Themes not found", 404)
 
     def get_update_information(self):
         # Define the configuration for your plugin to use with the Software Update
