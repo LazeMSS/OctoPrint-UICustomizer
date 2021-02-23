@@ -2379,55 +2379,77 @@ $(function() {
 
 
         // Load themes
-        self.loadSettingsThemes = function(){
-            $('#settings_uicustomizer_themesContent').html('<div class="UIC-pulsate text-info text-center">Loading webcam&hellip;</div>');
+        self.loadSettingsThemes = function(responseData,baseURL){
+            if (responseData == null){
+                $('#settings_uicustomizer_themesContent').html('<div class="UIC-pulsate text-info text-center">Loading webcam&hellip;</div>');
+                $.ajax({
+                    url: "https://lazemss.github.io/OctoPrint-UICustomizerThemes/themes.json",
+                    success: function(response){
+                        self.loadSettingsThemes(response,"https://lazemss.github.io/OctoPrint-UICustomizerThemes/");
+                    },
+                    // Try local as a workaround
+                    error: function (request, status, error) {
+                         $.ajax({
+                            url: "./plugin/uicustomizer/static/themes.json",
+                            success: function(response){
+                                self.loadSettingsThemes(response,"./plugin/uicustomizer/static/themes/");
+                            },
+                            error: function (request, status, error) {
+                                alert("FAILED TO LOAD THEMES!");
+                            }
+                        });
+                    }
+                });
+                return;
+            }
             var themesHTML = '<ul class="thumbnails">';
             var template = '\
             <li class="span4" data-uictheme="[key]">\
-                <a title="Click to select theme" href="#" class="UICsetTheme thumbnail"><img src="[t]"/></a>\
+                <a title="Click to select theme" href="#" class="UICsetTheme thumbnail"><img src="'+baseURL+'thumbs/[key].png"/></a>\
                 <p><a href="[org]" class="UICMargLeft pull-right btn-mini btn" target="_blank">Source</a><button class="btn-mini btn btn-primary UICsetTheme pull-right">Select</button>\
                 <strong>[name]</strong><br><small>[desc]</small>\
                 </p>\
             </li>';
-            OctoPrint.simpleApiCommand("uicustomizer","themes",{}).done(function(response) {
-                var keys = Object.keys(response);
-                keys.sort();
-                keys.push(keys.splice(keys.indexOf('default'), 1)[0]);
-                $.each(keys,function(id,key){
-                    var addThis = template+'';
-                    addThis = addThis.replace('\[key\]',key);
-                    theme = response[key];
-                    $.each(theme,function(key,attr){
-                        if (key == "org"){
-                            if (attr == false){
-                                attr = '#;" style="display:none" ';
-                            }else{
-                                attr = encodeURI(attr);
-                            }
+            // Sort result
+            var keys = Object.keys(responseData);
+            keys.sort();
+            // Put default last
+            keys.push(keys.splice(keys.indexOf('default'), 1)[0]);
+
+            // Parse them
+            $.each(keys,function(id,key){
+                var addThis = template+'';
+                addThis = addThis.replaceAll('\[key\]',key);
+                theme = responseData[key];
+                $.each(theme,function(key,attr){
+                    if (key == "org"){
+                        if (attr == false){
+                            attr = '#;" style="display:none" ';
                         }else{
-                            attr = $('<div/>').text(attr).html();
+                            attr = encodeURI(attr);
                         }
-                        addThis = addThis.replace('\['+key+'\]',attr);
-                    });
-                    themesHTML += addThis;
-                });
-                themesHTML += '</ul>';
-                $('#settings_uicustomizer_themesContent').html(themesHTML);
-
-                // Click handler
-                $('.UICsetTheme').off('click').on('click',function(event){
-                    var selectedTheme = $(this).closest('li').data('uictheme');
-                    // Update preview
-                    if (self.previewOn){
-                        self.set_theme(selectedTheme,true);
+                    }else{
+                        attr = $('<div/>').text(attr).html();
                     }
-                    self.setThemeSelected(selectedTheme);
-                    return false;
+                    addThis = addThis.replace('\['+key+'\]',attr);
                 });
-                // Set themes when done
-                self.setThemeSelected();
+                themesHTML += addThis;
             });
+            themesHTML += '</ul>';
+            $('#settings_uicustomizer_themesContent').html(themesHTML);
 
+            // Click handler
+            $('.UICsetTheme').off('click').on('click',function(event){
+                var selectedTheme = $(this).closest('li').data('uictheme');
+                // Update preview
+                if (self.previewOn){
+                    self.set_theme(selectedTheme,true);
+                }
+                self.setThemeSelected(selectedTheme);
+                return false;
+            });
+            // Set themes when done
+            self.setThemeSelected();
         }
 
         // Set theme selected
@@ -2452,9 +2474,11 @@ $(function() {
 
             // Load themes
             if (!self.ThemesLoaded){
-                self.loadSettingsThemes();
-                // Dont load again
-                self.ThemesLoaded = true;
+                $('#settings_plugin_uicustomizer a[href="#settings_uicustomizer_themes"]').one('click',function(){
+                    // Dont load again
+                    self.ThemesLoaded = true;
+                    self.loadSettingsThemes(null);
+                });
             }else{
                 self.setThemeSelected();
             }
