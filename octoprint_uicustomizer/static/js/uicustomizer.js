@@ -165,6 +165,21 @@ $(function() {
                 $('div#tabs_content div.tab-pane:not("#tab_plugin_consolidate_temp_control") > div.span6').children().unwrap();
             }
 
+            // Rewrite the tab selector for settings - https://github.com/LazeMSS/OctoPrint-UICustomizer/issues/95
+            var prevTab = OctoPrint.coreui.viewmodels.settingsViewModel.selectTab;
+            OctoPrint.coreui.viewmodels.settingsViewModel.selectTab = function(tab){
+                if ($('body').hasClass('UICResponsiveMode')){
+                    if (tab != undefined) {
+                        if (tab[0] != "#") { tab = "#" + tab; }
+                        $('#UICsettingsMenu a[href="'+tab+'"]').tab('show')
+                    } else {
+                        $('#UICsettingsMenu a[data-toggle="tab"]:first').tab('show')
+                    }
+                }else{
+                    prevTab(tab);
+                }
+            }
+
             // Observe theme changes
             OctoPrint.coreui.viewmodels.settingsViewModel.appearance_color.subscribe(function(color) {
                 self.updateStandardTheme(color);
@@ -178,27 +193,37 @@ $(function() {
                 });
             }
 
-            // Remove css bootstrap hardcode css to make it easier to use skins
-            var styleSrc = false;
+            // Remove hardcode css to make it easier to use skins
+            var styleSrcs = [];
             if ($('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]').length){
-                styleSrc = $('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]');
-            }else if ($('link[href="/static/css/octoprint.css"][rel="stylesheet"]').length){
-                styleSrc = $('link[href="/static/css/octoprint.css"][rel="stylesheet"]');
+                styleSrcs.push($('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]')[0]);
             }
-            if (styleSrc != false){
-                $.each(styleSrc[0].sheet.cssRules,function(index,val){
-                    if (this.selectorText != undefined){
-                        if (this.selectorText == ".octoprint-container .accordion-heading .accordion-heading-button a"){
-                            this.selectorText = ".octoprint-container .accordion-heading .accordion-heading-button >a";
+            if ($('link[href="/static/css/octoprint.css"][rel="stylesheet"]').length){
+                styleSrcs.push($('link[href="/static/css/octoprint.css"][rel="stylesheet"]')[0]);
+            }
+            if ($('link[href="/plugin/navbartemp/static/css/navbartemp.css"][rel="stylesheet"]').length){
+                styleSrcs.push($('link[href="/plugin/navbartemp/static/css/navbartemp.css"][rel="stylesheet"]')[0]);
+            }
+            if (styleSrcs.length){
+                $.each(styleSrcs,function(idx,styleSrc){
+                    $.each(styleSrc.sheet.cssRules,function(index,val){
+                        if (this.selectorText != undefined){
+                            if (this.selectorText == ".octoprint-container .accordion-heading .accordion-heading-button a"){
+                                this.selectorText = ".octoprint-container .accordion-heading .accordion-heading-button >a";
+                            }
+                            if (this.selectorText.indexOf('#navbar .navbar-inner .nav') != -1){
+                                this.selectorText = '#navbardisabledByUIC'
+                            }
+                            if (this.selectorText == "#navbar .navbar-inner"){
+                                this.selectorText = '#navbardisabledByUIC'
+                            }
+                            // Fix coding for navbar temp
+                            if (this.selectorText == "#navbar_plugin_navbartemp .navbar-text"){
+                                this.selectorText = '#navbardisabledByUIC'
+                            }
                         }
-                        if (this.selectorText.indexOf('#navbar .navbar-inner .nav') != -1){
-                            this.selectorText = '#navbardisabledByUIC'
-                        }
-                        if (this.selectorText == "#navbar .navbar-inner"){
-                            this.selectorText = '#navbardisabledByUIC'
-                        }
-                    }
-                })
+                    })
+                });
             }
 
             // Check these plugins
@@ -1404,10 +1429,14 @@ $(function() {
                                     $('#UICWebCamFull img').attr('src',streamURL);
                                 }
 
-                            }else if($('#IUCWebcamContainerInner img').attr('src') != streamURL){
+                            }
+
+                            // Check if the url is right - on first load this sometimes breaks on fast webcam streams: https://github.com/LazeMSS/OctoPrint-UICustomizer/issues/82
+                            if($('#IUCWebcamContainerInner img').attr('src') != streamURL){
                                 self.logToConsole("WebCam updated SRC");
                                 $('#IUCWebcamContainerInner img').attr('src',streamURL);
                             }
+
                             // Make sure its shown
                             $('#IUCWebcamContainer > div >div').show();
                             $('#webcam_image').data("isLoaded",true);
@@ -1650,9 +1679,6 @@ $(function() {
                 // Remove the id and move it to the new one
                 $('#settings_dialog_menu').removeAttr('id').addClass('UICsettingsMenuOldMenu');
                 $('#UICsettingsMenuNav div.UICsettingsNewMenu').attr('id','settings_dialog_menu');
-                // For restoring
-                $('#settingsTabs').addClass('UICsettingsMOldTabs');
-                $('#UICsettingsNewMenu').attr('id','settingsTabs');;
 
                 // hide the "collapse/responsive" stuff
                 $('#UICsettingsMenuNav a.btn-navbar').hide();
@@ -1790,8 +1816,6 @@ $(function() {
 
                 // revert settings menu
                 $('#UICSettingsHeader').remove();
-                $('#settingsTabs').removeAttr('id');
-                $('ul.UICsettingsMOldTabs').attr('id','settingsTabs').removeClass('UICsettingsMOldTabs');
                 $('#settings_dialog_menu').removeAttr('id');
                 $('div.UICsettingsMenuOldMenu').attr('id','settings_dialog_menu').removeClass('UICsettingsMenuOldMenu');
                 $('#UICsettingsMenu li ').each(function(){
