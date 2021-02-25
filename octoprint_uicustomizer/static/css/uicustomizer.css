@@ -37,6 +37,11 @@
         margin-top:3px;
     }
 
+    /* Adjust the Files -> Folders menu offset */
+    #files_wrapper .dropdown-menu > .dropdown-submenu > .dropdown-menu {
+        margin-right: -195px;
+    }
+
 }
 
 /* smaller than  big screens :) */
@@ -105,6 +110,11 @@
     #navbar.navbar-fixed-top .navbar-inner {
         padding: 0px 5px !important;
     }
+
+    /* Adjust the Files -> Folders menu offset */
+    #files_wrapper .dropdown-menu > .dropdown-submenu > .dropdown-menu {
+        margin-right: -195px;
+    }
 }
 
 /* tiny screns aka mobile */
@@ -163,10 +173,20 @@
         height: 100%;
         max-height: 75vh;
     }
+
+    /* Adjust the Files -> Folders menu offset */
+    #files_wrapper .dropdown-menu > .dropdown-submenu > .dropdown-menu {
+        margin-right: 298px;
+    }
 }
 
 /* super tiny hack*/
 @media (max-width: 600px){
+
+    /* Adjust the Files -> Folders menu offset */
+    #files_wrapper .dropdown-menu > .dropdown-submenu > .dropdown-menu {
+        margin-right: 0 !important;
+    }
 
 	body.UICResponsiveMode #navbar a.brand{
 		width:22px;
