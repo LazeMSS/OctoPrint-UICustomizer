@@ -3949,7 +3949,7 @@ input[type="submit"].btn.btn-mini {
 
 .navbar-text {
   margin-bottom: 0;
-  line-height: 50px;
+  line-height: 40px;
   color: #adafae;
 }
 
@@ -5778,7 +5778,6 @@ hr {
 .navbar .navbar-text {
   /*padding: 15px 15px 14px; UIC: removed*/
   margin-bottom: 1px;
-  line-height: inherit;
 }
 
 .navbar .divider-vertical {
@@ -6676,4 +6675,3 @@ body.UICResponsiveMode #settings_dialog_content{
 .ct-series-a .ct-line{
   stroke: #b94a48;
 }
-

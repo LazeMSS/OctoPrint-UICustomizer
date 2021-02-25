@@ -3914,7 +3914,7 @@ input[type="submit"].btn.btn-mini {
 
 .navbar-text {
   margin-bottom: 0;
-  line-height: 70px;
+  line-height: 40px;
   color: #999999;
 }
 
@@ -3928,7 +3928,7 @@ input[type="submit"].btn.btn-mini {
 }
 
 .navbar .divider-vertical {
-  height: 70px;
+  height: 40px;
   margin: 0 9px;
   border-right: 1px solid #2a333c;
   border-left: 1px solid #2a333c;
@@ -5665,7 +5665,7 @@ blockquote.pull-right {
 
 .navbar .navbar-text {
   font-family: 'Roboto', sans-serif;
-  line-height: 30px;
+  line-height: 40px;
 }
 
 .navbar .navbar-search {
@@ -5685,7 +5685,7 @@ blockquote.pull-right {
 }
 
 .navbar .divider-vertical {
-  height: 70px;
+  height: 40px;
 }
 
 .navbar .nav .dropdown-toggle .caret,
