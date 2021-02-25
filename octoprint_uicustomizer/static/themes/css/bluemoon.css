@@ -6621,4 +6621,6 @@ a.accordion-toggle:not(.collapsed) {
 
 .UICHeaderIcons .navbar-text{
   font-weight: normal;
+  padding-right: 15px;
+  padding-left: 15px;
 }

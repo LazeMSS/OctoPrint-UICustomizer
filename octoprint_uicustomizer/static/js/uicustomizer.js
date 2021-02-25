@@ -42,6 +42,10 @@ $(function() {
         self.getReturnData = false;
 
         self.ThemesLoaded = false;
+        self.ThemesInternalURL = './plugin/uicustomizer/static/themes.json';
+        self.ThemesExternalURL = 'https://lazemss.github.io/OctoPrint-UICustomizerThemes/';
+        self.ThemesBaseURL = self.ThemesInternalURL;
+
 
         // timer for resize fix modal
         self.modalTimer = null;
@@ -407,11 +411,10 @@ $(function() {
                 // Remove the current css to trigger reload
                 $('link.UICThemeCSS').remove();
 
+                var themeURL = self.ThemesBaseURL+"/css/"+themeName+'.css?theme='+themeName;
+
                 // Preview or for real?
-                if (preview){
-                    var themeURL = './plugin/uicustomizer/static/themes/css/'+themeName+'.css?theme='+themeName;
-                }else{
-                    var themeURL = './plugin/uicustomizer/static/themes/css/active.css?theme='+themeName;
+                if (!preview){
                     // Store it for easier loading
                     self.setStorage('theme',themeName);
                 }
@@ -426,8 +429,14 @@ $(function() {
                         clearTimeout(hideLoader);
                         hideLoader = null;
                         setTimeout(function(){
-                            $('#page-container-loading').fadeOut()
+                            $('#page-container-loading').fadeOut();
                         },300);
+                    }
+                }).on('error',function (){
+                    if (hideLoader != null){
+                        clearTimeout(hideLoader);
+                        hideLoader = null;
+                        $('#page-container-loading').fadeOut();
                     }
                 });
                 styleCSS.attr('href',themeURL);
@@ -2387,16 +2396,16 @@ $(function() {
             if (responseData == null){
                 $('#settings_uicustomizer_themesContent').html('<div class="UIC-pulsate text-info text-center">Loading themes&hellip;</div>');
                 $.ajax({
-                    url: "https://lazemss.github.io/OctoPrint-UICustomizerThemes/themes.json",
+                    url: self.ThemesExternalURL+'themes.json',
                     success: function(response){
-                        self.loadSettingsThemes(response,"https://lazemss.github.io/OctoPrint-UICustomizerThemes/");
+                        self.loadSettingsThemes(response,self.ThemesExternalURL);
                     },
                     // Try local as a workaround
                     error: function (request, status, error) {
                          $.ajax({
-                            url: "./plugin/uicustomizer/static/themes.json",
+                            url: ThemesInternalURL+'themes.json',
                             success: function(response){
-                                self.loadSettingsThemes(response,"./plugin/uicustomizer/static/themes/");
+                                self.loadSettingsThemes(response,self.ThemesInternalURL);
                             },
                             error: function (request, status, error) {
                                 alert("FAILED TO LOAD THEMES!");
@@ -2406,10 +2415,11 @@ $(function() {
                 });
                 return;
             }
+            self.ThemesBaseURL = baseURL;
             var themesHTML = '<ul class="thumbnails">';
             var template = '\
             <li class="span4" data-uictheme="[key]">\
-                <a title="Click to select theme" href="#" class="UICsetTheme thumbnail"><img src="'+baseURL+'thumbs/[key].png"/></a>\
+                <a title="Click to select theme" href="#" class="UICsetTheme thumbnail"><img src="'+self.ThemesBaseURL+'thumbs/[key].png"/></a>\
                 <p><a href="[org]" class="UICMargLeft pull-right btn-mini btn" target="_blank">Source</a><button class="btn-mini btn btn-primary UICsetTheme pull-right">Select</button>\
                 <strong>[name]</strong><br><small>[desc]</small>\
                 </p>\
@@ -3171,6 +3181,11 @@ $(function() {
 
                 // Set theme into settings and storage
                 var theme = $('#settings_uicustomizer_themesContent li.UICThemeSelected').data('uictheme');
+                if (self.ThemesBaseURL != self.ThemesInternalURL){
+                    self.settings.settings.plugins.uicustomizer.themeLocal(false);
+                }else{
+                    self.settings.settings.plugins.uicustomizer.themeLocal(true);
+                }
                 self.settings.settings.plugins.uicustomizer.theme(theme);
 
                 var streamURL = self.settings.webcam_streamUrl();

@@ -26,7 +26,6 @@
 /* fix hardcode headers*/
 .octoprint-container .tab-content h1 {
     color: var(--white);
-    border-bottom-color: #d32f2f;
 }
 
 
