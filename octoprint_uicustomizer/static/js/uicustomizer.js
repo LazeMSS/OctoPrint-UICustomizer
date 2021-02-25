@@ -2384,7 +2384,7 @@ $(function() {
 
         // Load themes
         self.loadSettingsThemes = function(){
-            $('#settings_uicustomizer_themesContent').html('<div class="UIC-pulsate text-info text-center">Loading webcam&hellip;</div>');
+            $('#settings_uicustomizer_themesContent').html('<div class="UIC-pulsate text-info text-center">Loading themes&hellip;</div>');
             var themesHTML = '<ul class="thumbnails">';
             var template = '\
             <li class="span4" data-uictheme="[key]">\
