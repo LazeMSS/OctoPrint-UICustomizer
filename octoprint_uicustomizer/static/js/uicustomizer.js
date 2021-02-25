@@ -2385,7 +2385,7 @@ $(function() {
         // Load themes
         self.loadSettingsThemes = function(responseData,baseURL){
             if (responseData == null){
-                $('#settings_uicustomizer_themesContent').html('<div class="UIC-pulsate text-info text-center">Loading webcam&hellip;</div>');
+                $('#settings_uicustomizer_themesContent').html('<div class="UIC-pulsate text-info text-center">Loading themes&hellip;</div>');
                 $.ajax({
                     url: "https://lazemss.github.io/OctoPrint-UICustomizerThemes/themes.json",
                     success: function(response){
