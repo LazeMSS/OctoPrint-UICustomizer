@@ -1161,5 +1161,29 @@ html.themeify #UICsetMenuShow{
     height: 70px;
     overflow: auto;
 }
+
+#settings_uicustomizer_themesContent .UICsetTheme.thumbnail {
+    min-height: 100px;
+    position: relative;
+}
+
+#settings_uicustomizer_themesContent .UICsetTheme.thumbnail img{
+    position: relative;
+}
+
+#settings_uicustomizer_themesContent .UICsetTheme.thumbnail:before{
+    content: "Loading...";
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    text-shadow: none;
+    font-weight: normal;
+    position: absolute;
+    font-size: 12px;
+    text-align:center;
+    width: 100%;
+    line-height: 20px;
+    margin-top: calc(25% - 20px);
+    animation: uicPulseFrame 1s ease-out;
+    animation-iteration-count: infinite;
+}
 /* UICustomizer END */
 
