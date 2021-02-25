@@ -195,15 +195,18 @@ $(function() {
 
             // Remove hardcode css to make it easier to use skins
             var styleSrcs = [];
-            if ($('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]').length){
-                styleSrcs.push($('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]')[0]);
-            }
-            if ($('link[href="/static/css/octoprint.css"][rel="stylesheet"]').length){
-                styleSrcs.push($('link[href="/static/css/octoprint.css"][rel="stylesheet"]')[0]);
-            }
-            if ($('link[href="/plugin/navbartemp/static/css/navbartemp.css"][rel="stylesheet"]').length){
-                styleSrcs.push($('link[href="/plugin/navbartemp/static/css/navbartemp.css"][rel="stylesheet"]')[0]);
-            }
+            var cssLookUp = [
+                'static/webassets/packed_core.css',
+                'static/css/octoprint.css',
+                'static/webassets/packed_plugins.css',
+                'plugin/navbartemp/static/css/navbartemp.css'
+            ];
+            var cssFind = null;
+            $.each(cssLookUp,function(i,cval){
+                if ((cssFind = self.getStyleSheet(cval)) != null){
+                    styleSrcs.push(cssFind);
+                }
+            });
             if (styleSrcs.length){
                 $.each(styleSrcs,function(idx,styleSrc){
                     $.each(styleSrc.sheet.cssRules,function(index,val){
@@ -465,13 +468,11 @@ $(function() {
                 var hasResponsive = $('body').hasClass('UICResponsiveMode');
                 var cleanRep = new RegExp('\.'+curTheme, "gi");
                 var newStyle = '';
-                var styleSrc = false;
-                if ($('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]').length){
-                    styleSrc = $('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]');
-                }else if ($('link[href="/static/css/octoprint.css"][rel="stylesheet"]').length){
-                    styleSrc = $('link[href="/static/css/octoprint.css"][rel="stylesheet"]');
+                var styleSrc = self.getStyleSheet('static/webassets/packed_core.css');
+                if (styleSrc == null){
+                    styleSrc = self.getStyleSheet('static/css/octoprint.css');
                 }
-                if (styleSrc == false){
+                if (styleSrc == null){
                     self.logToConsole("Standard theme css src not found!");
                     return;
                 }
@@ -532,12 +533,11 @@ $(function() {
             var newStyle = '';
             var bgcolor = '';
             var styleSrc = false;
-            if ($('link[href^="/static/webassets/packed_plugins.css"][rel="stylesheet"]').length){
-                styleSrc = $('link[href^="/static/webassets/packed_plugins.css"][rel="stylesheet"]');
-            }else if ($('link[href="/plugin/themeify/static/dist/themeify.min.css"][rel="stylesheet"]').length){
-                styleSrc = $('link[href="/plugin/themeify/static/dist/themeify.min.css"][rel="stylesheet"]');
+            var styleSrc = self.getStyleSheet('static/webassets/packed_plugins.css"');
+            if (styleSrc == null){
+                styleSrc = self.getStyleSheet('plugin/themeify/static/dist/themeify.min.css');
             }
-            if (styleSrc == false){
+            if (styleSrc == null){
                 self.logToConsole("Themeify css src not found!");
                 return;
             }
@@ -3231,6 +3231,14 @@ $(function() {
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
+
+        self.getStyleSheet = function(cssUrlPart){
+            var cssSel = $('link[href*="'+cssUrlPart+'"][rel="stylesheet"]');
+            if (cssSel.length){
+                return cssSel[0];
+            }
+            return null;
+        }
 
         self.setStorage = function(cname,cvalue){
             if (!Modernizr.localstorage) return;
