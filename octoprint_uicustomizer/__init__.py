@@ -47,7 +47,7 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                 open(srcTheme, 'wb').write(r.content)
                 self._logger.info("Downloaded theme: "+dlURL)
             else:
-                self.warning.info("Unable to download theme: "+dlURL);
+                self._logger.warning("Unable to download theme: "+dlURL);
 
         if os.path.exists(baseFolder) and os.path.isfile(srcTheme):
             # remove old
