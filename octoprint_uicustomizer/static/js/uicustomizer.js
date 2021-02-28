@@ -2489,9 +2489,23 @@ $(function() {
             // Load themes
             if (!self.ThemesLoaded){
                 $('#settings_plugin_uicustomizer a[href="#settings_uicustomizer_themes"]').one('click',function(){
-                    // Dont load again
-                    self.ThemesLoaded = true;
-                    self.loadSettingsThemes(null);
+                    if (self.getStorage("getThemesApproved") == 1){
+                        // Dont load again
+                        self.ThemesLoaded = true;
+                        self.loadSettingsThemes(null);
+                        return;
+                    }
+                    // Show warning
+                    $('#settings_uicustomizer_themesContent').html('<div class="alert alert-info">\
+                    <strong>Information regarding themes</strong>\
+                    <p>In order to download new and updated themes UI Customizer will download the themes, using a secure connection, from <a href="'+self.ThemesExternalURL+'" target="_blank">'+self.ThemesExternalURL+'</a>.</p><p>No personal data is sent to this URL. The only data being sent is your public IP address due to the nature of the internet.</p><p>Click "Continue" to downlad themes.</p>\
+                    <button class="btn btn-success">Continue</button>\
+                    </div>').find('button').one('click',function(){
+                        self.setStorage("getThemesApproved",1);
+                        self.ThemesLoaded = true;
+                        self.loadSettingsThemes(null);
+                    });
+
                 });
             }else{
                 self.setThemeSelected();
