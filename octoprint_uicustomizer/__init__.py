@@ -43,10 +43,16 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
         # Download the file or not
         if localTheme == False and source != "default":
             dlURL = self.themeURL+source+".css"
-            r = requests.get(dlURL, allow_redirects=True)
+            try:
+                r = requests.get(dlURL, allow_redirects=True)
+            except Exception as e:
+                self._logger.error("Failed to download theme: %s (%s)",dlURL,e);
+                return
+
             if r.status_code == 200:
-                open(srcTheme, 'wb').write(r.content)
-                self._logger.info("Downloaded theme: "+dlURL)
+                with open(srcTheme, 'wb') as f:
+                    f.write(r.content)
+                    self._logger.info("Downloaded theme: "+dlURL)
             else:
                 self._logger.warning("Unable to download theme: "+dlURL);
 
