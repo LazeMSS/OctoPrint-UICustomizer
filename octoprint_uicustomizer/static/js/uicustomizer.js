@@ -3295,11 +3295,17 @@ $(function() {
 
         self.setStorage = function(cname,cvalue){
             if (!Modernizr.localstorage) return;
+            if (window.location.pathname != "/"){
+                cname = window.location.pathname+cname;
+            }
             localStorage['plugin.uicustomizer.'+cname] = cvalue;
         }
 
         self.getStorage = function(cname){
             if (!Modernizr.localstorage) return undefined;
+            if (window.location.pathname != "/"){
+                cname = window.location.pathname+cname;
+            }
             return localStorage['plugin.uicustomizer.'+cname];
         }
 
