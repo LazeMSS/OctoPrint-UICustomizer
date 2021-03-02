@@ -31,8 +31,9 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
 
     def on_settings_initialized(self):
         curTheme = self._settings.get(["theme"],merged=True,asdict=True)
+        themeLocal = self._settings.get(["themeLocal"],merged=True,asdict=True)
         if curTheme:
-            self.setThemeFile(curTheme,True)
+            self.setThemeFile(curTheme,themeLocal)
 
     def setThemeFile(self,source,localTheme = True):
         baseFolder = os.path.join(os.path.dirname(os.path.realpath(__file__)),'static','themes','css')
