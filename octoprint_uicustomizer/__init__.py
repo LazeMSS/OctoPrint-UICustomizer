@@ -8,14 +8,17 @@ import os
 import flask
 import sys
 import shutil
+import requests
 
 from flask import send_file
 
 class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                        octoprint.plugin.SettingsPlugin,
                        octoprint.plugin.AssetPlugin,
-                       octoprint.plugin.TemplatePlugin,
-                       octoprint.plugin.SimpleApiPlugin):
+                       octoprint.plugin.TemplatePlugin):
+
+    def __init__(self):
+        self.themeURL = 'https://lazemss.github.io/OctoPrint-UICustomizerThemes/css/'
 
     def on_after_startup(self):
         self._logger.info("UI Customizer is initialized.")
@@ -29,24 +32,35 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
     def on_settings_initialized(self):
         curTheme = self._settings.get(["theme"],merged=True,asdict=True)
         if curTheme:
-            self.setThemeFile(curTheme)
+            self.setThemeFile(curTheme,True)
 
-    def setThemeFile(self,source):
+    def setThemeFile(self,source,localTheme = True):
         baseFolder = os.path.join(os.path.dirname(os.path.realpath(__file__)),'static','themes','css')
+        targetTheme = os.path.join(baseFolder,'active.css')
         srcTheme = os.path.join(baseFolder,source+'.css')
-        targeTheme = os.path.join(baseFolder,'active.css')
+
+        # Download the file or not
+        if localTheme == False and source != "default":
+            dlURL = self.themeURL+source+".css"
+            r = requests.get(dlURL, allow_redirects=True)
+            if r.status_code == 200:
+                open(srcTheme, 'wb').write(r.content)
+                self._logger.info("Downloaded theme: "+dlURL)
+            else:
+                self._logger.warning("Unable to download theme: "+dlURL);
+
         if os.path.exists(baseFolder) and os.path.isfile(srcTheme):
             # remove old
             try:
-                os.remove(targeTheme)
+                os.remove(targetTheme)
             except OSError:
                 pass
 
             # symlink on linux else we copy
             if sys.platform.startswith("linux"):
-                os.symlink(srcTheme, targeTheme)
+                os.symlink(srcTheme, targetTheme)
             else:
-                shutil.copy2(srcTheme, targeTheme)
+                shutil.copy2(srcTheme, targetTheme)
 
         else:
             self._logger.info("Unable to set the theme: %s",srcTheme)
@@ -55,9 +69,11 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
         # save
         octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
 
-        # set theme
         if 'theme' in data and data['theme']:
-            self.setThemeFile(str(data['theme']))
+            # Local or not
+            themeLocal = self._settings.get(["themeLocal"],merged=True,asdict=True)
+            self._logger.info("Setting theme \"%s\"",str(data['theme']))
+            self.setThemeFile(str(data['theme']),themeLocal)
 
     # default settings
     def get_settings_defaults(self):
@@ -104,6 +120,7 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
             "topIconSort" : [],
             "gcodeZoom": 3,
             "theme" : "default",
+            "themeLocal" : True,
             "customCSS" : ""
         }
 
@@ -111,23 +128,6 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
         return [
             dict(type="settings", custom_bindings=False)
         ]
-
-
-    def get_api_commands(self):
-        return dict(
-            themes=[],
-        )
-
-    def on_api_command(self, command, data):
-        if not user_permission.can():
-            return flask.make_response("Insufficient rights", 403)
-
-        if command == "themes":
-            themeFile = os.path.join(os.path.dirname(os.path.realpath(__file__)),'static','themes.json')
-            if os.path.isfile(themeFile):
-                return send_file(themeFile, mimetype='application/json')
-            else:
-                return flask.make_response("Themes not found", 404)
 
     def get_update_information(self):
         # Define the configuration for your plugin to use with the Software Update

@@ -44,6 +44,78 @@ a:hover {
     text-decoration: none;
 }
 
+body::-webkit-scrollbar,
+body .scrollable::-webkit-scrollbar,
+.scroll-wrapper::-webkit-scrollbar,
+.modal .modal-body::-webkit-scrollbar,
+.controls select::-webkit-scrollbar,
+#settings_gcodeScripts .block.monospace::-webkit-scrollbar,
+#settings_plugin_pluginmanager_pluginlist::-webkit-scrollbar,
+#settings_plugin_pluginmanager_repositorydialog_list::-webkit-scrollbar,
+#settings_plugin_softwareupdate_updatelist::-webkit-scrollbar {
+  width: 12px;
+}
+
+body,
+body .scrollable,
+.scroll-wrapper,
+.modal .modal-body,
+.controls select,
+#settings_gcodeScripts .block.monospace,
+#settings_plugin_pluginmanager_pluginlist,
+#settings_plugin_pluginmanager_repositorydialog_list,
+#settings_plugin_softwareupdate_updatelist {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-darker) var(--grey1);
+}
+
+body::-webkit-scrollbar-track,
+body .scrollable::-webkit-scrollbar-track,
+.scroll-wrapper::-webkit-scrollbar-track,
+.modal .modal-body::-webkit-scrollbar-track,
+.controls select::-webkit-scrollbar-track,
+#settings_gcodeScripts .block.monospace::-webkit-scrollbar-track,
+#settings_plugin_pluginmanager_pluginlist::-webkit-scrollbar-track,
+#settings_plugin_pluginmanager_repositorydialog_list::-webkit-scrollbar-track,
+#settings_plugin_softwareupdate_updatelist::-webkit-scrollbar-track,
+body::-webkit-scrollbar-corner,
+body .scrollable::-webkit-scrollbar-corner,
+.scroll-wrapper::-webkit-scrollbar-corner,
+.modal .modal-body::-webkit-scrollbar-corner,
+.controls select::-webkit-scrollbar-corner,
+#settings_gcodeScripts .block.monospace::-webkit-scrollbar-corner,
+#settings_plugin_pluginmanager_pluginlist::-webkit-scrollbar-corner,
+#settings_plugin_pluginmanager_repositorydialog_list::-webkit-scrollbar-corner,
+#settings_plugin_softwareupdate_updatelist::-webkit-scrollbar-corner {
+  background: var(--background-darker);
+}
+
+body::-webkit-scrollbar-thumb,
+body .scrollable::-webkit-scrollbar-thumb,
+.scroll-wrapper::-webkit-scrollbar-thumb,
+.modal .modal-body::-webkit-scrollbar-thumb,
+.controls select::-webkit-scrollbar-thumb,
+#settings_gcodeScripts .block.monospace::-webkit-scrollbar-thumb,
+#settings_plugin_pluginmanager_pluginlist::-webkit-scrollbar-thumb,
+#settings_plugin_pluginmanager_repositorydialog_list::-webkit-scrollbar-thumb,
+#settings_plugin_softwareupdate_updatelist::-webkit-scrollbar-thumb  {
+  background-color: var(--accent-darker) ;
+  border-radius: 2px;
+  border: 2px solid var(--background-darker);
+}
+
+body::-webkit-resizer,
+body .scrollable::-webkit-resizer,
+.scroll-wrapper::-webkit-resizer,
+.modal .modal-body::-webkit-resizer,
+.controls select::-webkit-resizer,
+#settings_gcodeScripts .block.monospace::-webkit-resizer,
+#settings_plugin_pluginmanager_pluginlist::-webkit-resizer,
+#settings_plugin_pluginmanager_repositorydialog_list::-webkit-resizer,
+#settings_plugin_softwareupdate_updatelist::-webkit-resizer {
+    background: var(--grey1);
+}
+
 .accordion-group,
 .octoprint-container .tab-content {
     border: none;
@@ -265,6 +337,10 @@ textarea:focus {
     color: var(--quiteWhite-dark);
 }
 
+#settings_dialog .table .table {
+    background-color: var(--grey1);
+}
+
 td[class^=settings_] a,
 td i a,
 th[class^=settings_] a,
@@ -388,9 +464,9 @@ th i a.disabled {
     border-right: 2px solid var(--accent);
 }
 
- .nav-collapse ul {
+.nav-collapse ul {
     margin-bottom: 0;
- }
+}
 
 .navbar .nav-collapse .dropdown-menu li>a {
     color: var(--quiteWhite);
@@ -459,6 +535,11 @@ th i a.disabled {
 .table-striped tbody>tr:nth-child(odd)>td,
 .table-striped tbody th {
     background-color: var(--grey2);
+}
+
+.table th, .table td {
+    border-bottom: 1px solid var(--accent);
+    border-top: none;
 }
 
 .modal {
@@ -745,34 +826,13 @@ hr {
     box-shadow: 0 0 8px 4px var(--quiteWhite-transparent);
 }
 
+#tab_plugin_filemanager .table-container {
+    border: none;
+}
+
 #tab_plugin_filemanager .header {
     background-color: var(--background);
     border-bottom: 1px solid var(--accent);
-}
-
-#tab_plugin_filemanager .header>div {
-    border-right: none;
-}
-
-#tab_plugin_filemanager .container-fluid>.row-fluid {
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-}
-
-#tab_plugin_filemanager .entry-hover>div {
-    border-bottom: 1px solid var(--accent);
-    border-left: 4px solid transparent;
-}
-
-#tab_plugin_filemanager .entry-hover>div.selected {
-    background-color: var(--grey4);
-    border-left-color: var(--accent);
-}
-
-#tab_plugin_filemanager .entry-hover>div:hover,
-#tab_plugin_filemanager .entry-hover>div div:hover {
-    background-color: var(--grey2);
 }
 
 .print-time-genius-after:after,
@@ -784,6 +844,7 @@ hr {
 .print-time-genius-after:after {
     transform: none;
     margin-left: 4px;
+    position: initial;
 }
 
 #psucontrol_indicator.on i {
