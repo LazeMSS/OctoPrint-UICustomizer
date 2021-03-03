@@ -42,7 +42,7 @@ $(function() {
         self.getReturnData = false;
 
         self.ThemesLoaded = false;
-        self.ThemesInternalURL = './plugin/uicustomizer/static/themes.json';
+        self.ThemesInternalURL = './plugin/uicustomizer/static/themes/';
         self.ThemesExternalURL = 'https://lazemss.github.io/OctoPrint-UICustomizerThemes/';
         self.ThemesBaseURL = self.ThemesInternalURL;
 
@@ -2403,7 +2403,7 @@ $(function() {
                     // Try local as a workaround
                     error: function (request, status, error) {
                          $.ajax({
-                            url: ThemesInternalURL+'themes.json',
+                            url: self.ThemesInternalURL+'../themes.json',
                             success: function(response){
                                 self.loadSettingsThemes(response,self.ThemesInternalURL);
                             },
