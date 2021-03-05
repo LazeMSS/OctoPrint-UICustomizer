@@ -389,7 +389,7 @@ $(function() {
         // ------------------------------------------------------------------------------------------------------------------------
         self.set_theme = function(themeName,preview){
             // if empty we try the others - else we cleanup from everything else
-            if (themeName == "default"){
+            if (themeName == "default" || themeName == null){
                 $('html').removeClass('UICCustomTheme');
                 if (self.updateThemify(null) == false){
                     self.updateStandardTheme(OctoPrint.coreui.viewmodels.settingsViewModel.settings.appearance.color());
@@ -398,7 +398,7 @@ $(function() {
                 $('html').addClass('UICDefaultTheme UICCustomTheme');
                 $('#UICCustStandardTheme,#UICCustThemeify').remove();
             }
-            if (self.curTheme != themeName){
+            if (self.curTheme != themeName && themeName != null){
                 self.logToConsole("Loading theme: " + themeName + " - old theme: " + self.curTheme);
                 // Show loading UI if slow
                 var hideLoader = null;
@@ -485,7 +485,7 @@ $(function() {
                     self.logToConsole("Standard theme css src not found!");
                     return;
                 }
-                $.each(styleSrc[0].sheet.cssRules,function(){
+                $.each(styleSrc.sheet.cssRules,function(){
                     var cssSel = this.selectorText;
                     if (cssSel != undefined && cssSel.indexOf('#navbar .navbar-inner.'+curTheme) != -1){
                         newStyle += this.cssText.replace(/#navbar/gi,'#page-container-main > div.footer').replace(cleanRep,'');
@@ -550,7 +550,7 @@ $(function() {
                 self.logToConsole("Themeify css src not found!");
                 return;
             }
-            $.each(styleSrc[0].sheet.cssRules,function(){
+            $.each(styleSrc.sheet.cssRules,function(){
                 var cssSel = this.selectorText;
                 if (cssSel != undefined && cssSel.indexOf('.themeify.'+curTheme+' #navbar .navbar-inner') != -1){
                     newStyle += this.cssText.replace(navbarClean,'#page-container-main > div.footer').replace(cleanRep,'');
