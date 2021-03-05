@@ -542,7 +542,7 @@ $(function() {
             var newStyle = '';
             var bgcolor = '';
             var styleSrc = false;
-            var styleSrc = self.getStyleSheet('static/webassets/packed_plugins.css"');
+            var styleSrc = self.getStyleSheet('static/webassets/packed_plugins.css');
             if (styleSrc == null){
                 styleSrc = self.getStyleSheet('plugin/themeify/static/dist/themeify.min.css');
             }
