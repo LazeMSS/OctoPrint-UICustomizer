@@ -346,6 +346,7 @@ html:not(.themeify) #tabs_content{
 #files .gcode_files .scroll-wrapper.UICFullHeight{
     height: 100%;
     max-height: 80vh;
+    min-height: 70px;
 }
 
 /* search in settings fix*/
@@ -1131,8 +1132,22 @@ html.themeify #UICsetMenuShow{
 }
 
 /* internal themese */
+#settings_uicustomizer_themesContent a.UICsetTheme.thumbnail:before{
+    content: "Loading...";
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    text-shadow: none;
+    font-weight: normal;
+    position: absolute;
+    font-size: 12px;
+    text-align:center;
+    width: 100%;
+    line-height: 20px;
+    margin-top: calc(25% - 20px);
+    animation: uicPulseFrame 1s ease-out;
+    animation-iteration-count: infinite;
+}
 
-.UICThemeSelected a.thumbnail:before {
+#settings_uicustomizer_themesContent li.UICThemeSelected a.UICsetTheme.thumbnail:before{
     content: "\f00c";
     display: inline-block;
     text-rendering: auto;
@@ -1153,6 +1168,11 @@ html.themeify #UICsetMenuShow{
     font-size: 3em;
     margin-left: 5px;
     margin-top: 5px;
+    z-index: 10;
+    text-align: left;
+    width: auto;
+    animation: none;
+    text-shadow: 0 0 2px #000000;
 }
 
 #settings_uicustomizer_themesContent .span4 p {
@@ -1160,5 +1180,16 @@ html.themeify #UICsetMenuShow{
     height: 70px;
     overflow: auto;
 }
+
+#settings_uicustomizer_themesContent .UICsetTheme.thumbnail {
+    min-height: 100px;
+    position: relative;
+}
+
+#settings_uicustomizer_themesContent .UICsetTheme.thumbnail img{
+    position: relative;
+}
+
+
 /* UICustomizer END */
 

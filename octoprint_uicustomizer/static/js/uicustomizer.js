@@ -42,6 +42,10 @@ $(function() {
         self.getReturnData = false;
 
         self.ThemesLoaded = false;
+        self.ThemesInternalURL = './plugin/uicustomizer/static/themes/';
+        self.ThemesExternalURL = 'https://lazemss.github.io/OctoPrint-UICustomizerThemes/';
+        self.ThemesBaseURL = self.ThemesInternalURL;
+
 
         // timer for resize fix modal
         self.modalTimer = null;
@@ -195,15 +199,18 @@ $(function() {
 
             // Remove hardcode css to make it easier to use skins
             var styleSrcs = [];
-            if ($('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]').length){
-                styleSrcs.push($('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]')[0]);
-            }
-            if ($('link[href="/static/css/octoprint.css"][rel="stylesheet"]').length){
-                styleSrcs.push($('link[href="/static/css/octoprint.css"][rel="stylesheet"]')[0]);
-            }
-            if ($('link[href="/plugin/navbartemp/static/css/navbartemp.css"][rel="stylesheet"]').length){
-                styleSrcs.push($('link[href="/plugin/navbartemp/static/css/navbartemp.css"][rel="stylesheet"]')[0]);
-            }
+            var cssLookUp = [
+                'static/webassets/packed_core.css',
+                'static/css/octoprint.css',
+                'static/webassets/packed_plugins.css',
+                'plugin/navbartemp/static/css/navbartemp.css'
+            ];
+            var cssFind = null;
+            $.each(cssLookUp,function(i,cval){
+                if ((cssFind = self.getStyleSheet(cval)) != null){
+                    styleSrcs.push(cssFind);
+                }
+            });
             if (styleSrcs.length){
                 $.each(styleSrcs,function(idx,styleSrc){
                     $.each(styleSrc.sheet.cssRules,function(index,val){
@@ -382,7 +389,7 @@ $(function() {
         // ------------------------------------------------------------------------------------------------------------------------
         self.set_theme = function(themeName,preview){
             // if empty we try the others - else we cleanup from everything else
-            if (themeName == "default"){
+            if (themeName == "default" || themeName == null){
                 $('html').removeClass('UICCustomTheme');
                 if (self.updateThemify(null) == false){
                     self.updateStandardTheme(OctoPrint.coreui.viewmodels.settingsViewModel.settings.appearance.color());
@@ -391,7 +398,7 @@ $(function() {
                 $('html').addClass('UICDefaultTheme UICCustomTheme');
                 $('#UICCustStandardTheme,#UICCustThemeify').remove();
             }
-            if (self.curTheme != themeName){
+            if (self.curTheme != themeName && themeName != null){
                 self.logToConsole("Loading theme: " + themeName + " - old theme: " + self.curTheme);
                 // Show loading UI if slow
                 var hideLoader = null;
@@ -404,11 +411,10 @@ $(function() {
                 // Remove the current css to trigger reload
                 $('link.UICThemeCSS').remove();
 
+                var themeURL = self.ThemesBaseURL+"/css/"+themeName+'.css?theme='+themeName;
+
                 // Preview or for real?
-                if (preview){
-                    var themeURL = './plugin/uicustomizer/static/themes/css/'+themeName+'.css?theme='+themeName;
-                }else{
-                    var themeURL = './plugin/uicustomizer/static/themes/css/active.css?theme='+themeName;
+                if (!preview){
                     // Store it for easier loading
                     self.setStorage('theme',themeName);
                 }
@@ -423,8 +429,14 @@ $(function() {
                         clearTimeout(hideLoader);
                         hideLoader = null;
                         setTimeout(function(){
-                            $('#page-container-loading').fadeOut()
+                            $('#page-container-loading').fadeOut();
                         },300);
+                    }
+                }).on('error',function (){
+                    if (hideLoader != null){
+                        clearTimeout(hideLoader);
+                        hideLoader = null;
+                        $('#page-container-loading').fadeOut();
                     }
                 });
                 styleCSS.attr('href',themeURL);
@@ -465,17 +477,15 @@ $(function() {
                 var hasResponsive = $('body').hasClass('UICResponsiveMode');
                 var cleanRep = new RegExp('\.'+curTheme, "gi");
                 var newStyle = '';
-                var styleSrc = false;
-                if ($('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]').length){
-                    styleSrc = $('link[href^="/static/webassets/packed_core.css"][rel="stylesheet"]');
-                }else if ($('link[href="/static/css/octoprint.css"][rel="stylesheet"]').length){
-                    styleSrc = $('link[href="/static/css/octoprint.css"][rel="stylesheet"]');
+                var styleSrc = self.getStyleSheet('static/webassets/packed_core.css');
+                if (styleSrc == null){
+                    styleSrc = self.getStyleSheet('static/css/octoprint.css');
                 }
-                if (styleSrc == false){
+                if (styleSrc == null){
                     self.logToConsole("Standard theme css src not found!");
                     return;
                 }
-                $.each(styleSrc[0].sheet.cssRules,function(){
+                $.each(styleSrc.sheet.cssRules,function(){
                     var cssSel = this.selectorText;
                     if (cssSel != undefined && cssSel.indexOf('#navbar .navbar-inner.'+curTheme) != -1){
                         newStyle += this.cssText.replace(/#navbar/gi,'#page-container-main > div.footer').replace(cleanRep,'');
@@ -532,16 +542,15 @@ $(function() {
             var newStyle = '';
             var bgcolor = '';
             var styleSrc = false;
-            if ($('link[href^="/static/webassets/packed_plugins.css"][rel="stylesheet"]').length){
-                styleSrc = $('link[href^="/static/webassets/packed_plugins.css"][rel="stylesheet"]');
-            }else if ($('link[href="/plugin/themeify/static/dist/themeify.min.css"][rel="stylesheet"]').length){
-                styleSrc = $('link[href="/plugin/themeify/static/dist/themeify.min.css"][rel="stylesheet"]');
+            var styleSrc = self.getStyleSheet('static/webassets/packed_plugins.css"');
+            if (styleSrc == null){
+                styleSrc = self.getStyleSheet('plugin/themeify/static/dist/themeify.min.css');
             }
-            if (styleSrc == false){
+            if (styleSrc == null){
                 self.logToConsole("Themeify css src not found!");
                 return;
             }
-            $.each(styleSrc[0].sheet.cssRules,function(){
+            $.each(styleSrc.sheet.cssRules,function(){
                 var cssSel = this.selectorText;
                 if (cssSel != undefined && cssSel.indexOf('.themeify.'+curTheme+' #navbar .navbar-inner') != -1){
                     newStyle += this.cssText.replace(navbarClean,'#page-container-main > div.footer').replace(cleanRep,'');
@@ -2383,55 +2392,78 @@ $(function() {
 
 
         // Load themes
-        self.loadSettingsThemes = function(){
-            $('#settings_uicustomizer_themesContent').html('<div class="UIC-pulsate text-info text-center">Loading webcam&hellip;</div>');
+        self.loadSettingsThemes = function(responseData,baseURL){
+            if (responseData == null){
+                $('#settings_uicustomizer_themesContent').html('<div class="UIC-pulsate text-info text-center">Loading themes&hellip;</div>');
+                $.ajax({
+                    url: self.ThemesExternalURL+'themes.json',
+                    success: function(response){
+                        self.loadSettingsThemes(response,self.ThemesExternalURL);
+                    },
+                    // Try local as a workaround
+                    error: function (request, status, error) {
+                         $.ajax({
+                            url: self.ThemesInternalURL+'../themes.json',
+                            success: function(response){
+                                self.loadSettingsThemes(response,self.ThemesInternalURL);
+                            },
+                            error: function (request, status, error) {
+                                alert("FAILED TO LOAD THEMES!");
+                            }
+                        });
+                    }
+                });
+                return;
+            }
+            self.ThemesBaseURL = baseURL;
             var themesHTML = '<ul class="thumbnails">';
             var template = '\
             <li class="span4" data-uictheme="[key]">\
-                <a title="Click to select theme" href="#" class="UICsetTheme thumbnail"><img src="[t]"/></a>\
+                <a title="Click to select theme" href="#" class="UICsetTheme thumbnail"><img src="'+self.ThemesBaseURL+'thumbs/[key].png"/></a>\
                 <p><a href="[org]" class="UICMargLeft pull-right btn-mini btn" target="_blank">Source</a><button class="btn-mini btn btn-primary UICsetTheme pull-right">Select</button>\
                 <strong>[name]</strong><br><small>[desc]</small>\
                 </p>\
             </li>';
-            OctoPrint.simpleApiCommand("uicustomizer","themes",{}).done(function(response) {
-                var keys = Object.keys(response);
-                keys.sort();
-                keys.push(keys.splice(keys.indexOf('default'), 1)[0]);
-                $.each(keys,function(id,key){
-                    var addThis = template+'';
-                    addThis = addThis.replace('\[key\]',key);
-                    theme = response[key];
-                    $.each(theme,function(key,attr){
-                        if (key == "org"){
-                            if (attr == false){
-                                attr = '#;" style="display:none" ';
-                            }else{
-                                attr = encodeURI(attr);
-                            }
+            // Sort result
+            var keys = Object.keys(responseData);
+            keys.sort();
+            // Put default last
+            keys.push(keys.splice(keys.indexOf('default'), 1)[0]);
+
+            // Parse them
+            $.each(keys,function(id,key){
+                var addThis = template+'';
+                addThis = addThis.replaceAll('\[key\]',key);
+                theme = responseData[key];
+                $.each(theme,function(key,attr){
+                    if (key == "org"){
+                        if (attr == false){
+                            attr = '#;" style="display:none" ';
                         }else{
-                            attr = $('<div/>').text(attr).html();
+                            attr = encodeURI(attr);
                         }
-                        addThis = addThis.replace('\['+key+'\]',attr);
-                    });
-                    themesHTML += addThis;
-                });
-                themesHTML += '</ul>';
-                $('#settings_uicustomizer_themesContent').html(themesHTML);
-
-                // Click handler
-                $('.UICsetTheme').off('click').on('click',function(event){
-                    var selectedTheme = $(this).closest('li').data('uictheme');
-                    // Update preview
-                    if (self.previewOn){
-                        self.set_theme(selectedTheme,true);
+                    }else{
+                        attr = $('<div/>').text(attr).html();
                     }
-                    self.setThemeSelected(selectedTheme);
-                    return false;
+                    addThis = addThis.replace('\['+key+'\]',attr);
                 });
-                // Set themes when done
-                self.setThemeSelected();
+                themesHTML += addThis;
             });
+            themesHTML += '</ul>';
+            $('#settings_uicustomizer_themesContent').html(themesHTML);
 
+            // Click handler
+            $('.UICsetTheme').off('click').on('click',function(event){
+                var selectedTheme = $(this).closest('li').data('uictheme');
+                // Update preview
+                if (self.previewOn){
+                    self.set_theme(selectedTheme,true);
+                }
+                self.setThemeSelected(selectedTheme);
+                return false;
+            });
+            // Set themes when done
+            self.setThemeSelected();
         }
 
         // Set theme selected
@@ -2456,9 +2488,25 @@ $(function() {
 
             // Load themes
             if (!self.ThemesLoaded){
-                self.loadSettingsThemes();
-                // Dont load again
-                self.ThemesLoaded = true;
+                $('#settings_plugin_uicustomizer a[href="#settings_uicustomizer_themes"]').one('click',function(){
+                    if (self.getStorage("getThemesApproved") == 1){
+                        // Dont load again
+                        self.ThemesLoaded = true;
+                        self.loadSettingsThemes(null);
+                        return;
+                    }
+                    // Show warning
+                    $('#settings_uicustomizer_themesContent').html('<div class="alert alert-info">\
+                    <strong>Information regarding themes</strong>\
+                    <p>In order to download new and updated themes UI Customizer will download the themes, using a secure connection, from <a href="'+self.ThemesExternalURL+'" target="_blank">'+self.ThemesExternalURL+'</a>.</p><p>No personal data is sent to this URL. The only data being sent is your public IP address due to the nature of the internet.</p><p>Click "Continue" to downlad themes.</p>\
+                    <button class="btn btn-success">Continue</button>\
+                    </div>').find('button').one('click',function(){
+                        self.setStorage("getThemesApproved",1);
+                        self.ThemesLoaded = true;
+                        self.loadSettingsThemes(null);
+                    });
+
+                });
             }else{
                 self.setThemeSelected();
             }
@@ -3147,6 +3195,11 @@ $(function() {
 
                 // Set theme into settings and storage
                 var theme = $('#settings_uicustomizer_themesContent li.UICThemeSelected').data('uictheme');
+                if (self.ThemesBaseURL != self.ThemesInternalURL){
+                    self.settings.settings.plugins.uicustomizer.themeLocal(false);
+                }else{
+                    self.settings.settings.plugins.uicustomizer.themeLocal(true);
+                }
                 self.settings.settings.plugins.uicustomizer.theme(theme);
 
                 var streamURL = self.settings.webcam_streamUrl();
@@ -3232,13 +3285,27 @@ $(function() {
 
         // ------------------------------------------------------------------------------------------------------------------------
 
+        self.getStyleSheet = function(cssUrlPart){
+            var cssSel = $('link[href*="'+cssUrlPart+'"][rel="stylesheet"]');
+            if (cssSel.length){
+                return cssSel[0];
+            }
+            return null;
+        }
+
         self.setStorage = function(cname,cvalue){
             if (!Modernizr.localstorage) return;
+            if (window.location.pathname != "/"){
+                cname = window.location.pathname+cname;
+            }
             localStorage['plugin.uicustomizer.'+cname] = cvalue;
         }
 
         self.getStorage = function(cname){
             if (!Modernizr.localstorage) return undefined;
+            if (window.location.pathname != "/"){
+                cname = window.location.pathname+cname;
+            }
             return localStorage['plugin.uicustomizer.'+cname];
         }
 
