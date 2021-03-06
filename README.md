@@ -83,9 +83,9 @@ This allows you to change the look & feel of the top icons in top menu
 * Disable terminal when hidden - Disables the terminal update when the terminal tab is in the background - gives a small perfomance boost.
 
 ## Donation/support
-If you like my work feel free to support me using paypal: https://www.paypal.me/ihccaptain
+If you like my work feel free to support me using paypal: https://www.paypal.com/donate/?business=2STH3SD3KXGNQ&item_name=UI+Customizer
 
-[![Paypal](https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-200px.png)](https://www.paypal.me/ihccaptain)
+[![Paypal](https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-200px.png)](https://www.paypal.com/donate/?business=2STH3SD3KXGNQ&item_name=UI+Customizer)
 
 ## Credits
 - Many of the themes includes is derived from https://bootswatch.com/2/ - under the APACHE LICENSE, VERSION 2.0
