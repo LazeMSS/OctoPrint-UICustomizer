@@ -3200,15 +3200,14 @@ $(function() {
                 // Set theme into settings and storage
                 if (self.ThemesLoaded){
                     self.logToConsole(" ----> Themes have been loaded - we can save <----");
-                    var theme = $('#settings_uicustomizer_themesContent li.UICThemeSelected').data('uictheme');
+                    self.settings.settings.plugins.uicustomizer.theme($('#settings_uicustomizer_themesContent li.UICThemeSelected').data('uictheme'));
                     if (self.ThemesBaseURL != self.ThemesInternalURL){
                         self.settings.settings.plugins.uicustomizer.themeLocal(false);
                     }else{
                         self.settings.settings.plugins.uicustomizer.themeLocal(true);
                     }
-                    self.settings.settings.plugins.uicustomizer.theme(theme);
                 }else{
-                    self.logToConsole(" ----> Themes have been NOT loaded - we will not update the theme <----");
+                    self.logToConsole(" ----> Themes NOT loaded - we will not update the theme <----");
                 }
 
                 var streamURL = self.settings.webcam_streamUrl();
