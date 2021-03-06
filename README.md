@@ -82,12 +82,19 @@ This allows you to change the look & feel of the top icons in top menu
 ![](extras/s5.png)<br/><br/>
 * Disable terminal when hidden - Disables the terminal update when the terminal tab is in the background - gives a small perfomance boost.
 
-## Screenshots/Video
+## Donation/support
+If you like my work feel free to support me using paypal: https://www.paypal.me/ihccaptain
+
+[![Paypal](https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-200px.png)](https://www.paypal.me/ihccaptain)
+
+## Credits
+- Many of the themes includes is derived from https://bootswatch.com/2/ - under the APACHE LICENSE, VERSION 2.0
+- The red night theme is created by the very talented @Poeschl
+
+## More screenshots/Video
 [YouTube](https://youtu.be/BTiI6i1Rc5c)
 ### Webcam and gcode widget
 ![](extras/camwidget.png)
 ### Floating webcam
 ![](extras/floating.png)
 
-##Credit
-Many of the themes includes is derived from https://bootswatch.com/2/ - under the APACHE LICENSE, VERSION 2.0
