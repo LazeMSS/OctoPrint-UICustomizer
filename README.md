@@ -22,6 +22,23 @@ It also features a lot of other fixes and improvements:
 * Center top bar icons
 * Realtime preview of changes
 
+Table of Contents
+=================
+  * [Setup](#setup)
+  * [Configuration](#configuration)
+     * [General](#general)
+     * [Themes](#themes)
+     * [Layout](#layout)
+     * [Main tabs](#main-tabs)
+     * [Top icons](#top-icons)
+     * [Advanced](#advanced)
+  * [Donation/support](#donationsupport)
+  * [Credits](#credits)
+  * [More screenshots/Video](#more-screenshotsvideo)
+     * [Webcam and gcode widget](#webcam-and-gcode-widget)
+     * [Floating webcam](#floating-webcam)
+
+
 ## Setup
 
 Install via the bundled [Plugin Manager](https://github.com/foosel/OctoPrint/wiki/Plugin:-Plugin-Manager)
