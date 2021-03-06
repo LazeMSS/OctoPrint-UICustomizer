@@ -9,7 +9,11 @@ $('head').prepend('<meta id="UICViewport" name="viewport" content="width=device-
 // Set theme onload
 var UICPreLoadTheme  = "default";
 if (Modernizr.localstorage){
-    UICPreLoadTheme = localStorage['plugin.uicustomizer.theme'];
+    if (window.location.pathname != "/"){
+        UICPreLoadTheme = localStorage['plugin.uicustomizer.'+window.location.pathname+'theme'];
+    }else{
+        UICPreLoadTheme = localStorage['plugin.uicustomizer.theme'];
+    }
     if (UICPreLoadTheme == undefined || UICPreLoadTheme == "" || UICPreLoadTheme == null){
         UICPreLoadTheme = "default";
     }
@@ -3194,13 +3198,18 @@ $(function() {
                 self.settings.settings.plugins.uicustomizer.mainTabs = ko.observableArray(self.buildCustomTabsSave());
 
                 // Set theme into settings and storage
-                var theme = $('#settings_uicustomizer_themesContent li.UICThemeSelected').data('uictheme');
-                if (self.ThemesBaseURL != self.ThemesInternalURL){
-                    self.settings.settings.plugins.uicustomizer.themeLocal(false);
+                if (self.ThemesLoaded){
+                    self.logToConsole(" ----> Themes have been loaded - we can save <----");
+                    var theme = $('#settings_uicustomizer_themesContent li.UICThemeSelected').data('uictheme');
+                    if (self.ThemesBaseURL != self.ThemesInternalURL){
+                        self.settings.settings.plugins.uicustomizer.themeLocal(false);
+                    }else{
+                        self.settings.settings.plugins.uicustomizer.themeLocal(true);
+                    }
+                    self.settings.settings.plugins.uicustomizer.theme(theme);
                 }else{
-                    self.settings.settings.plugins.uicustomizer.themeLocal(true);
+                    self.logToConsole(" ----> Themes have been NOT loaded - we will not update the theme <----");
                 }
-                self.settings.settings.plugins.uicustomizer.theme(theme);
 
                 var streamURL = self.settings.webcam_streamUrl();
                 if (/.m3u8/i.test(streamURL)){
