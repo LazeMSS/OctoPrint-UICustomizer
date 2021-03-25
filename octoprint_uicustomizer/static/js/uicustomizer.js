@@ -192,6 +192,7 @@ $(function() {
             OctoPrint.coreui.viewmodels.settingsViewModel.appearance_color.subscribe(function(color) {
                 self.updateStandardTheme(color);
             });
+
             if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('themeify')){
                 OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.theme.subscribe(function(theme) {
                     self.updateThemify(theme);
@@ -399,8 +400,12 @@ $(function() {
                     self.updateStandardTheme(OctoPrint.coreui.viewmodels.settingsViewModel.settings.appearance.color());
                 };
             }else{
+                // Remove any non UI Customizer related theming
                 $('html').addClass('UICDefaultTheme UICCustomTheme');
                 $('#UICCustStandardTheme,#UICCustThemeify').remove();
+                // Set colors and transparent off
+                OctoPrint.coreui.viewmodels.settingsViewModel.appearance_color('default');
+                OctoPrint.coreui.viewmodels.settingsViewModel.appearance_colorTransparent(false);
             }
             if (self.curTheme != themeName && themeName != null){
                 self.logToConsole("Loading theme: " + themeName + " - old theme: " + self.curTheme);
