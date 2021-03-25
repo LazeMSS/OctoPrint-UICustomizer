@@ -2011,7 +2011,12 @@ $(function() {
             });
             self.logToConsole("Built these cols:"+JSON.stringify(colsSave));
 
-            var widths = $('#UICSortCols input.uiccolwidth').map(function(){return $(this).val();}).get();
+            var totalw = 0
+            var widths = $('#UICSortCols input.uiccolwidth').map(function(){totalw += $(this).val()*1; return $(this).val();}).get();
+            // Fallback if something went wrong - we make it all 1 wide
+            if (totalw > self.maxCWidth){
+                widths = Array($('#UICSortCols input.uiccolwidth').length).fill(1);
+            }
             return [ko.observableArray(colsSave), ko.observableArray(widths)];
         }
 
@@ -3006,7 +3011,7 @@ $(function() {
                 $(this).next().html($(this).val());
             });
 
-            // Keep the maxium width
+            // Inforce the maxium total width
             $('#settings_plugin_uicustomizer input.uiccolwidth').off('change.uicus').on('change.uicus',function(){
                 var thisItem = this;
                 var spanW = $('#UICSortCols input.uiccolwidth');
