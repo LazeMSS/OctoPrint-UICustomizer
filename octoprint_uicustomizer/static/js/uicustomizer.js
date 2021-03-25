@@ -3067,6 +3067,15 @@ $(function() {
                 if (self.previewOn){
                     self.previewHasBeenOn = true;
 
+                    // Set custom css
+                    if($('textarea.UICCustomCSS').data('uicPreVal') == undefined){
+                        $('textarea.UICCustomCSS').data('uicPreVal',$('textarea.UICCustomCSS').val());
+                    }
+                    self.set_customCSS($('textarea.UICCustomCSS').val());
+                    $('textarea.UICCustomCSS').on('blur.uicus',function(){
+                        self.set_customCSS($('textarea.UICCustomCSS').val());
+                    });
+
                     // Set theme when updating it all
                     var themeSel = $('#settings_uicustomizer_themesContent li.UICThemeSelected').data('uictheme');
                     self.set_theme(themeSel,true);
@@ -3095,6 +3104,7 @@ $(function() {
                     }
 
                 }else{
+                    $('textarea.UICCustomCSS').off('blur.uicus');
                     // Remove preview toggles and restore the views when turning preview off/on
                     if (self.previewHasBeenOn){
                         // Restore theme
@@ -3111,6 +3121,8 @@ $(function() {
                         });
                         $('.UICpreviewHide').hide();
                         $('.UICpreviewHide').removeClass('UICpreviewHide');
+
+                        self.set_customCSS($('textarea.UICCustomCSS').data('uicPreVal'));
                     }
                     $('#settingsTabs').off('click.uicusPrev');
                 }
@@ -3258,6 +3270,8 @@ $(function() {
                 // Cancel the data to revert settings
                 OctoPrint.coreui.viewmodels.settingsViewModel.cancelData();
             }
+            // Reset preview of custom css
+            $('textarea.UICCustomCSS').data('uicPreVal',undefined);
             // Update
             self.UpdateLayout(self.settings.settings.plugins.uicustomizer);
 
