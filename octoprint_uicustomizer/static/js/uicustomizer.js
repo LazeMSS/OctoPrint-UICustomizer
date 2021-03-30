@@ -813,10 +813,14 @@ $(function() {
 
             // drag handler - http://jsfiddle.net/robertc/kKuqH/
             var dragstart = function (event) {
+                if (event.originalEvent != undefined && event.originalEvent.dataTransfer != undefined){
+                    event.originalEvent.dataTransfer.effectAllowed = "move";
+                }
                 $('#drop_overlay').addClass('UICHideHard');
                 var style = window.getComputedStyle(event.target, null);
                 $('#drop_overlay').data('positionData',[(parseInt(style.getPropertyValue("left"),10) - event.clientX),(parseInt(style.getPropertyValue("top"),10) - event.clientY)]);
             }
+
             var drag_over = function(event) {
                 // Avoid conflict with dropzone uploading
                 if ($('#drop_overlay').hasClass('UICHideHard')){
@@ -2434,7 +2438,7 @@ $(function() {
             var template = '\
             <li class="span4" data-uictheme="[key]">\
                 <a title="Click to select theme" href="#" class="UICsetTheme thumbnail"><img src="'+self.ThemesBaseURL+'thumbs/[key].png"/></a>\
-                <p><a href="[org]" class="UICMargLeft pull-right btn-mini btn" target="_blank">Source</a><button class="btn-mini btn btn-primary UICsetTheme pull-right">Select</button>\
+                <p><a href="[org]" class="UICMargLeft pull-right btn-mini btn" target="_blank">Author</a><button class="btn-mini btn btn-primary UICsetTheme pull-right">Select</button>\
                 <strong>[name]</strong><br><small>[desc]</small>\
                 </p>\
             </li>';
