@@ -450,7 +450,8 @@ div#UICSortCols li a:hover .UICToggleVis, .UICToggleVis:hover {
     width: 100%;
 }
 
-#settings_plugin_uicustomizer .UICReportBug{
+/* settings bottom buttons */
+#settings_plugin_uicustomizer .UICBottomBar{
     position: relative;
     top: 15px;
     overflow: hidden;
@@ -458,6 +459,11 @@ div#UICSortCols li a:hover .UICToggleVis, .UICToggleVis:hover {
     border-top: 1px solid #eee;
     padding-top: 10px;
     height: 30px;
+}
+
+#UICDonate:hover i{
+    animation: uicPulseFrame 1s ease-out;
+    animation-iteration-count: infinite;
 }
 
 #settings_plugin_uicustomizer #UICReportBug:hover i{
@@ -478,7 +484,6 @@ div#UICSortCols li a:hover .UICToggleVis, .UICToggleVis:hover {
 #settings_plugin_uicustomizer #UICReportBug{
     transition: width 1s;
     width: 80px;
-    height: 22px;
     text-align:right;
     overflow:hidden;
     white-space: nowrap;
@@ -749,7 +754,7 @@ html.touchevents #settings_dialog ::-webkit-scrollbar-thumb:window-inactive {
 
 .UIC-pulsate{
 	animation: uicPulseFrame 1s ease-out;
-    animation-iteration-count: infinite
+    animation-iteration-count: infinite;
 }
 
 @keyframes uicPulseFrame {

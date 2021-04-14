@@ -287,6 +287,7 @@ textarea {
     text-shadow: none;
     padding-bottom: 6px;
     border-radius: 2px;
+    margin: 0;
 }
 
 .uneditable-input:focus,
@@ -380,6 +381,15 @@ th i a.disabled {
 .progress .bar {
     background-color: var(--accent-darker);
     background-image: none;
+}
+
+.progress.progress-info.progress-striped .bar {
+    background-color: var(--accent-darker);
+}
+
+.progress.progress-danger.progress-striped .bar,
+.progress.progress-error.progress-striped .bar {
+    background-color: var(--red);
 }
 
 .navbar {
@@ -773,11 +783,13 @@ hr {
     background-color: inherit;
 }
 
-.fa-spinner {
+.fa-spinner, .icon-spinner {
     color: var(--accent);
 }
 
-.fa-spinner:before {
+.fa-spinner:before, .icon-spinner:before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
     content: "\F1CE";
 }
 
@@ -836,7 +848,8 @@ hr {
 
 .print-time-genius-after:after,
 .print-time-genius:before {
-    font-family: FONTAWESOME3;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
     content: "\F005";
 }
 
@@ -859,6 +872,8 @@ hr {
 }
 
 #navbar_plugin_toptemp .TopTempLoad:before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
     color: var(--accent);
     content: "\F1CE";
 }
@@ -872,7 +887,7 @@ div.popover.toptempPopover {
     background-color: var(--grey3);
 }
 
-div.popover.toptempPopover .arrow:after { 
+div.popover.toptempPopover .arrow:after {
     border-bottom-color: var(--grey3);
 }
 
@@ -891,4 +906,43 @@ div.popover.toptempPopover .popover-content div.TopTempPopoverGraph svg .ct-grid
 
 div.popover.toptempPopover .popover-content div.TopTempPopoverGraph svg .ct-labels span {
     color: var(--white);
+}
+
+#settings_plugin_bedlevelvisualizer .table {
+    border-radius: 0;
+}
+
+#settings_plugin_bedlevelvisualizer .table,
+#settings_plugin_bedlevelvisualizer .table thead tr.info > th,
+#settings_plugin_bedlevelvisualizer .table tbody tr td.info,
+#settings_plugin_bedlevelvisualizer .table tfoot tr.info > th {
+    background-color: var(--grey3);
+}
+
+#settings_plugin_bedlevelvisualizer .table tbody tr .raise,
+#settings_plugin_bedlevelvisualizer .table tfoot tr td span.raise {
+    color: var(--green);
+}
+
+#settings_plugin_bedlevelvisualizer .table tbody tr .lower,
+#settings_plugin_bedlevelvisualizer .table tfoot tr td span.lower {
+    color: var(--red);
+}
+
+#settings_plugin_bedlevelvisualizer .table thead tr.info .x-axis-label,
+#settings_plugin_bedlevelvisualizer .table tbody tr .x-axis-label,
+#settings_plugin_bedlevelvisualizer .table tfoot tr .x-axis-label,
+#settings_plugin_bedlevelvisualizer .table tfoot tr .x-axis-label  {
+    color: var(--quiteWhite-dark);
+}
+
+#settings_plugin_bedlevelvisualizer .table thead tr.info .y-axis-label,
+#settings_plugin_bedlevelvisualizer .table tbody tr .y-axis-label,
+#settings_plugin_bedlevelvisualizer .table tfoot tr .y-axis-label,
+#settings_plugin_bedlevelvisualizer .table tfoot tr.info .y-axis-label {
+    color: var(--grey);
+}
+
+#settings_plugin_bedlevelvisualizer #bedlevelvisualizer_command {
+    min-height: 300px;
 }

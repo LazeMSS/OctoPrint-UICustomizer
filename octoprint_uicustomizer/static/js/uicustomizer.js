@@ -9,7 +9,11 @@ $('head').prepend('<meta id="UICViewport" name="viewport" content="width=device-
 // Set theme onload
 var UICPreLoadTheme  = "default";
 if (Modernizr.localstorage){
-    UICPreLoadTheme = localStorage['plugin.uicustomizer.theme'];
+    if (window.location.pathname != "/"){
+        UICPreLoadTheme = localStorage['plugin.uicustomizer.'+window.location.pathname+'theme'];
+    }else{
+        UICPreLoadTheme = localStorage['plugin.uicustomizer.theme'];
+    }
     if (UICPreLoadTheme == undefined || UICPreLoadTheme == "" || UICPreLoadTheme == null){
         UICPreLoadTheme = "default";
     }
@@ -137,7 +141,7 @@ $(function() {
             self.onWebCamErrorOrg = OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored;
 
             // Set names
-            $('div.octoprint-container div.tabbable').addClass('UICmainTabs').wrap( '<div class="UICCol2"></div>');
+            $('#tabs').parent().addClass('UICmainTabs').wrap( '<div class="UICCol2"></div>');
             $('#sidebar').addClass('UICCol1');
             $('div.octoprint-container').addClass('UICMainCont');
             $('#navbar div.navbar-inner > div > div.nav-collapse').addClass('UICMainMenu');
@@ -188,6 +192,7 @@ $(function() {
             OctoPrint.coreui.viewmodels.settingsViewModel.appearance_color.subscribe(function(color) {
                 self.updateStandardTheme(color);
             });
+
             if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('themeify')){
                 OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.theme.subscribe(function(theme) {
                     self.updateThemify(theme);
@@ -395,8 +400,12 @@ $(function() {
                     self.updateStandardTheme(OctoPrint.coreui.viewmodels.settingsViewModel.settings.appearance.color());
                 };
             }else{
+                // Remove any non UI Customizer related theming
                 $('html').addClass('UICDefaultTheme UICCustomTheme');
                 $('#UICCustStandardTheme,#UICCustThemeify').remove();
+                // Set colors and transparent off
+                OctoPrint.coreui.viewmodels.settingsViewModel.appearance_color('default');
+                OctoPrint.coreui.viewmodels.settingsViewModel.appearance_colorTransparent(false);
             }
             if (self.curTheme != themeName && themeName != null){
                 self.logToConsole("Loading theme: " + themeName + " - old theme: " + self.curTheme);
@@ -804,10 +813,14 @@ $(function() {
 
             // drag handler - http://jsfiddle.net/robertc/kKuqH/
             var dragstart = function (event) {
+                if (event.originalEvent != undefined && event.originalEvent.dataTransfer != undefined){
+                    event.originalEvent.dataTransfer.effectAllowed = "move";
+                }
                 $('#drop_overlay').addClass('UICHideHard');
                 var style = window.getComputedStyle(event.target, null);
                 $('#drop_overlay').data('positionData',[(parseInt(style.getPropertyValue("left"),10) - event.clientX),(parseInt(style.getPropertyValue("top"),10) - event.clientY)]);
             }
+
             var drag_over = function(event) {
                 // Avoid conflict with dropzone uploading
                 if ($('#drop_overlay').hasClass('UICHideHard')){
@@ -2007,7 +2020,12 @@ $(function() {
             });
             self.logToConsole("Built these cols:"+JSON.stringify(colsSave));
 
-            var widths = $('#UICSortCols input.uiccolwidth').map(function(){return $(this).val();}).get();
+            var totalw = 0
+            var widths = $('#UICSortCols input.uiccolwidth').map(function(){totalw += $(this).val()*1; return $(this).val();}).get();
+            // Fallback if something went wrong - we make it all 1 wide
+            if (totalw > self.maxCWidth){
+                widths = Array($('#UICSortCols input.uiccolwidth').length).fill(1);
+            }
             return [ko.observableArray(colsSave), ko.observableArray(widths)];
         }
 
@@ -2420,7 +2438,7 @@ $(function() {
             var template = '\
             <li class="span4" data-uictheme="[key]">\
                 <a title="Click to select theme" href="#" class="UICsetTheme thumbnail"><img src="'+self.ThemesBaseURL+'thumbs/[key].png"/></a>\
-                <p><a href="[org]" class="UICMargLeft pull-right btn-mini btn" target="_blank">Source</a><button class="btn-mini btn btn-primary UICsetTheme pull-right">Select</button>\
+                <p><a href="[org]" class="UICMargLeft pull-right btn-mini btn" target="_blank">Author</a><button class="btn-mini btn btn-primary UICsetTheme pull-right">Select</button>\
                 <strong>[name]</strong><br><small>[desc]</small>\
                 </p>\
             </li>';
@@ -3002,7 +3020,7 @@ $(function() {
                 $(this).next().html($(this).val());
             });
 
-            // Keep the maxium width
+            // Inforce the maxium total width
             $('#settings_plugin_uicustomizer input.uiccolwidth').off('change.uicus').on('change.uicus',function(){
                 var thisItem = this;
                 var spanW = $('#UICSortCols input.uiccolwidth');
@@ -3063,6 +3081,15 @@ $(function() {
                 if (self.previewOn){
                     self.previewHasBeenOn = true;
 
+                    // Set custom css
+                    if($('textarea.UICCustomCSS').data('uicPreVal') == undefined){
+                        $('textarea.UICCustomCSS').data('uicPreVal',$('textarea.UICCustomCSS').val());
+                    }
+                    self.set_customCSS($('textarea.UICCustomCSS').val());
+                    $('textarea.UICCustomCSS').on('blur.uicus',function(){
+                        self.set_customCSS($('textarea.UICCustomCSS').val());
+                    });
+
                     // Set theme when updating it all
                     var themeSel = $('#settings_uicustomizer_themesContent li.UICThemeSelected').data('uictheme');
                     self.set_theme(themeSel,true);
@@ -3091,6 +3118,7 @@ $(function() {
                     }
 
                 }else{
+                    $('textarea.UICCustomCSS').off('blur.uicus');
                     // Remove preview toggles and restore the views when turning preview off/on
                     if (self.previewHasBeenOn){
                         // Restore theme
@@ -3107,6 +3135,8 @@ $(function() {
                         });
                         $('.UICpreviewHide').hide();
                         $('.UICpreviewHide').removeClass('UICpreviewHide');
+
+                        self.set_customCSS($('textarea.UICCustomCSS').data('uicPreVal'));
                     }
                     $('#settingsTabs').off('click.uicusPrev');
                 }
@@ -3194,13 +3224,17 @@ $(function() {
                 self.settings.settings.plugins.uicustomizer.mainTabs = ko.observableArray(self.buildCustomTabsSave());
 
                 // Set theme into settings and storage
-                var theme = $('#settings_uicustomizer_themesContent li.UICThemeSelected').data('uictheme');
-                if (self.ThemesBaseURL != self.ThemesInternalURL){
-                    self.settings.settings.plugins.uicustomizer.themeLocal(false);
+                if (self.ThemesLoaded){
+                    self.logToConsole(" ----> Themes have been loaded - we can save <----");
+                    self.settings.settings.plugins.uicustomizer.theme($('#settings_uicustomizer_themesContent li.UICThemeSelected').data('uictheme'));
+                    if (self.ThemesBaseURL != self.ThemesInternalURL){
+                        self.settings.settings.plugins.uicustomizer.themeLocal(false);
+                    }else{
+                        self.settings.settings.plugins.uicustomizer.themeLocal(true);
+                    }
                 }else{
-                    self.settings.settings.plugins.uicustomizer.themeLocal(true);
+                    self.logToConsole(" ----> Themes NOT loaded - we will not update the theme <----");
                 }
-                self.settings.settings.plugins.uicustomizer.theme(theme);
 
                 var streamURL = self.settings.webcam_streamUrl();
                 if (/.m3u8/i.test(streamURL)){
@@ -3250,6 +3284,8 @@ $(function() {
                 // Cancel the data to revert settings
                 OctoPrint.coreui.viewmodels.settingsViewModel.cancelData();
             }
+            // Reset preview of custom css
+            $('textarea.UICCustomCSS').data('uicPreVal',undefined);
             // Update
             self.UpdateLayout(self.settings.settings.plugins.uicustomizer);
 
