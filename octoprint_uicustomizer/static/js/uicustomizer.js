@@ -141,7 +141,7 @@ $(function() {
             self.onWebCamErrorOrg = OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored;
 
             // Set names
-            $('div.octoprint-container div.tabbable').addClass('UICmainTabs').wrap( '<div class="UICCol2"></div>');
+            $('#tabs').parent().addClass('UICmainTabs').wrap( '<div class="UICCol2"></div>');
             $('#sidebar').addClass('UICCol1');
             $('div.octoprint-container').addClass('UICMainCont');
             $('#navbar div.navbar-inner > div > div.nav-collapse').addClass('UICMainMenu');
