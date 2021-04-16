@@ -2,7 +2,7 @@
 ![](extras/responsive.png)
 A [OctoPrint](https://github.com/foosel/OctoPrint) plugin that allows you to customize the look and feel of the user interface.
 It also features a lot of other fixes and improvements:
-* Themes/skins - choose between 6 themes and more are coming soon
+* Themes/skins - choose between 6+ themes
 * Customize tabs: Change icon, labels, order, show/hide
 * Change width of the columns
 * Sort the order to icons in the menu bar (top icons)
@@ -18,7 +18,7 @@ It also features a lot of other fixes and improvements:
 * Extra Gcode viewer "widget"
 * [Compact Navbar temp](https://plugins.octoprint.org/plugins/navbartemp/) icons
 * Hide widgets
-* Hide main camera
+* Hide main camera on Control tab
 * Center top bar icons
 * Realtime preview of changes
 
@@ -64,7 +64,8 @@ The configuration is split into 6 tabs - all have an preview option in the top r
 * Compress temp. controls - compress/minimize the temperature controls in the temperature main tab
 
 ### Themes
-Select a theme - notice you can enable preview and see the theme in a realtime preview
+Select a theme - notice you can enable preview and see the theme in a realtime preview.
+When clicking this tab for the first time you will need to confirm that it's okay to download the different themes from the remote themes site (https://lazemss.github.io/OctoPrint-UICustomizerThemes/) this is done in so we can update themes without updating the plugin.
 ![](extras/s6.png)<br/><br/>
 
 
@@ -74,8 +75,8 @@ The layout of the screen can be made into 1,2 or 3 columns and the size of the c
 If you want a two or one column layout then just drag the "widgets" all the widgets into the left hand side columns.
 Each widget can be moved by draging. The widgets can also be hidden by clicking the eye on the right hand side of the widget.
 Notice there is 2 extras widgets include with UI Customizer:
-- Webcam widget which allows you to have a webcam outside the main tabs
-- Gcode widget which allows you to have a gcode viewer outside the main tabs
+- Webcam widget which allows you to have a webcam outside the main Control tab
+- Gcode widget which allows you to have a gcode viewer outside the main Gcode viewer tab
 
 ### Main tabs
 ![](extras/s3.png)<br/><br/>
@@ -98,6 +99,7 @@ This allows you to change the look & feel of the top icons in top menu
 
 ![](extras/s5.png)<br/><br/>
 * Disable terminal when hidden - Disables the terminal update when the terminal tab is in the background - gives a small perfomance boost.
+* Custom CSS - Enter any custom CSS styling you want to have applied
 
 ## Donation/support
 If you like my work feel free to support me using paypal: https://www.paypal.com/donate/?business=2STH3SD3KXGNQ&item_name=UI+Customizer
