@@ -573,7 +573,7 @@ th i a.disabled {
 }
 
 .nav-list>li>a:hover {
-    color: #white;
+    color: var(--white);
     background: var(--grey2);
 }
 
@@ -591,7 +591,7 @@ th i a.disabled {
 }
 
 .close {
-    color: #white;
+    color: var(--white);
     text-shadow: none;
 }
 
@@ -887,7 +887,7 @@ div.popover.toptempPopover {
     background-color: var(--grey3);
 }
 
-div.popover.toptempPopover .arrow:after {
+div.popover.toptempPopover .arrow:after { 
     border-bottom-color: var(--grey3);
 }
 
