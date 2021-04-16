@@ -420,7 +420,7 @@ $(function() {
                 // Remove the current css to trigger reload
                 $('link.UICThemeCSS').remove();
 
-                var themeURL = self.ThemesBaseURL+"/css/"+themeName+'.css?theme='+themeName;
+                var themeURL = self.ThemesBaseURL+"css/"+themeName+'.css?theme='+themeName;
 
                 // Preview or for real?
                 if (!preview){
@@ -2421,7 +2421,13 @@ $(function() {
                     // Try local as a workaround
                     error: function (jqXHR, textStatus, errorThrown ) {
                         console.log("FAILED TO LOAD: "+ self.ThemesExternalURL,errorThrown)
-                         $.ajax({
+                        new PNotify({
+                            title: 'Unable to load themes',
+                            text: 'Failed to load "'+self.ThemesExternalURL+'themes.json" file - internal files loaded as fallback.<br><br>Do you have any plugins blocking access to external sites, for example NoScript.<br><br><code>Error message: ' + errorThrown + '</code>',
+                            type: "error",
+                            hide: false
+                        });
+                        $.ajax({
                             url: self.ThemesInternalURL+'../themes.json',
                             success: function(response){
                                 self.loadSettingsThemes(response,self.ThemesInternalURL);
@@ -2517,7 +2523,7 @@ $(function() {
                     // Show warning
                     $('#settings_uicustomizer_themesContent').html('<div class="alert alert-info">\
                     <strong>Information regarding themes</strong>\
-                    <p>In order to download new and updated themes UI Customizer will download the themes, using a secure connection, from <a href="'+self.ThemesExternalURL+'" target="_blank">'+self.ThemesExternalURL+'</a>.</p><p>No personal data is sent to this URL. The only data being sent is your public IP address due to the nature of the internet.</p><p>Click "Continue" to downlad themes.</p>\
+                    <p>In order to download new and updated themes UI Customizer will download the themes, using a secure connection, from <a href="'+self.ThemesExternalURL+'" target="_blank">'+self.ThemesExternalURL+'</a>.</p><p>No personal data is sent to this URL. The only data being sent is your public IP address due to the nature of the internet.</p><p>If you have any plugins (ie. NoScript) installed that might block access to external sites then please allow access to https://github.io</p><p>Click "Continue" to downlad themes.</p>\
                     <button class="btn btn-success">Continue</button>\
                     </div>').find('button').one('click',function(){
                         self.setStorage("getThemesApproved",1);
