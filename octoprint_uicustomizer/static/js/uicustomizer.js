@@ -2419,7 +2419,8 @@ $(function() {
                         self.loadSettingsThemes(response,self.ThemesExternalURL);
                     },
                     // Try local as a workaround
-                    error: function (request, status, error) {
+                    error: function (jqXHR, textStatus, errorThrown ) {
+                        console.log("FAILED TO LOAD: "+ self.ThemesExternalURL,errorThrown)
                          $.ajax({
                             url: self.ThemesInternalURL+'../themes.json',
                             success: function(response){
