@@ -2091,6 +2091,10 @@ $(function() {
             // ID, Shown,Customlabel,tab design:, color code
             // 0 ,   1  ,    2      , 3         , 5
             // Append them
+            var tabIconSize = self.settings.settings.plugins.uicustomizer.mainTabsIconSize();
+            if (tabIconSize != ""){
+                tabIconSize += " UICTabIconSize";
+            }
             var val = data[0];
             var target = $('#'+val).find('a');
             var newtabcontent = target.clone();
@@ -2122,11 +2126,11 @@ $(function() {
             }
             // On the right or the left hand side icon only
             if (data[4] === true && data[3] != ''){
-                $(newtabcontent).prepend($('<i class="UICPadRight hidden-tablet '+data[3]+'"></i>').css(colorclass));
+                $(newtabcontent).prepend($('<i class="UICPadRight hidden-tablet '+data[3]+' '+ tabIconSize +'"></i>').css(colorclass));
             }else if (data[4] === false && data[3] != ''){
-                $(newtabcontent).append($('<i class="UICPadLeft hidden-tablet '+data[3]+'"></i>').css(colorclass));
+                $(newtabcontent).append($('<i class="UICPadLeft hidden-tablet '+data[3]+' '+ tabIconSize +'"></i>').css(colorclass));
             }else if (data[4] == "iconOnly" && data[3] != ''){
-                $(newtabcontent).append($('<i class="'+data[3]+'"></i>').css(colorclass));
+                $(newtabcontent).append($('<i class="'+data[3]+' '+ tabIconSize +'"></i>').css(colorclass));
             }
             $(target).html(newtabcontent.html()).attr('title',title);
         }
@@ -2884,6 +2888,7 @@ $(function() {
                     }
                     tabsorter.option("disabled", false);
                     $('#settings_uicustomizer_tabs_look').fadeTo(300,1);
+                    $('#UICMainTabsIconSize').prop( "disabled", false );
                     $('#settings_uicustomizer_tabs_look :input').prop( "disabled", false );
                     if (self.previewOn){
                         var tabData = self.buildCustomTabsSave();
@@ -2893,6 +2898,7 @@ $(function() {
                     $('.UICthemeifyAlert').hide();
                     tabsorter.option("disabled", true);
                     $('#settings_uicustomizer_tabs_look').fadeTo(300,0.5);
+                    $('#UICMainTabsIconSize').prop( "disabled", true );
                     $('#settings_uicustomizer_tabs_look :input').prop( "disabled", true );
                     if (self.previewOn){
                         self.set_mainTabsCustomize(false,false);
@@ -2910,6 +2916,13 @@ $(function() {
                     $('#UICMainTabCustomizerToggle').trigger('change');
                 });
             }
+
+            // Change icon size
+            $('#UICMainTabsIconSize').off('change.uicus').on('change.uicus',function(){
+                if (self.previewOn){
+                    self.set_mainTabsCustomize(true,self.buildCustomTabsSave());
+                }
+            });
 
             /// ---------------------- COLS LAYOUT
 

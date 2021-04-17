@@ -329,6 +329,11 @@ html:not(.themeify) #tabs_content{
 	margin-bottom: 2px !important;
 }
 
+/* use small font size for tabdrop */
+#tabs li.tabdrop >ul.dropdown-menu a >i.UICTabIconSize{
+    font-size: 1em;
+}
+
 /* fix right side menu drop on files*/
 #files_wrapper ul.dropdown-menu {
     right: 0;
