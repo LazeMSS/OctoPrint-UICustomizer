@@ -403,9 +403,6 @@ $(function() {
                 // Remove any non UI Customizer related theming
                 $('html').addClass('UICDefaultTheme UICCustomTheme');
                 $('#UICCustStandardTheme,#UICCustThemeify').remove();
-                // Set colors and transparent off
-                OctoPrint.coreui.viewmodels.settingsViewModel.appearance_color('default');
-                OctoPrint.coreui.viewmodels.settingsViewModel.appearance_colorTransparent(false);
             }
             if (self.curTheme != themeName && themeName != null){
                 self.logToConsole("Loading theme: " + themeName + " - old theme: " + self.curTheme);
@@ -2491,6 +2488,7 @@ $(function() {
                 self.setThemeSelected(selectedTheme);
                 return false;
             });
+
             // Set themes when done
             self.setThemeSelected();
         }
@@ -2506,6 +2504,21 @@ $(function() {
             }
             $('#settings_uicustomizer_themesContent li').removeClass('UICThemeSelected');
             $('#settings_uicustomizer_themesContent li[data-uictheme="'+theme+'"]').addClass('UICThemeSelected');
+
+            // Show warning about "appearance" styling conflict
+            if ($('div.alert.UICappearWarn').length == 0 && (OctoPrint.coreui.viewmodels.settingsViewModel.appearance_colorTransparent() == true || OctoPrint.coreui.viewmodels.settingsViewModel.appearance_color() != "default")){
+                $('#settings_uicustomizer_themesContent').prepend('<div class="alert alert-info UICappearWarn">\
+                    <strong>Styling/Theme conflict</strong>\
+                    <p>You currently have one or more "Appearance" settings that might make the themes look wrong. Check under OctoPrint > Appearance and make sure Color is "Default" and "Transparent color" is unchecked.</p>\
+                    <button class="btn btn-success">Fix it</button>\
+                    </div>')
+                .find('button').one('click',function(){
+                    OctoPrint.coreui.viewmodels.settingsViewModel.appearance_color('default');
+                    OctoPrint.coreui.viewmodels.settingsViewModel.appearance_colorTransparent(false);
+                    $('div.alert.UICappearWarn').remove();
+                    return false;
+                });
+            }
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
@@ -2533,6 +2546,7 @@ $(function() {
                         self.setStorage("getThemesApproved",1);
                         self.ThemesLoaded = true;
                         self.loadSettingsThemes(null);
+                        return false;
                     });
 
                 });
