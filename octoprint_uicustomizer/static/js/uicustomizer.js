@@ -3302,8 +3302,14 @@ $(function() {
             var clonecon = clone.getContext('2d');
             var source = $('#gcode_canvas')[0];
             var factor = $('#UICGcodeVWidget').data('zoomlvl');
-            clone.width = source.width/factor
-            clone.height = source.height/factor
+            var newWidth = source.width/factor;
+            var newHeight = source.height/factor;
+            if (newWidth != clone.width){
+                clone.width = newWidth;
+            }
+            if (newHeight != clone.height){
+                clone.height = newHeight;
+            }
             clonecon.drawImage( source, 0, 0, clone.width, clone.height);
         }
 
