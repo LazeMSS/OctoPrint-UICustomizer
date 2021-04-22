@@ -1772,7 +1772,7 @@ $(function() {
                 $('div.UICMainMenu > ul.nav > li:not([id^="navbar_plugin"]) > a,li.UICExcludeFromTopIcons > a').each(function(){
                     var title= $(this).attr('title');
                     if (title != undefined){
-                        $(this).append('<span class="UICHideDesktop">'+title+'</span>');
+                       $('<span class="UICHideDesktop">&nbsp;'+title+'</span>').insertAfter($('.fas',this));
                     }
                 });
 
