@@ -764,7 +764,7 @@ $(function() {
 
 
         self.set_gcodeFullWidth= function(enable){
-            if (enable){
+            if (enable && !('cancelobjectViewModel' in OctoPrint.coreui.viewmodels)){
                 $('#canvas_container').addClass('UICMaxi');
             }else{
                 $('#canvas_container').removeClass('UICMaxi');
@@ -1621,7 +1621,7 @@ $(function() {
             }
         }
 
-        // Set 
+        // Set
         self.set_settingsMenuTxt = function(link){
             var settingsMenuTxt = link.closest('li.dropdown').find('a:first').text() + '&nbsp;<i class="fas fa-chevron-right"></i>&nbsp;'+link.text();
             $('#UICsetMenuShow').html(settingsMenuTxt);
@@ -3177,6 +3177,11 @@ $(function() {
                 }
             }).find('i').removeClass('fa-check-square').addClass('fa-square');
 
+            if ('cancelobjectViewModel' in OctoPrint.coreui.viewmodels){
+                $('#settings_plugin_uicustomizer input[data-settingtype="gcodeFullWidth"]').attr('disabled',true).parent().attr('title','Disabled because of incompatibility with Cancel Objects plugin.')
+            }else{
+                $('#settings_plugin_uicustomizer input[data-settingtype="gcodeFullWidth"]').attr('disabled',false);
+            }
 
             // Realtime preview
             $('#settings_plugin_uicustomizer input:checkbox[data-settingtype]').on('change.uicus',function(){
