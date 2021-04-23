@@ -1621,6 +1621,12 @@ $(function() {
             }
         }
 
+        // Set 
+        self.set_settingsMenuTxt = function(link){
+            var settingsMenuTxt = link.closest('li.dropdown').find('a:first').text() + '&nbsp;<i class="fas fa-chevron-right"></i>&nbsp;'+link.text();
+            $('#UICsetMenuShow').html(settingsMenuTxt);
+            $('#UICSettingsHeader').html(settingsMenuTxt);
+        }
 
         // ------------------------------------------------------------------------------------------------------------------------
         // Set responsive
@@ -1667,7 +1673,6 @@ $(function() {
                 // Convert the existing to the other format
                 var menuitem = null;
                 var menuItems = null;
-                var curactive = null;
                 $('#settings_dialog_menu ul li').each(function(){
                     if ($(this).hasClass('nav-header')){
                         if (menuitem != null){
@@ -1678,7 +1683,6 @@ $(function() {
                         menuItems = $('<ul class="dropdown-menu" role="menu"></ul>');
                     }else{
                         if ($(this).hasClass('active')){
-                            curactive = $(this);
                             $(this).removeClass('active');
                         }
                         menuItems.append($(this));
@@ -1711,15 +1715,8 @@ $(function() {
                     if ($('#settings_dialog_menu').hasClass('in')){
                         $('#UICsettingsMenuNav a.btn-navbar').trigger('click');
                     }
-                    var settingsMenuTxt = $(this).closest('li.dropdown').find('a:first').text() + '&nbsp;<i class="fas fa-chevron-right"></i>&nbsp;'+$(this).text();
-                    $('#UICsetMenuShow').html(settingsMenuTxt);
-                    $('#UICSettingsHeader').html(settingsMenuTxt);
+                    self.set_settingsMenuTxt($(this));
                 });
-
-                // Click the active menu to make it all look goode
-                if (curactive != null){
-                    curactive.find('a:first').trigger('click');
-                }
 
                 // Fix floating errors
                 $('#UICFullSettingsBox div.control-group:not(.row-fluid)').addClass('row-fluid UICRemoveFluidRow');
@@ -1734,6 +1731,10 @@ $(function() {
                 // Fix modals on show
                 $('body').on('shown.bs.modal.UICHandler','#settings_dialog', function(event) {
                     if ($('body').hasClass('UICResponsiveMode') && $('#settings_dialog_menu:visible').length ){
+                        // reopen last used setting again
+                        if (event.target.id === 'settings_dialog') self.set_settingsMenuTxt($('.nav>.active .active>a',event.target));
+                        // open active submenu
+                        if (event.target.id === 'settings_dialog_menu') $('.dropdown.active',event.target).addClass('open')
                         // Save size for mobile resizing for settings
                         if ($('#settings_dialog_menu:visible').length && $('#UICsettingsMenu').data('UICOrgWidth') == undefined || $('#UICsettingsMenu').data('UICOrgWidth') == 0){
                             $('#settings_dialog_menu').width('2000px');
@@ -1772,7 +1773,7 @@ $(function() {
                 $('div.UICMainMenu > ul.nav > li:not([id^="navbar_plugin"]) > a,li.UICExcludeFromTopIcons > a').each(function(){
                     var title= $(this).attr('title');
                     if (title != undefined){
-                        $(this).append('<span class="UICHideDesktop">'+title+'</span>');
+                       $('<span class="UICHideDesktop">&nbsp;'+title+'</span>').insertAfter($('.fas',this));
                     }
                 });
 
