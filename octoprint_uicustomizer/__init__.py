@@ -11,14 +11,17 @@ import shutil
 import requests
 
 from flask import send_file
+from packaging import version
 
 class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                        octoprint.plugin.SettingsPlugin,
                        octoprint.plugin.AssetPlugin,
-                       octoprint.plugin.TemplatePlugin):
+                       octoprint.plugin.TemplatePlugin,
+                       octoprint.plugin.EventHandlerPlugin):
 
     def __init__(self):
         self.themeURL = 'https://lazemss.github.io/OctoPrint-UICustomizerThemes/css/'
+        self.themeVersion = 'https://api.github.com/repos/LazeMSS/OctoPrint-UICustomizerThemes/releases/latest'
 
     def on_after_startup(self):
         self._logger.info("UI Customizer is initialized.")
@@ -35,7 +38,7 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
         if curTheme:
             self.setThemeFile(curTheme,themeLocal)
 
-    def setThemeFile(self,source,localTheme = True):
+    def setThemeFile(self,source,localTheme = True,themeVersion = False):
         baseFolder = os.path.join(os.path.dirname(os.path.realpath(__file__)),'static','themes','css')
         targetTheme = os.path.join(baseFolder,'active.css')
         srcTheme = os.path.join(baseFolder,source+'.css')
@@ -69,13 +72,51 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
             else:
                 shutil.copy2(srcTheme, targetTheme)
 
+            # Set the theme version
+            if themeVersion == False:
+                themeVersion = self.getRemoteThemeVersion()
+            if themeVersion != False:
+                self._settings.set(["themeVersion"],str(themeVersion))
+
         else:
-            self._logger.info("Unable to set the theme: %s",srcTheme)
+            self._logger.warning("Unable to set the theme: %s",srcTheme)
+
+    def getRemoteThemeVersion(self):
+        try:
+            r = requests.get(self.themeVersion, allow_redirects=True)
+        except Exception as e:
+            self._logger.error("Failed to get theme version: %s (%s)",self.themeVersion,e);
+            return False
+        if r.status_code == 200:
+            jsonVersion = r.json()
+            if "tag_name" in jsonVersion:
+                return jsonVersion['tag_name']
+        return False
+
+    # Check for new versions on login
+    def on_event(self,event,payload):
+        if event == "UserLoggedIn":
+            themeLocal = self._settings.get(["themeLocal"],merged=True,asdict=True)
+            # Using remote themes?
+            if themeLocal == False:
+                # Get the remote theme version
+                themeVersionRemote = self.getRemoteThemeVersion()
+                # Did we get the version no
+                if themeVersionRemote != False:
+                    # Get local versio no
+                    themeVersionLocal = str(self._settings.get(["themeVersion"],merged=True,asdict=True))
+                    # Different versions?
+                    if version.parse(themeVersionLocal) < version.parse(themeVersionRemote):
+                        themeName = self._settings.get(["theme"],merged=True,asdict=True)
+                        self._logger.info("Newer themes found - starting update. %s < %s : %s", themeVersionLocal, themeVersionRemote,themeName)
+                        self.setThemeFile(str(themeName),False,themeVersionRemote)
+
 
     def on_settings_save(self,data):
         # save
         octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
 
+        # Theme selected - lets fix it
         if 'theme' in data and data['theme']:
             # Local or not
             themeLocal = self._settings.get(["themeLocal"],merged=True,asdict=True)
@@ -124,11 +165,13 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                 ['term_link',True,False,'fas fa-terminal',True,False],
                 ['gcode_link',True,False,'fab fa-codepen',True,False],
             ],
+            'mainTabsIconSize': '',
             "topIconSort" : [],
             "gcodeZoom": 3,
             "theme" : "default",
             "themeLocal" : True,
-            "customCSS" : ""
+            "customCSS" : "",
+            "themeVersion": "0"
         }
 
     def get_template_configs(self):

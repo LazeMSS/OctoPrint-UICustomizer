@@ -27,7 +27,7 @@
                 <div class="row-fluid">
                     <div class="span6">
                         <div class="controls">
-                            <label class="checkbox" title="Enables the improved responsive modes including settings for mobile screens etc."><input data-bind="checked: settings.plugins.uicustomizer.responsiveMode" data-settingtype="responsiveMode" type="checkbox"> {{ _('Improve mobile/responsive') }}</label>
+                            <label class="checkbox" title="Enables the improved responsive mode including settings for mobile/tables"><input data-bind="checked: settings.plugins.uicustomizer.responsiveMode" data-settingtype="responsiveMode" type="checkbox"> {{ _('Improve mobile/responsive') }}</label>
                         </div>
                         <div class="controls">
                             <label class="checkbox" title="Should the top menubar stay fixed when scrolling or not"><input data-bind="checked: settings.plugins.uicustomizer.fixedHeader" data-settingtype="fixedHeader" type="checkbox"> {{ _('Fixed header/topbar') }}</label>
@@ -53,7 +53,7 @@
                             <label class="checkbox" title="Hide temperature background graphics"><input data-bind="checked: settings.plugins.uicustomizer.hideGraphBackground" data-settingtype="hideGraphBackground" data-previewtab="temp_link" type="checkbox"> {{ _('Hide temp. graph background') }}</label>
                         </div>
                         <div class="controls">
-                            <label class="checkbox" title="Hide the main camera - only acive if the webcam in the wiget is enabled"><input data-bind="checked: settings.plugins.uicustomizer.hideMainCam" data-settingtype="hideMainCam" data-previewtab="control_link"  type="checkbox"> {{ _('Hide main camera') }}</label>
+                            <label class="checkbox" title="Hide the webcamera on the Control tab"><input data-bind="checked: settings.plugins.uicustomizer.hideMainCam" data-settingtype="hideMainCam" data-previewtab="control_link"  type="checkbox"> {{ _('Hide webcamera on Control tab') }}</label>
                         </div>
                         <div class="controls">
                             <label class="checkbox" title="Will add an zoom icon to the webcam live feed that will popup out the webcam video feed into a floating resizeable overlay"><input data-bind="checked: settings.plugins.uicustomizer.addWebCamZoom" data-settingtype="addWebCamZoom" type="checkbox"> {{ _('Zoom/float webcam icon') }}</label>
@@ -111,6 +111,30 @@
                     <small>Having both Themeify and UI Customizer changing tab icons can cause problems. You should uncheck <a href="javascript:$('#settings_plugin_themeify_link a').trigger('click');">"Enable Tab-icons" in Themeify</a> or "Customize tabs" in UI Customizer.</small>
                 </div>
                 <div id="settings_uicustomizer_tabs_look"></div>
+            </fieldset>
+            <fieldset>
+                <legend>{{ _('Icons size') }}</legend>
+                <div class="control-group">
+                    <label class="control-label">Size</label>
+                    <div class="controls">
+                        <select id="UICMainTabsIconSize" data-bind="value: settings.plugins.uicustomizer.mainTabsIconSize">
+                            <option value="fa-xs">Xtra small</option>
+                            <option value="fa-sm">Small</option>
+                            <option value="">Normal(1:1)</option>
+                            <option value="fa-lg">x1.3</option>
+                            <option value="fa-2x">x2</option>
+                            <option value="fa-3x">x3</option>
+                            <option value="fa-4x">x4</option>
+                            <option value="fa-5x">x5</option>
+                            <option value="fa-6x">x6</option>
+                            <option value="fa-7x">x7</option>
+                            <option value="fa-8x">x8</option>
+                            <option value="fa-9x">x9</option>
+                            <option value="fa-10x">x10</option>
+                        </select>
+                        <div class="thumbnail pull-right"><i class="fab fa-octopus-deploy" data-bind="class: settings.plugins.uicustomizer.mainTabsIconSize"></i></div>
+                    </div>
+                </div>
             </fieldset>
         </div>
         <div class="tab-pane" id="settings_uicustomizer_topicons">

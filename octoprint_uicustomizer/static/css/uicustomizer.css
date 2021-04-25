@@ -329,6 +329,11 @@ html:not(.themeify) #tabs_content{
 	margin-bottom: 2px !important;
 }
 
+/* use small font size for tabdrop */
+#tabs li.tabdrop >ul.dropdown-menu a >i.UICTabIconSize{
+    font-size: 1em;
+}
+
 /* fix right side menu drop on files*/
 #files_wrapper ul.dropdown-menu {
     right: 0;
@@ -1123,6 +1128,11 @@ body.inlineFullscreen .UICWebCamClick{
 #UICGcodeVWidgetContainer canvas{
     border: 1px solid #eee;
     border-radius: 3px;
+}
+
+/*OctoPrint-CameraSettings fixes - not perfect but the flexbox stuff and old bootstrap does not mix*/
+body.UICResponsiveMode #settings_plugin_camerasettings div.camera-settings-outer > div:nth-child(4){
+    max-height: 45vh;
 }
 
 /* themify hacks :/*/

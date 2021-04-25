@@ -173,6 +173,14 @@ $(function() {
                 $('div#tabs_content div.tab-pane:not("#tab_plugin_consolidate_temp_control") > div.span6').children().unwrap();
             }
 
+
+            // Spool manager until its patched: https://github.com/OllisGit/OctoPrint-SpoolManager/issues/142
+            if ('spoolManagerViewModel' in OctoPrint.coreui.viewmodels && $('body').hasClass('UICResponsiveMode')){
+                $('#spool-form input[type="hidden"]').prependTo($('#spool-form'));
+                $('#spool-form > div.row:first').addClass('row-fluid').removeClass('row');
+                $('#spool-note-editor').closest('div.span6').addClass('span12').removeClass('span6');
+            }
+
             // Rewrite the tab selector for settings - https://github.com/LazeMSS/OctoPrint-UICustomizer/issues/95
             var prevTab = OctoPrint.coreui.viewmodels.settingsViewModel.selectTab;
             OctoPrint.coreui.viewmodels.settingsViewModel.selectTab = function(tab){
@@ -403,9 +411,6 @@ $(function() {
                 // Remove any non UI Customizer related theming
                 $('html').addClass('UICDefaultTheme UICCustomTheme');
                 $('#UICCustStandardTheme,#UICCustThemeify').remove();
-                // Set colors and transparent off
-                OctoPrint.coreui.viewmodels.settingsViewModel.appearance_color('default');
-                OctoPrint.coreui.viewmodels.settingsViewModel.appearance_colorTransparent(false);
             }
             if (self.curTheme != themeName && themeName != null){
                 self.logToConsole("Loading theme: " + themeName + " - old theme: " + self.curTheme);
@@ -420,7 +425,7 @@ $(function() {
                 // Remove the current css to trigger reload
                 $('link.UICThemeCSS').remove();
 
-                var themeURL = self.ThemesBaseURL+"/css/"+themeName+'.css?theme='+themeName;
+                var themeURL = self.ThemesBaseURL+"css/"+themeName+'.css?theme='+themeName;
 
                 // Preview or for real?
                 if (!preview){
@@ -767,7 +772,7 @@ $(function() {
 
 
         self.set_gcodeFullWidth= function(enable){
-            if (enable){
+            if (enable && !('cancelobjectViewModel' in OctoPrint.coreui.viewmodels)){
                 $('#canvas_container').addClass('UICMaxi');
             }else{
                 $('#canvas_container').removeClass('UICMaxi');
@@ -1624,6 +1629,12 @@ $(function() {
             }
         }
 
+        // Set
+        self.set_settingsMenuTxt = function(link){
+            var settingsMenuTxt = link.closest('li.dropdown').find('a:first').text() + '&nbsp;<i class="fas fa-chevron-right"></i>&nbsp;'+link.text();
+            $('#UICsetMenuShow').html(settingsMenuTxt);
+            $('#UICSettingsHeader').html(settingsMenuTxt);
+        }
 
         // ------------------------------------------------------------------------------------------------------------------------
         // Set responsive
@@ -1670,7 +1681,6 @@ $(function() {
                 // Convert the existing to the other format
                 var menuitem = null;
                 var menuItems = null;
-                var curactive = null;
                 $('#settings_dialog_menu ul li').each(function(){
                     if ($(this).hasClass('nav-header')){
                         if (menuitem != null){
@@ -1681,7 +1691,6 @@ $(function() {
                         menuItems = $('<ul class="dropdown-menu" role="menu"></ul>');
                     }else{
                         if ($(this).hasClass('active')){
-                            curactive = $(this);
                             $(this).removeClass('active');
                         }
                         menuItems.append($(this));
@@ -1714,15 +1723,8 @@ $(function() {
                     if ($('#settings_dialog_menu').hasClass('in')){
                         $('#UICsettingsMenuNav a.btn-navbar').trigger('click');
                     }
-                    var settingsMenuTxt = $(this).closest('li.dropdown').find('a:first').text() + '&nbsp;<i class="fas fa-chevron-right"></i>&nbsp;'+$(this).text();
-                    $('#UICsetMenuShow').html(settingsMenuTxt);
-                    $('#UICSettingsHeader').html(settingsMenuTxt);
+                    self.set_settingsMenuTxt($(this));
                 });
-
-                // Click the active menu to make it all look goode
-                if (curactive != null){
-                    curactive.find('a:first').trigger('click');
-                }
 
                 // Fix floating errors
                 $('#UICFullSettingsBox div.control-group:not(.row-fluid)').addClass('row-fluid UICRemoveFluidRow');
@@ -1737,6 +1739,10 @@ $(function() {
                 // Fix modals on show
                 $('body').on('shown.bs.modal.UICHandler','#settings_dialog', function(event) {
                     if ($('body').hasClass('UICResponsiveMode') && $('#settings_dialog_menu:visible').length ){
+                        // reopen last used setting again
+                        if (event.target.id === 'settings_dialog') self.set_settingsMenuTxt($('.nav>.active .active>a',event.target));
+                        // open active submenu
+                        if (event.target.id === 'settings_dialog_menu') $('.dropdown.active',event.target).addClass('open')
                         // Save size for mobile resizing for settings
                         if ($('#settings_dialog_menu:visible').length && $('#UICsettingsMenu').data('UICOrgWidth') == undefined || $('#UICsettingsMenu').data('UICOrgWidth') == 0){
                             $('#settings_dialog_menu').width('2000px');
@@ -1775,7 +1781,7 @@ $(function() {
                 $('div.UICMainMenu > ul.nav > li:not([id^="navbar_plugin"]) > a,li.UICExcludeFromTopIcons > a').each(function(){
                     var title= $(this).attr('title');
                     if (title != undefined){
-                        $(this).append('<span class="UICHideDesktop">'+title+'</span>');
+                       $('<span class="UICHideDesktop">&nbsp;'+title+'</span>').insertAfter($('.fas',this));
                     }
                 });
 
@@ -2091,6 +2097,10 @@ $(function() {
             // ID, Shown,Customlabel,tab design:, color code
             // 0 ,   1  ,    2      , 3         , 5
             // Append them
+            var tabIconSize = self.settings.settings.plugins.uicustomizer.mainTabsIconSize();
+            if (tabIconSize != ""){
+                tabIconSize += " UICTabIconSize";
+            }
             var val = data[0];
             var target = $('#'+val).find('a');
             var newtabcontent = target.clone();
@@ -2122,11 +2132,11 @@ $(function() {
             }
             // On the right or the left hand side icon only
             if (data[4] === true && data[3] != ''){
-                $(newtabcontent).prepend($('<i class="UICPadRight hidden-tablet '+data[3]+'"></i>').css(colorclass));
+                $(newtabcontent).prepend($('<i class="UICPadRight hidden-tablet '+data[3]+' '+ tabIconSize +'"></i>').css(colorclass));
             }else if (data[4] === false && data[3] != ''){
-                $(newtabcontent).append($('<i class="UICPadLeft hidden-tablet '+data[3]+'"></i>').css(colorclass));
+                $(newtabcontent).append($('<i class="UICPadLeft hidden-tablet '+data[3]+' '+ tabIconSize +'"></i>').css(colorclass));
             }else if (data[4] == "iconOnly" && data[3] != ''){
-                $(newtabcontent).append($('<i class="'+data[3]+'"></i>').css(colorclass));
+                $(newtabcontent).append($('<i class="'+data[3]+' '+ tabIconSize +'"></i>').css(colorclass));
             }
             $(target).html(newtabcontent.html()).attr('title',title);
         }
@@ -2419,8 +2429,15 @@ $(function() {
                         self.loadSettingsThemes(response,self.ThemesExternalURL);
                     },
                     // Try local as a workaround
-                    error: function (request, status, error) {
-                         $.ajax({
+                    error: function (jqXHR, textStatus, errorThrown ) {
+                        console.log("FAILED TO LOAD: "+ self.ThemesExternalURL,errorThrown)
+                        new PNotify({
+                            title: 'Unable to load themes',
+                            text: 'Failed to load "'+self.ThemesExternalURL+'themes.json" file - internal files loaded as fallback.<br><br>Do you have any plugins blocking access to external sites, for example NoScript.<br><br><code>Error message: ' + errorThrown + '</code>',
+                            type: "error",
+                            hide: false
+                        });
+                        $.ajax({
                             url: self.ThemesInternalURL+'../themes.json',
                             success: function(response){
                                 self.loadSettingsThemes(response,self.ThemesInternalURL);
@@ -2480,6 +2497,7 @@ $(function() {
                 self.setThemeSelected(selectedTheme);
                 return false;
             });
+
             // Set themes when done
             self.setThemeSelected();
         }
@@ -2495,6 +2513,21 @@ $(function() {
             }
             $('#settings_uicustomizer_themesContent li').removeClass('UICThemeSelected');
             $('#settings_uicustomizer_themesContent li[data-uictheme="'+theme+'"]').addClass('UICThemeSelected');
+
+            // Show warning about "appearance" styling conflict
+            if ($('div.alert.UICappearWarn').length == 0 && (OctoPrint.coreui.viewmodels.settingsViewModel.appearance_colorTransparent() == true || OctoPrint.coreui.viewmodels.settingsViewModel.appearance_color() != "default")){
+                $('#settings_uicustomizer_themesContent').prepend('<div class="alert alert-info UICappearWarn">\
+                    <strong>Styling/Theme conflict</strong>\
+                    <p>You currently have one or more "Appearance" settings that might make the themes look wrong. Check under OctoPrint > Appearance and make sure Color is "Default" and "Transparent color" is unchecked.</p>\
+                    <button class="btn btn-success">Fix it</button>\
+                    </div>')
+                .find('button').one('click',function(){
+                    OctoPrint.coreui.viewmodels.settingsViewModel.appearance_color('default');
+                    OctoPrint.coreui.viewmodels.settingsViewModel.appearance_colorTransparent(false);
+                    $('div.alert.UICappearWarn').remove();
+                    return false;
+                });
+            }
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
@@ -2516,12 +2549,13 @@ $(function() {
                     // Show warning
                     $('#settings_uicustomizer_themesContent').html('<div class="alert alert-info">\
                     <strong>Information regarding themes</strong>\
-                    <p>In order to download new and updated themes UI Customizer will download the themes, using a secure connection, from <a href="'+self.ThemesExternalURL+'" target="_blank">'+self.ThemesExternalURL+'</a>.</p><p>No personal data is sent to this URL. The only data being sent is your public IP address due to the nature of the internet.</p><p>Click "Continue" to downlad themes.</p>\
+                    <p>In order to download new and updated themes UI Customizer will download the themes, using a secure connection, from <a href="'+self.ThemesExternalURL+'" target="_blank">'+self.ThemesExternalURL+'</a>.</p><p>No personal data is sent to this URL. The only data being sent is your public IP address due to the nature of the internet.</p><p>If you have any plugins (ie. NoScript) installed that might block access to external sites then please allow access to https://github.io</p><p>Click "Continue" to downlad themes.</p>\
                     <button class="btn btn-success">Continue</button>\
                     </div>').find('button').one('click',function(){
                         self.setStorage("getThemesApproved",1);
                         self.ThemesLoaded = true;
                         self.loadSettingsThemes(null);
+                        return false;
                     });
 
                 });
@@ -2877,6 +2911,7 @@ $(function() {
                     }
                     tabsorter.option("disabled", false);
                     $('#settings_uicustomizer_tabs_look').fadeTo(300,1);
+                    $('#UICMainTabsIconSize').prop( "disabled", false );
                     $('#settings_uicustomizer_tabs_look :input').prop( "disabled", false );
                     if (self.previewOn){
                         var tabData = self.buildCustomTabsSave();
@@ -2886,6 +2921,7 @@ $(function() {
                     $('.UICthemeifyAlert').hide();
                     tabsorter.option("disabled", true);
                     $('#settings_uicustomizer_tabs_look').fadeTo(300,0.5);
+                    $('#UICMainTabsIconSize').prop( "disabled", true );
                     $('#settings_uicustomizer_tabs_look :input').prop( "disabled", true );
                     if (self.previewOn){
                         self.set_mainTabsCustomize(false,false);
@@ -2903,6 +2939,13 @@ $(function() {
                     $('#UICMainTabCustomizerToggle').trigger('change');
                 });
             }
+
+            // Change icon size
+            $('#UICMainTabsIconSize').off('change.uicus').on('change.uicus',function(){
+                if (self.previewOn){
+                    self.set_mainTabsCustomize(true,self.buildCustomTabsSave());
+                }
+            });
 
             /// ---------------------- COLS LAYOUT
 
@@ -3142,6 +3185,11 @@ $(function() {
                 }
             }).find('i').removeClass('fa-check-square').addClass('fa-square');
 
+            if ('cancelobjectViewModel' in OctoPrint.coreui.viewmodels){
+                $('#settings_plugin_uicustomizer input[data-settingtype="gcodeFullWidth"]').attr('disabled',true).parent().attr('title','Disabled because of incompatibility with Cancel Objects plugin.')
+            }else{
+                $('#settings_plugin_uicustomizer input[data-settingtype="gcodeFullWidth"]').attr('disabled',false);
+            }
 
             // Realtime preview
             $('#settings_plugin_uicustomizer input:checkbox[data-settingtype]').on('change.uicus',function(){
@@ -3268,8 +3316,14 @@ $(function() {
             var clonecon = clone.getContext('2d');
             var source = $('#gcode_canvas')[0];
             var factor = $('#UICGcodeVWidget').data('zoomlvl');
-            clone.width = source.width/factor
-            clone.height = source.height/factor
+            var newWidth = source.width/factor;
+            var newHeight = source.height/factor;
+            if (newWidth != clone.width){
+                clone.width = newWidth;
+            }
+            if (newHeight != clone.height){
+                clone.height = newHeight;
+            }
             clonecon.drawImage( source, 0, 0, clone.width, clone.height);
         }
 
