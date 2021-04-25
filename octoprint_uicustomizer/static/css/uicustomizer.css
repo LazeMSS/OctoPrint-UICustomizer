@@ -1130,6 +1130,11 @@ body.inlineFullscreen .UICWebCamClick{
     border-radius: 3px;
 }
 
+/*OctoPrint-CameraSettings fixes - not perfect but the flexbox stuff and old bootstrap does not mix*/
+body.UICResponsiveMode #settings_plugin_camerasettings div.camera-settings-outer > div:nth-child(4){
+    max-height: 45vh;
+}
+
 /* themify hacks :/*/
 .themeify.dyl #navbar{
     position: absolute !important;
