@@ -11,7 +11,6 @@ import shutil
 import requests
 
 from flask import send_file
-from packaging import version
 
 class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                        octoprint.plugin.SettingsPlugin,
@@ -106,7 +105,7 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                     # Get local versio no
                     themeVersionLocal = str(self._settings.get(["themeVersion"],merged=True,asdict=True))
                     # Different versions?
-                    if version.parse(themeVersionLocal) < version.parse(themeVersionRemote):
+                    if themeVersionLocal != themeVersionRemote:
                         themeName = self._settings.get(["theme"],merged=True,asdict=True)
                         self._logger.info("Newer themes found - starting update. %s < %s : %s", themeVersionLocal, themeVersionRemote,themeName)
                         self.setThemeFile(str(themeName),False,themeVersionRemote)
