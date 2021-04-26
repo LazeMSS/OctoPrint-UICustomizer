@@ -8,6 +8,7 @@ $('head').prepend('<meta id="UICViewport" name="viewport" content="width=device-
 
 // Set theme onload
 var UICPreLoadTheme  = "default";
+var UICThemeV = 0;
 if (Modernizr.localstorage){
     if (window.location.pathname != "/"){
         UICPreLoadTheme = localStorage['plugin.uicustomizer.'+window.location.pathname+'theme'];
@@ -17,9 +18,13 @@ if (Modernizr.localstorage){
     if (UICPreLoadTheme == undefined || UICPreLoadTheme == "" || UICPreLoadTheme == null){
         UICPreLoadTheme = "default";
     }
+    UICThemeV = localStorage['plugin.uicustomizer.themeversion'];
+    if (UICThemeV == undefined){
+        UICThemeV = 0;
+    }
 }
-$('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/themes/css/active.css?theme='+UICPreLoadTheme+'">');
-delete UICPreLoadTheme;
+$('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/themes/css/active.css?theme='+UICPreLoadTheme+'&v='+UICThemeV+'">');
+delete UICPreLoadTheme,UICThemeV;
 // we will remove it again if user has opted out - this will just make it more clean on showing the UI
 $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicustomizer/static/css/bootstrap-responsive.css">');
 
@@ -135,6 +140,9 @@ $(function() {
 
             // Load from storage
             self.curTheme = self.getStorage('theme');
+
+            // Set theme version
+            self.setStorage('themeversion',self.settings.settings.plugins.uicustomizer.themeVersion());
 
             // Store WebCam
             self.onWebCamOrg = OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded;
@@ -425,12 +433,17 @@ $(function() {
                 // Remove the current css to trigger reload
                 $('link.UICThemeCSS').remove();
 
-                var themeURL = self.ThemesBaseURL+"css/"+themeName+'.css?theme='+themeName;
+                var themeversion = "0";
+                if('themeVersion' in self.settings.settings.plugins.uicustomizer){
+                    themeversion = self.settings.settings.plugins.uicustomizer.themeVersion();
+                }
+                var themeURL = self.ThemesBaseURL+"css/"+themeName+'.css?theme='+themeName+'&v='+themeversion;
 
                 // Preview or for real?
                 if (!preview){
                     // Store it for easier loading
                     self.setStorage('theme',themeName);
+                    self.setStorage('themeversion',themeversion);
                 }
 
                 // Load style sheet

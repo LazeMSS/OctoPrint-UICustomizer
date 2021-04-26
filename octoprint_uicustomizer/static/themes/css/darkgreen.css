@@ -1,0 +1,529 @@
+:root {
+    --white: #fff;
+    --black: #000;
+    --black-transparent: hsla(0, 0%, 7%, .6);
+    --danger: #b40000;
+    --dangerdark: #7e0000;
+    --warning: #c75000;
+    --warningdark: #8b3800;
+    --success: #778500;
+    --successdark: #515a00;
+    --greyple: #aeb599;
+    --lightgreyple: #d1dab9;
+    --darkish: #3c3f36;
+    --notquiteBlack: #35362f;
+    --green: #80cf00;
+    --darkgreen: #5f9b00;
+    --darkergreen: #426b00;
+    --darkestgreen: #284100;
+    --lighterish: #5f6455;
+    --notquiteWhite: #dcdcda;
+    --almostWhite: #ebebeb;
+    --darkerWhite: #a3a3a3;
+    --highlighter: #4b4d42;
+}
+
+body {
+    background-color: var(--darkish);
+    color: var(--notquiteWhite);
+    font-weight: 400;
+}
+
+a {
+    color: var(--greyple);
+}
+
+a:hover {
+    color: var(--lightgreyple)
+}
+
+.octoprint-container .tab-content h1 {
+    color: var(--white);
+}
+
+.octoprint-container .tab-content {
+    border: none var(--notquiteBlack);
+    background-color: var(--notquiteBlack);
+    -webkit-box-shadow: var(--black-transparent);
+    -moz-box-shadow: var(--black-transparent);
+    box-shadow: var(--black-transparent);
+    padding: 20px 15px;
+}
+
+.accordion-group {
+    border: none;
+}
+
+.accordion {
+    background-color: var(--notquiteBlack);
+    -webkit-box-shadow: var(--black-transparent);
+    -moz-box-shadow: var(--black-transparent);
+    box-shadow: var(--black-transparent);
+}
+
+.octoprint-container .accordion-heading a.accordion-toggle {
+    color: var(--green);
+}
+.octoprint-container:hover .accordion-heading:hover a.accordion-toggle:hover,
+.octoprint-container:focus .accordion-heading:focus a.accordion-toggle:focus,
+.octoprint-container:active .accordion-heading:active a.accordion-toggle:active {
+    color: var(--darkergreen);
+    text-decoration: none;
+}
+
+.octoprint-container .accordion-heading .accordion-heading-button a {
+    color: inherit;
+}
+
+.nav-tabs {
+    border: 1px solid var(--darkish);
+}
+
+.nav-tabs>li>a {
+    -webkit-border-radius: 0;
+    border-radius: 0;
+}
+
+.nav-tabs>.active>a, .nav-tabs>.active>a:hover {
+    background-color: var(--notquiteBlack);
+    color: var(--green);
+    border: 1px solid var(--notquiteBlack);
+    border-right: 1px solid var(--black);
+}
+.nav-pills>.active>a, .nav-pills>.active>a:hover {
+    background-color: var(--green);
+    background-image: -moz-linear-gradient(top var(--green), var(--darkgreen));
+    background-image: -webkit-gradient(linear,0 0,0 100%,from(var(--green)),to(var(--darkgreen)));
+    background-image: -webkit-linear-gradient(top,var(--green),var(--darkgreen));
+    background-image: -o-linear-gradient(top,var(--green),var(--darkgreen));
+    background-image: linear-gradient(to bottom,var(--green),var(--darkgreen));
+    background-repeat: repeat-x;
+    outline: 0;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc',endColorstr='#ff0077b3',GradientType=0);
+}
+
+.nav-tabs>li>a:hover {
+    background-color: var(--lighterish);
+    border: 1px solid var(--darkish);
+    color: var(--green);
+}
+.nav>li>a:hover {
+    text-decoration: none;
+    background-color: var(--notquiteBlack);
+}
+
+h1, h2, h3, h4 {
+    color: var(--green)
+}
+
+.btn {
+    border-radius: 3px;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    background-color: var(--darkish);
+    color: var(--white);
+    font-weight: 400;
+    text-shadow: none;
+    outline: none;
+}
+.btn:hover, .btn:focus {
+    color: var(--white);
+    background-color: var(--highlighter);
+}
+.btn:active {
+    background-color: var(--lighterish);
+}
+.btn.active {
+    background-color: var(--lighterish);
+    color: var(--white);
+}
+.btn .btn-primary, .btn-primary[disabled] {
+    background-color: var(--green);
+    background-image: -moz-linear-gradient(top var(--green), var(--darkgreen));
+    background-image: -webkit-gradient(linear,0 0,0 100%,from(var(--green)),to(var(--darkgreen)));
+    background-image: -webkit-linear-gradient(top,var(--green),var(--darkgreen));
+    background-image: -o-linear-gradient(top,var(--green),var(--darkgreen));
+    background-image: linear-gradient(to bottom,var(--green),var(--darkgreen));
+    background-repeat: repeat-x;
+    outline: 0;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc',endColorstr='#ff0077b3',GradientType=0);
+}
+.btn-primary {
+    background-color: var(--green);
+    background-image: -moz-linear-gradient(top var(--green), var(--darkgreen));
+    background-image: -webkit-gradient(linear,0 0,0 100%,from(var(--green)),to(var(--darkgreen)));
+    background-image: -webkit-linear-gradient(top,var(--green),var(--darkgreen));
+    background-image: -o-linear-gradient(top,var(--green),var(--darkgreen));
+    background-image: linear-gradient(to bottom,var(--green),var(--darkgreen));
+    background-repeat: repeat-x;
+    outline: 0;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc',endColorstr='#ff0077b3',GradientType=0);
+    border: none;
+}
+.btn-primary:hover {
+    background-color: var(--darkgreen);
+}
+.btn-primary:active, .btn-primary:focus {
+    background-color: var(--darkergreen);
+}
+.btn-primary.disabled, .btn-primary[disabled] {
+    background-color: var(--darkgreen);
+}
+.btn-primary:hover, .btn-primary[disabled], .btn-primary.disabled {
+    background-color: var(--darkgreen);
+}
+.btn-primary:active, .btn-primary:focus {
+    background-color: var(--darkergreen);
+}
+.btn-group.open .btn-primary.dropdown-toggle {
+    box-shadow: none;
+    background-color: var(--darkestgreen);
+}
+.btn-group.open .btn.dropdown-toggle {
+    background: var(--darkish);
+}
+.btn-group.open .btn.dropdown-toggle:active, .btn-group.open .btn.dropdown-toggle:focus {
+    background: var(--darkish);
+    color: var(--white);
+}
+.btn.disabled, .btn[disabled] {
+    background-color: var(--greyple);
+    color: var(--darkwhite);
+}
+.btn.disabled:hover, .btn[disabled]:hover {
+    color: var(--darkwhite);
+}
+.btn-danger {
+    background-color: var(--danger);
+}
+.btn-danger:active, .btn-danger:focus, .btn-danger:hover {
+    background-color: var(--dangerdark);
+}
+.btn-warning {
+    background-color: var(--warning);
+}
+.btn-warning:active, .btn-warning:focus, .btn-warning:hover {
+    background-color: var(--warningdark);
+}
+.btn-success {
+    background-color: var(--success);
+}
+.btn-success:active, .btn-success:focus, .btn-success:hover {
+    background-color: var(--successdark);
+}
+select, textarea, input[type="search"], input[type="text"], input[type="number"], .input-append .add-on, textarea, input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+    background-color: var(--lighterish);
+    border: none;
+    color: var(--almostWhite);
+    text-shadow: none;
+    padding-bottom: 6px;
+}
+textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="date"]:focus, input[type="month"]:focus, input[type="time"]:focus, input[type="week"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="color"]:focus, .uneditable-input:focus {
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.075), 0 0 8px rgba(255,255,255,0.5);
+}
+.input-append .add-on, .input-prepend .add-on {
+    padding-bottom: 6px;
+}
+.input-prepend .add-on.add-on-limited {
+    background-color: var(--lighterish);
+    color: var(--almostWhite);
+    border: none;
+    text-shadow: none;
+}
+.slider .slider-selection {
+    background-image: none;
+    background-color: var(--green);
+    border-color: var(--darkgreen);
+}
+.slider .slider-selection:hover, .slider .slider-selection:active {
+    background-color: var(--green);
+}
+.slider .slider-handle {
+    background-image: none;
+    background-color: var(--green);
+    border: 1px solid var(--darkgreen);
+}
+.slider .slider-handle:hover, .slider .slider-handle:active {
+    background-color: var(--green);
+}
+.slider .slider-track {
+    background-image: none;
+    border: none;
+    background-color: var(--lighterish);
+}
+.octoprint-container .accordion-heading [class*=" icon-"] {
+    color: var(--green);
+}
+.octoprint-container .accordion-heading [class*=" icon-"]:hover {
+    color: var(--darkergreen);
+}
+.octoprint-container .accordion-heading [class*=" icon-"].disabled {
+    color: var(--greyple);
+}
+td[class^="settings_"] a, th[class^="settings_"] a {
+    color: var(--notquiteWhite);
+}
+td[class^="settings_"] a:hover, th[class^="settings_"] a:hover {
+    color: var(--white);
+}
+td[class^="settings_"] a.disabled, th[class^="settings_"] a.disabled {
+    color: var(--greyple);
+}
+th[class^="settings_"] {
+    background-color: var(--highlighter);
+}
+td i, th i {
+    color: var(--notquiteWhite);
+}
+td i:hover, th i:hover {
+    color: var(--white);
+}
+td i.disabled, th i.disabled {
+    color: var(--greyple);
+}
+#settings_dialog_content .table td {
+    background-color: var(--notquiteBlack);
+    border-top: none;
+}
+.table tbody tr.info td {
+    background-color: var(--green);
+}
+
+.icon-sd-black-14 {
+    background-image: url(../../img/ic_sd_card_white_18dp_1x.png);
+    background-image: url(../../img/ic_sd_card_white_18px.svg);
+    background-position: 0 0;
+    margin-top: 1px;
+    width: 15px;
+    height: 17px;
+    filter: hue-rotate(unit(hue(var(--notquiteWhite)),deg)) saturate(saturation(var(--notquiteWhite))) brightness(lightness(var(--notquiteWhite)));
+    transform: rotateY(180deg);
+}
+
+.progress .bar {
+    background: var(--green);
+}
+
+#navbar .navbar-inner,
+.navbar .navbar-inner {
+    background-color: var(--notquiteBlack);
+    border: none;
+    background-image: none;
+}
+#navbar .navbar-inner .nav >li.dropdown.open>.dropdown-toggle,
+#navbar .navbar-inner .nav >li.dropdown.active>.dropdown-toggle,
+#navbar .navbar-inner .nav >li.dropdown.open.active>.dropdown-toggle,
+.navbar .navbar-inner .nav >li.dropdown.open>.dropdown-toggle,
+.navbar .navbar-inner .nav >li.dropdown.active>.dropdown-toggle,
+.navbar .navbar-inner .nav >li.dropdown.open.active>.dropdown-toggle {
+    background: var(--notquiteBlack);
+    color: var(--green);
+}
+#navbar .navbar-inner .nav > li > a:hover,
+.navbar .navbar-inner .nav > li > a:hover {
+    color: var(--green);
+    background: var(--highlighter);
+}
+#navbar .navbar-inner .nav > li > .dropdown-menu:before {
+    border-bottom-color: var(--green);
+}
+#navbar .navbar-inner .nav > li > .dropdown-menu:after {
+    border-bottom-color: var(--notquiteBlack);
+}
+#navbar .navbar-inner .brand,
+#navbar .navbar-inner .nav > li > a,
+.navbar .navbar-inner .brand,
+.navbar .navbar-inner .nav > li > a {
+    color: var(--green);
+    text-shadow: none;
+}
+#navbar .navbar-inner .brand .caret,
+#navbar .navbar-inner .nav > li > a .caret,
+.navbar .navbar-inner .brand .caret,
+.navbar .navbar-inner .nav > li > a .caret {
+    border-top-color: var(--green);
+    border-bottom-color: var(--green);
+}
+.navbar {
+    background:none !important;
+}
+.dropdown-menu {
+    background: var(--notquiteBlack);
+    border: 1px solid var(--green);
+}
+.dropdown-menu li > a {
+    color: var(--notquiteWhite);
+}
+.dropdown-menu li > a:hover, .dropdown-menu li > a:focus {
+    background: var(--highlighter);
+    outline: none;
+}
+.dropdown-menu .active>a, .dropdown-menu .active>a:hover {
+    color: #fff;
+    text-decoration: none;
+    background-color: var(--green);
+    background-image: -moz-linear-gradient(top var(--green), var(--darkgreen));
+    background-image: -webkit-gradient(linear,0 0,0 100%,from(var(--green)),to(var(--darkgreen)));
+    background-image: -webkit-linear-gradient(top,var(--green),var(--darkgreen));
+    background-image: -o-linear-gradient(top,var(--green),var(--darkgreen));
+    background-image: linear-gradient(to bottom,var(--green),var(--darkgreen));
+    background-repeat: repeat-x;
+    outline: 0;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc',endColorstr='#ff0077b3',GradientType=0);
+}
+#files .gcode_files .entry:hover, .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+    background-color: var(--lighterish);
+}
+.legend > table {
+    color: var(--notquiteWhite) !important;
+}
+.progress {
+    background: var(--lighterish);
+}
+.table-bordered, .table-striped {
+    border: none var(--lighterish);
+}
+.table-bordered th, .table-bordered td, .table-striped th, .table-striped td {
+    border-color: var(--lighterish);
+    border-left: none;
+    border-right: none;
+}
+.table-striped tbody > tr:nth-child(odd) > td, .table-striped tbody th {
+    background-color: var(--darkish);
+}
+.modal {
+    background-color: var(--darkish);
+}
+.modal-body {
+    border: none;
+}
+.modal-footer, .modal-header {
+    background-color: var(--notquiteBlack);
+    border: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+.nav-list > li > a {
+    text-shadow: none;
+}
+.nav-list > li > a:hover {
+    color: var(--white);
+    background: var(--highlighter);
+}
+.nav-list .nav-header {
+    text-shadow: none;
+    color: var(--green);
+}
+.nav-list >.active>a {
+    background-color: var(--notquiteBlack);
+}
+.nav-list >.active>a:hover {
+    background-color: var(--notquiteBlack);
+}
+.close {
+    color: var(--white);
+    text-shadow: none;
+}
+.help-inline, .help-block {
+    color: var(--darkwhite);
+}
+code {
+    background-color: var(--lighterish);
+    border: none;
+}
+.label, .badge {
+    background-color: var(--lighterish);
+    color: var(--notquiteWhite);
+    text-shadow: none;
+}
+
+.scrollable::-webkit-scrollbar,
+.pre-scrollable::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.scroll-wrapper::-webkit-scrollbar,
+#settings_plugin_pluginmanager_pluginlist::-webkit-scrollbar,
+#settings_plugin_softwareupdate_updatelist::-webkit-scrollbar {
+    background-color: var(--darkish);
+    border: none;
+}
+
+.scrollable::-webkit-scrollbar-thumb,
+.pre-scrollable::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+.scroll-wrapper::-webkit-scrollbar-thumb,
+#settings_plugin_pluginmanager_pluginlist::-webkit-scrollbar-thumb,
+#settings_plugin_softwareupdate_updatelist::-webkit-scrollbar-thumb {
+    background-color: var(--notquiteBlack);
+    border-radius: 25px;
+}
+
+.scrollable::-webkit-scrollbar-track,
+.pre-scrollable::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+.scroll-wrapper::-webkit-scrollbar-track,
+#settings_plugin_pluginmanager_pluginlist::-webkit-scrollbar-track,
+#settings_plugin_softwareupdate_updatelist::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px fade(var(--notquiteBlack),50);
+}
+
+legend {
+    color: inherit;
+}
+
+.hero-unit {
+    background-color: var(--darkish);
+    box-shadow: 10px 10px 20px var(--black);
+}
+
+.footer ul li a {
+    color: #999;
+}
+
+.flot-text {
+    color: var(--notquiteWhite) !important;
+}
+
+#terminal-output {
+    background-color: var(--lighterish);
+    color: var(--notquiteWhite);
+}
+
+.pagination-mini ul>li > a {
+    background-color: var(--darkish);
+    color: var(--notquiteWhite);
+    border: 1px solid rgba(255,255,255,0.3);
+}
+.pagination-mini ul>li > a:hover {
+    color: var(--white);
+    background: var(--highlighter);
+    border: 1px solid rgba(255,255,255,0.7);
+}
+.pagination-mini ul>li > a:focus {
+    outline: none;
+    border: 1px solid rgba(255,255,255,0.8);
+}
+.pagination ul>li>a:hover, .pagination ul>.active>a {
+    background-color: var(--notquiteBlack);
+    color: var(--white);
+    border: 1px solid rgba(255,255,255,0.85);
+}
+.nav .dropdown-toggle .caret {
+    border-top-color: var(--notquiteWhite);
+    border-bottom-color: var(--notquiteWhite);
+}
+input[disabled], select[disabled], textarea[disabled], input[readonly], select[readonly], textarea[readonly] {
+    background-color: var(--greyple);
+    color: var(--darkwhite);
+}
+.modal-backdrop, .modal-backdrop.fade.in {
+    background: var(--black);
+}
+.alert h1, .alert h2, .alert h3, .alert h4, .alert h5, .alert h6 {
+    color: inherit;
+}
+.well {
+    background-color: var(--lighterish);
+    border: var(--darkerWhite);
+}
