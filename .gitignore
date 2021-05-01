@@ -8,4 +8,4 @@ dist
 .DS_Store
 *.zip
 __pycache__
-octoprint_uicustomizer/static/themes/css/active.css
+octoprint_uicustomizer/static/themes/*
