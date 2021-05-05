@@ -837,7 +837,7 @@ body.UICResponsiveMode select{
     display:inline-block;
     margin-top: 2px;
     padding-left: 27px;
-    text-indent: -40px;
+    text-indent: -38px;
     overflow: hidden;
     height: 40px;
     padding-top: 6px;
@@ -845,7 +845,7 @@ body.UICResponsiveMode select{
 }
 #navbar_plugin_navbartemp.UICIconHack #socInfo{
     max-width: 49px;
-    text-indent: -58px;
+    text-indent: -54px;
 }
 
 #navbar_plugin_navbartemp.UICIconHack > div > span:after{
