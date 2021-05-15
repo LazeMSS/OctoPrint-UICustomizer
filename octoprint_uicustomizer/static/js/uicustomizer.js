@@ -142,7 +142,12 @@ $(function() {
             self.curTheme = self.getStorage('theme');
 
             // Set theme version
-            self.setStorage('themeversion',self.settings.settings.plugins.uicustomizer.themeVersion());
+            var curVersion = self.settings.settings.plugins.uicustomizer.themeVersion();
+            var curVersionStor = self.getStorage('themeversion');
+            if (curVersion != curVersionStor && curVersionStor != undefined){
+                new PNotify({title:"UICustomizer themes...", type: "info","text":"UI Customizer themes has been updated: <a href=\"https://github.com/LazeMSS/OctoPrint-UICustomizerThemes/releases/\">Read the release notes</a>","hide":false});
+                self.setStorage('themeversion',self.settings.settings.plugins.uicustomizer.themeVersion());
+            }
 
             // Store WebCam
             self.onWebCamOrg = OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded;
