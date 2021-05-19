@@ -799,9 +799,11 @@ $(function() {
 
         self.set_filesFullHeight = function(enable){
              if (enable){
+                $('#term .terminal pre').addClass('UICResizeAble')
                 $('#files .gcode_files .scroll-wrapper').addClass('UICFullHeight');
             }else{
                 $('#files .gcode_files .scroll-wrapper').removeClass('UICFullHeight');
+                $('#term .terminal pre').addClass('UICResizeAble')
             }
         }
 
