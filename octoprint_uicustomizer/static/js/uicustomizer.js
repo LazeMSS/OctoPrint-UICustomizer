@@ -8,6 +8,7 @@ $('head').prepend('<meta id="UICViewport" name="viewport" content="width=device-
 
 // Set theme onload
 var UICPreLoadTheme  = "default";
+var UICThemeV = 0;
 if (Modernizr.localstorage){
     if (window.location.pathname != "/"){
         UICPreLoadTheme = localStorage['plugin.uicustomizer.'+window.location.pathname+'theme'];
@@ -17,9 +18,13 @@ if (Modernizr.localstorage){
     if (UICPreLoadTheme == undefined || UICPreLoadTheme == "" || UICPreLoadTheme == null){
         UICPreLoadTheme = "default";
     }
+    UICThemeV = localStorage['plugin.uicustomizer.themeversion'];
+    if (UICThemeV == undefined){
+        UICThemeV = 0;
+    }
 }
-$('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/themes/css/active.css?theme='+UICPreLoadTheme+'">');
-delete UICPreLoadTheme;
+$('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/themes/css/active.css?theme='+UICPreLoadTheme+'&v='+UICThemeV+'">');
+delete UICPreLoadTheme,UICThemeV;
 // we will remove it again if user has opted out - this will just make it more clean on showing the UI
 $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicustomizer/static/css/bootstrap-responsive.css">');
 
@@ -136,6 +141,14 @@ $(function() {
             // Load from storage
             self.curTheme = self.getStorage('theme');
 
+            // Set theme version
+            var curVersion = self.settings.settings.plugins.uicustomizer.themeVersion();
+            var curVersionStor = self.getStorage('themeversion');
+            if (curVersion != curVersionStor && curVersionStor != undefined){
+                new PNotify({title:"UICustomizer themes...", type: "info","text":"UI Customizer themes has been updated: <a href=\"https://github.com/LazeMSS/OctoPrint-UICustomizerThemes/releases/\">Read the release notes</a>","hide":false});
+                self.setStorage('themeversion',self.settings.settings.plugins.uicustomizer.themeVersion());
+            }
+
             // Store WebCam
             self.onWebCamOrg = OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded;
             self.onWebCamErrorOrg = OctoPrint.coreui.viewmodels.controlViewModel.onWebcamErrored;
@@ -171,14 +184,6 @@ $(function() {
                 $('div.UICmainTabs').removeClass('span10');
                 $('div#tabs_content div.tab-pane:not("#tab_plugin_consolidate_temp_control") > div > div.span6').unwrap();
                 $('div#tabs_content div.tab-pane:not("#tab_plugin_consolidate_temp_control") > div.span6').children().unwrap();
-            }
-
-
-            // Spool manager until its patched: https://github.com/OllisGit/OctoPrint-SpoolManager/issues/142
-            if ('spoolManagerViewModel' in OctoPrint.coreui.viewmodels && $('body').hasClass('UICResponsiveMode')){
-                $('#spool-form input[type="hidden"]').prependTo($('#spool-form'));
-                $('#spool-form > div.row:first').addClass('row-fluid').removeClass('row');
-                $('#spool-note-editor').closest('div.span6').addClass('span12').removeClass('span6');
             }
 
             // Rewrite the tab selector for settings - https://github.com/LazeMSS/OctoPrint-UICustomizer/issues/95
@@ -425,12 +430,17 @@ $(function() {
                 // Remove the current css to trigger reload
                 $('link.UICThemeCSS').remove();
 
-                var themeURL = self.ThemesBaseURL+"css/"+themeName+'.css?theme='+themeName;
+                var themeversion = "0";
+                if('themeVersion' in self.settings.settings.plugins.uicustomizer){
+                    themeversion = self.settings.settings.plugins.uicustomizer.themeVersion();
+                }
+                var themeURL = self.ThemesBaseURL+"css/"+themeName+'.css?theme='+themeName+'&v='+themeversion;
 
                 // Preview or for real?
                 if (!preview){
                     // Store it for easier loading
                     self.setStorage('theme',themeName);
+                    self.setStorage('themeversion',themeversion);
                 }
 
                 // Load style sheet
@@ -781,9 +791,11 @@ $(function() {
 
         self.set_filesFullHeight = function(enable){
              if (enable){
+                $('#term .terminal pre').addClass('UICResizeAble')
                 $('#files .gcode_files .scroll-wrapper').addClass('UICFullHeight');
             }else{
                 $('#files .gcode_files .scroll-wrapper').removeClass('UICFullHeight');
+                $('#term .terminal pre').addClass('UICResizeAble')
             }
         }
 

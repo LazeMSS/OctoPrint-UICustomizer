@@ -162,6 +162,7 @@
     body.UICResponsiveMode #files .gcode_files .scroll-wrapper.UICFullHeight{
         height: 100%;
         max-height: 75vh;
+        resize: vertical;
     }
 }
 
@@ -352,6 +353,7 @@ html:not(.themeify) #tabs_content{
     height: 100%;
     max-height: 80vh;
     min-height: 70px;
+    resize: vertical;
 }
 
 /* search in settings fix*/
@@ -1130,11 +1132,6 @@ body.inlineFullscreen .UICWebCamClick{
     border-radius: 3px;
 }
 
-/*OctoPrint-CameraSettings fixes - not perfect but the flexbox stuff and old bootstrap does not mix*/
-body.UICResponsiveMode #settings_plugin_camerasettings div.camera-settings-outer > div:nth-child(4){
-    max-height: 45vh;
-}
-
 /* themify hacks :/*/
 .themeify.dyl #navbar{
     position: absolute !important;
@@ -1205,6 +1202,12 @@ html.themeify #UICsetMenuShow{
     position: relative;
 }
 
+
+#term .terminal pre.UICResizeAble{
+    height: 600px;
+    resize: vertical;
+    max-height: inherit;
+}
 
 /* UICustomizer END */
 

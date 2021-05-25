@@ -11,6 +11,7 @@ import shutil
 import requests
 
 from flask import send_file
+from flask import url_for
 
 class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                        octoprint.plugin.SettingsPlugin,
@@ -91,6 +92,10 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
             if "tag_name" in jsonVersion:
                 return jsonVersion['tag_name']
         return False
+
+    def loginui_theming(self):
+        return [url_for("plugin.uicustomizer.static", filename="themes/css/active.css")]
+
 
     # Check for new versions on login
     def on_event(self,event,payload):
@@ -208,5 +213,6 @@ def __plugin_load__():
 
     global __plugin_hooks__
     __plugin_hooks__ = {
+        "octoprint.theming.login": __plugin_implementation__.loginui_theming,
         "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information
     }
