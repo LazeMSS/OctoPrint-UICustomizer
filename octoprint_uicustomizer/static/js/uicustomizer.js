@@ -186,14 +186,6 @@ $(function() {
                 $('div#tabs_content div.tab-pane:not("#tab_plugin_consolidate_temp_control") > div.span6').children().unwrap();
             }
 
-
-            // Spool manager until its patched: https://github.com/OllisGit/OctoPrint-SpoolManager/issues/142
-            if ('spoolManagerViewModel' in OctoPrint.coreui.viewmodels && $('body').hasClass('UICResponsiveMode')){
-                $('#spool-form input[type="hidden"]').prependTo($('#spool-form'));
-                $('#spool-form > div.row:first').addClass('row-fluid').removeClass('row');
-                $('#spool-note-editor').closest('div.span6').addClass('span12').removeClass('span6');
-            }
-
             // Rewrite the tab selector for settings - https://github.com/LazeMSS/OctoPrint-UICustomizer/issues/95
             var prevTab = OctoPrint.coreui.viewmodels.settingsViewModel.selectTab;
             OctoPrint.coreui.viewmodels.settingsViewModel.selectTab = function(tab){
