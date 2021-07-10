@@ -1205,7 +1205,7 @@ $(function() {
 
             // Check for multicam
             if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('multicam') && OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.multicam.multicam_profiles().length > 1 && !$('.UICMultiCamSelector').length ){
-                var multicamSelector = $('<div class="btn-group UICMultiCamSelector UICWidgetSelector"><a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#"><span id="UICMultiCamLbl">Cam</span><span class="caret"></span></a><ul class="dropdown-menu"></ul></div>');
+                var multicamSelector = $('<div class="btn-group UICMultiCamSelector UICWidgetSelector"><a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);"><span id="UICMultiCamLbl">Cam</span><span class="caret"></span></a><ul class="dropdown-menu"></ul></div>');
                 var ulCamSel = multicamSelector.find('ul');
                 $.each(OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.multicam.multicam_profiles(),function(idx,item){
                     // Set the label
@@ -1215,7 +1215,7 @@ $(function() {
                         className = ' class="active" ';
                     }
                     // Build the selector
-                    ulCamSel.append($('<li'+className+' data-streamURL="'+item.URL()+'"><a href="#">'+item.name()+'</a></li>').on('click','a',function(event,dontLoad){
+                    ulCamSel.append($('<li'+className+' data-streamURL="'+item.URL()+'"><a href="javascript:void(0);">'+item.name()+'</a></li>').on('click','a',function(event,dontLoad){
                         $('.UICMultiCamSelector li.active').removeClass('active');
                         $(this).parent().addClass('active');
                         $('#UICMultiCamLbl').text(item.name());
