@@ -1209,5 +1209,21 @@ html.themeify #UICsetMenuShow{
     max-height: inherit;
 }
 
+
+/* default styles for tempgraph - should be added/overwritten themes*/
+#UICTempWidgetGraph .ct-line {
+    stroke-width: 2px;
+}
+
+#UICTempWidgetGraph .ct-label{
+    color:  #aaa;
+}
+
+#UICTempWidgetGraph .ct-grid{
+    stroke: #aaa;
+    stroke-width: 0.4px;
+    stroke-dasharray: 0px;
+}
+
 /* UICustomizer END */
 
