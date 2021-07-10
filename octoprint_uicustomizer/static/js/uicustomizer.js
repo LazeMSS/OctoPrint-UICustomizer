@@ -38,6 +38,7 @@ $(function() {
 
         // Set settings
         self.settings = parameters[0];
+        self.tempModel = parameters[1];
         // max column width
         self.maxCWidth = 12;
 
@@ -48,7 +49,8 @@ $(function() {
         self.previewHasBeenOn = false;
         self.settingsBeenShown = false;
 
-        self.getReturnData = false;
+        self.gCodeViewerActive = false;
+        self.tempGraphActive = false;
 
         self.ThemesLoaded = false;
         self.ThemesInternalURL = './plugin/uicustomizer/static/themes/';
@@ -62,7 +64,8 @@ $(function() {
         self.nameLookup = {
             'div.UICmainTabs' : '<i class="fas fa-columns"></i> Main tabs',
             '#UICWebCamWidget' : '<i class="fas fa-camera"></i> Webcam',
-            '#UICGcodeVWidget' : '<i class="fab icon-black fa-codepen"></i> Gcode'
+            '#UICGcodeVWidget' : '<i class="fab icon-black fa-codepen"></i> Gcode',
+            '#UICTempWidget' : '<i class="fas fa-thermometer-half icon-black"></i> Temperature'
         }
 
         self.customWidgets = {
@@ -95,6 +98,21 @@ $(function() {
                             </div>\
                         </div>',
                 'init' : 'CustomW_initGcode',
+            },
+            '#UICTempWidget' : {
+                'dom': '<div id="UICTempWidget" class="accordion-group " data-bind="allowBindings: true, visible: loginState.hasAnyPermissionKo(access.permissions.STATUS)">\
+                            <div class="accordion-heading">\
+                                <a class="accordion-toggle" data-toggle="collapse" data-target="#UICTempWidgetContainer">\
+                                    <i class="fas fa-thermometer-half icon-black"></i> Temperature\
+                                </a>\
+                            </div>\
+                            <div id="UICTempWidgetContainer" class="accordion-body in collapse">\
+                                <div class="accordion-inner">\
+                                    <div id="UICTempWidgetGraph"></div>\
+                                </div>\
+                            </div>\
+                        </div>',
+                'init' : 'CustomW_initTempGraph',
             }
         }
 
@@ -1113,7 +1131,7 @@ $(function() {
         }
 
         self.CustomW_initGcode = function(enable){
-            self.getReturnData = enable;
+            self.gCodeViewerActive = enable;
             if (enable){
                 $('#UICGcodeVWidget ul.dropdown-menu a').off('click').on('click',function(event,dontLoad){
                     $('#UICGcodeVWidget  ul.dropdown-menu li.active').removeClass('active');
@@ -1130,6 +1148,28 @@ $(function() {
                 }
             }
         }
+
+        self.CustomW_initTempGraph = function(enable){
+            self.tempGraphActive = enable;
+            if (enable){
+                // Include chartist if not included already by toptemp
+                if (typeof OctoPrint.coreui.viewmodels.topTempViewModel != "undefined"){
+                    return;
+                }
+                if (typeof Chartist != "object"){
+                    $('head').append('<link rel="stylesheet" href="./plugin/uicustomizer/static/css/chartist.min.css">');
+                    var script = document.createElement('script');
+                    script.onload = function () {
+                        self.logToConsole('Main chartist js loaded');
+                    };
+                    script.src = './plugin/uicustomizer/static/js/chartist.min.js';
+                    document.body.appendChild(script);
+                }else{
+                    self.logToConsole('Main chartist js ALREADY loaded');
+                }
+            }
+        }
+
 
         // ------------------------------------------------------------------------------------------------------------------------
         self.CustomW_initWebCam = function(enable){
@@ -1165,7 +1205,7 @@ $(function() {
 
             // Check for multicam
             if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('multicam') && OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.multicam.multicam_profiles().length > 1 && !$('.UICMultiCamSelector').length ){
-                var multicamSelector = $('<div class="btn-group UICMultiCamSelector UICWidgetSelector"><a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#"><span id="UICMultiCamLbl">Cam</span><span class="caret"></span></a><ul class="dropdown-menu"></ul></div>');
+                var multicamSelector = $('<div class="btn-group UICMultiCamSelector UICWidgetSelector"><a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);"><span id="UICMultiCamLbl">Cam</span><span class="caret"></span></a><ul class="dropdown-menu"></ul></div>');
                 var ulCamSel = multicamSelector.find('ul');
                 $.each(OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.multicam.multicam_profiles(),function(idx,item){
                     // Set the label
@@ -1175,7 +1215,7 @@ $(function() {
                         className = ' class="active" ';
                     }
                     // Build the selector
-                    ulCamSel.append($('<li'+className+' data-streamURL="'+item.URL()+'"><a href="#">'+item.name()+'</a></li>').on('click','a',function(event,dontLoad){
+                    ulCamSel.append($('<li'+className+' data-streamURL="'+item.URL()+'"><a href="javascript:void(0);">'+item.name()+'</a></li>').on('click','a',function(event,dontLoad){
                         $('.UICMultiCamSelector li.active').removeClass('active');
                         $(this).parent().addClass('active');
                         $('#UICMultiCamLbl').text(item.name());
@@ -3310,33 +3350,115 @@ $(function() {
         }
 
         self.fromCurrentData = function(data){
-            if (!self.getReturnData) return;
+            if (!self.tempGraphActive && !self.gCodeViewerActive) return;
 
-            // Gcode widget on and visible
-            if (!$('#UICGcodeVWidgetContainer.collapse.in').length || !$('#gcode_canvas').length || typeof OctoPrint.coreui.viewmodels.gcodeViewModel != "object") return;
 
-            // load the file is needed
-            if (OctoPrint.coreui.viewmodels.gcodeViewModel.needsLoad){
-                OctoPrint.coreui.viewmodels.gcodeViewModel.loadFile(OctoPrint.coreui.viewmodels.gcodeViewModel.selectedFile.path(), OctoPrint.coreui.viewmodels.gcodeViewModel.selectedFile.date());
+            // Get temp graph data
+            if (self.tempGraphActive && data.temps.length && typeof Chartist == "object"){
+                var nowTs = Date.now();
+                var buildSeries = function(temp){
+                    temp.reverse();
+                    var series = [];
+                    $.each(temp,function(x,val){
+                        var seconds = Math.round((val[0]-nowTs)/1000);
+                        // only get last 10 min
+                        if (seconds < -600){
+                            return false;
+                        }
+                        series.push({y:val[1],x:seconds});
+                    });
+                    return series;
+                }
+
+                var seriesData = [];
+                if (self.tempModel.hasBed() && data.temps[0].bed != undefined){
+                    seriesData.push({'data':buildSeries([...OctoPrint.coreui.viewmodels.temperatureViewModel.temperatures['bed'].actual]),'className':'ct-series-g'});
+                    seriesData.push({'data':buildSeries([...OctoPrint.coreui.viewmodels.temperatureViewModel.temperatures['bed'].target]),'className':'ct-series-h'});
+                }
+                if (self.tempModel.hasTools()){
+                    $.each(self.tempModel.tools(),function(indx,val){
+                        var keyGraph = String.fromCharCode(97+indx);
+                        var keyGraphT = String.fromCharCode(98+indx);
+                        seriesData.push({'data':buildSeries([...OctoPrint.coreui.viewmodels.temperatureViewModel.temperatures['tool'+indx].actual]),'className':'ct-series-'+keyGraph});
+                        seriesData.push({'data':buildSeries([...OctoPrint.coreui.viewmodels.temperatureViewModel.temperatures['tool'+indx].target]),'className':'ct-series-'+keyGraphT});
+                    });
+                }
+                var options = {
+                    axisX: {
+                        offset: 0,
+                        position: 'end',
+                        labelOffset: {
+                            x: 0,
+                            y: 0
+                        },
+                        showLabel: true,
+                        showGrid: true,
+                        divisor: 10,
+                        labelInterpolationFnc: function(value) {
+                            return Math.round((value/60) * 10) / 10;
+                        },
+                        type: Chartist.FixedScaleAxis,
+                        onlyInteger: true
+                    },
+                    axisY: {
+                        offset: 25,
+                        position: 'start',
+                        labelOffset: {
+                            x: 0,
+                            y: 0
+                        },
+                        showLabel: true,
+                        showGrid: true,
+                        type: Chartist.AutoScaleAxis,
+                        scaleMinSpace: 20,
+                        onlyInteger: true,
+                        referenceValue: 0,
+                        low: 0,
+                    },
+                    low: 0,
+                    showLine: true,
+                    showPoint: false,
+                    showArea: false,
+                    lineSmooth: false,
+                    chartPadding: {
+                        top: 0,
+                        right: 0,
+                        bottom:30,
+                        left: 5
+                    },
+                    fullWidth: true
+                };
+                new Chartist.Line('#UICTempWidgetGraph', {'series' : seriesData},options);
             }
 
-            // Update if gcode if not centered
-            if (OctoPrint.coreui.selectedTab !== "#gcode") OctoPrint.coreui.viewmodels.gcodeViewModel._renderPercentage(data.progress.completion);
+            // Update gcode widget
+            if (self.gCodeViewerActive){
+                // Gcode widget on and visible
+                if (!$('#UICGcodeVWidgetContainer.collapse.in').length || !$('#gcode_canvas').length || typeof OctoPrint.coreui.viewmodels.gcodeViewModel != "object") return;
 
-            // Make a clone and parse to
-            var clone = $('#UICGcodeVWidgetCan')[0];
-            var clonecon = clone.getContext('2d');
-            var source = $('#gcode_canvas')[0];
-            var factor = $('#UICGcodeVWidget').data('zoomlvl');
-            var newWidth = source.width/factor;
-            var newHeight = source.height/factor;
-            if (newWidth != clone.width){
-                clone.width = newWidth;
+                // load the file is needed
+                if (OctoPrint.coreui.viewmodels.gcodeViewModel.needsLoad){
+                    OctoPrint.coreui.viewmodels.gcodeViewModel.loadFile(OctoPrint.coreui.viewmodels.gcodeViewModel.selectedFile.path(), OctoPrint.coreui.viewmodels.gcodeViewModel.selectedFile.date());
+                }
+
+                // Update if gcode if not centered
+                if (OctoPrint.coreui.selectedTab !== "#gcode") OctoPrint.coreui.viewmodels.gcodeViewModel._renderPercentage(data.progress.completion);
+
+                // Make a clone and parse to
+                var clone = $('#UICGcodeVWidgetCan')[0];
+                var clonecon = clone.getContext('2d');
+                var source = $('#gcode_canvas')[0];
+                var factor = $('#UICGcodeVWidget').data('zoomlvl');
+                var newWidth = source.width/factor;
+                var newHeight = source.height/factor;
+                if (newWidth != clone.width){
+                    clone.width = newWidth;
+                }
+                if (newHeight != clone.height){
+                    clone.height = newHeight;
+                }
+                clonecon.drawImage( source, 0, 0, clone.width, clone.height);
             }
-            if (newHeight != clone.height){
-                clone.height = newHeight;
-            }
-            clonecon.drawImage( source, 0, 0, clone.width, clone.height);
         }
 
 
@@ -3432,7 +3554,7 @@ $(function() {
         // This is a list of dependencies to inject into the plugin, the order which you request here is the order
         // in which the dependencies will be injected into your view model upon instantiation via the parameters
         // argument
-        ["settingsViewModel"],
+        ["settingsViewModel","temperatureViewModel"],
 
         // Finally, this is the list of all elements we want this view model to be bound to.
         []
