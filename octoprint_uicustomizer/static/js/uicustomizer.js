@@ -925,7 +925,7 @@ $(function() {
                     $('#UICWebCamFull').remove();
 
                     // Append floating cam to body
-                    $('body').append('<div id="UICWebCamFull" draggable="true" class="UICWebcam"><div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate text-info">Loading webcam&hellip;</span></div><div id="UICWebCamShrink" class="UICWebCamClick"><a href="javascript: void(0);"><i class="fas fa-compress"></i></a></div><div class="UICWebCamTarget"></div></div>');
+                    $('body').append('<div id="UICWebCamFull" draggable="true" class="UICWebcam"><div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate text-info">Loading webcam&hellip;</span></div><div id="UICWebCamShrink" class="UICWebCamClick"><a href="javascript: void(0);"><i class="fas fa-compress"></i></a></div><div class="UICWebCamTarget"></div><div id="UICWebCamFullProgress"></div></div>');
                     $('#UICWebCamShrink').hide();
 
                     // Set top offset
@@ -1027,6 +1027,7 @@ $(function() {
                             };
                             $('#UICWebCamShrink').show();
                             $('#UICWebCamFull img').show();
+                            $('#UICWebCamFull img').attr("draggable","false");
                             $('#UICWebCamFull div.nowebcam').remove();
                             // Set the size i running a fixed size
                             if (fixed){
@@ -3350,6 +3351,48 @@ $(function() {
         }
 
         self.fromCurrentData = function(data){
+            // add the progress data to full screenwebcam
+            if ($('#UICWebCamFullProgress').length){
+                var divstatus = "";
+                if(data.state.text){
+                    divstatus += "<div title=\"Printer state\" class=\"badge\"><i class=\"fas fa-info\"></i>"+data.state.text+"</div>";
+                }
+                if(data.job.file.display){
+                    divstatus += "<div class=\"badge\"><i class=\"fas fa-file\"></i>"+data.job.file.display+"</div>";
+                }
+                if(data.progress.completion){
+                    divstatus += "<div class=\"badge\"><i class=\"fas fa-percent\"></i>"+Math.round(data.progress.completion)+"%</div>";
+                }
+                if(data.progress.printTime){
+                    divstatus += "<div title=\"Print time progress/left\" class=\"badge\"><i class=\"fas fa-stopwatch\"></i>"+formatDuration(data.progress.printTime)+" / "+formatDuration(data.progress.printTimeLeft)+"</div>";
+                }
+                // Show temps
+                if(data.temps && data.temps[0]){
+                    if(self.tempModel.hasTools() && data.temps[0].tool0 != undefined){
+                        divstatus += "<div title=\"Tool temperature\" class=\"badge\"><i class=\"fas fa-fire\"></i>"+formatTemperature(data.temps[0].tool0.actual,false)+" / "+formatTemperature(data.temps[0].tool0.target,false)+"</div>";
+                    }
+                    if(self.tempModel.hasBed() && data.temps[0].bed != undefined){
+                        divstatus += "<div title=\"Bed temperature\" class=\"badge\"><i class=\"fas fa-window-minimize\"></i>"+formatTemperature(data.temps[0].bed.actual,false)+" / "+formatTemperature(data.temps[0].bed.target,false)+"</div>";
+                    }
+                }else{
+                    if(self.tempModel.hasTools()){
+                        var tempAct  = self.tempModel.temperatures['tool0'].actual[self.tempModel.temperatures['tool0'].actual.length-1][1];
+                        var tempTrg  = self.tempModel.temperatures['tool0'].target[self.tempModel.temperatures['tool0'].target.length-1][1];
+                        divstatus += "<div title=\"Tool temperature\" class=\"badge\"><i class=\"fas fa-fire\"></i>"+formatTemperature(tempAct,false)+" / "+formatTemperature(tempTrg,false)+"</div>";
+                    }
+                    if(self.tempModel.hasBed()){
+                        var tempAct  = self.tempModel.temperatures['bed'].actual[self.tempModel.temperatures['bed'].actual.length-1][1];
+                        var tempTrg  = self.tempModel.temperatures['bed'].target[self.tempModel.temperatures['bed'].target.length-1][1];
+                        divstatus += "<div title=\"Bed temperature\" class=\"badge\"><i class=\"fas fa-window-minimize\"></i>"+formatTemperature(tempAct,false)+" / "+formatTemperature(tempTrg,false)+"</div>";
+                    }
+                }
+                if(data.currentZ){
+                    divstatus += "<div title=\"Z-axis position\" class=\"badge\"><i class=\"fas fa-level-down-alt\"></i>"+data.currentZ+"</div>";
+                }
+                $('#UICWebCamFullProgress').html(divstatus);
+            }
+
+            // Nothing to show
             if (!self.tempGraphActive && !self.gCodeViewerActive) return;
 
 
@@ -3372,15 +3415,15 @@ $(function() {
 
                 var seriesData = [];
                 if (self.tempModel.hasBed() && data.temps[0].bed != undefined){
-                    seriesData.push({'data':buildSeries([...OctoPrint.coreui.viewmodels.temperatureViewModel.temperatures['bed'].actual]),'className':'ct-series-g'});
-                    seriesData.push({'data':buildSeries([...OctoPrint.coreui.viewmodels.temperatureViewModel.temperatures['bed'].target]),'className':'ct-series-h'});
+                    seriesData.push({'data':buildSeries([...self.tempModel.temperatures['bed'].actual]),'className':'ct-series-g'});
+                    seriesData.push({'data':buildSeries([...self.tempModel.temperatures['bed'].target]),'className':'ct-series-h'});
                 }
                 if (self.tempModel.hasTools()){
                     $.each(self.tempModel.tools(),function(indx,val){
                         var keyGraph = String.fromCharCode(97+indx);
                         var keyGraphT = String.fromCharCode(98+indx);
-                        seriesData.push({'data':buildSeries([...OctoPrint.coreui.viewmodels.temperatureViewModel.temperatures['tool'+indx].actual]),'className':'ct-series-'+keyGraph});
-                        seriesData.push({'data':buildSeries([...OctoPrint.coreui.viewmodels.temperatureViewModel.temperatures['tool'+indx].target]),'className':'ct-series-'+keyGraphT});
+                        seriesData.push({'data':buildSeries([...self.tempModel.temperatures['tool'+indx].actual]),'className':'ct-series-'+keyGraph});
+                        seriesData.push({'data':buildSeries([...self.tempModel.temperatures['tool'+indx].target]),'className':'ct-series-'+keyGraphT});
                     });
                 }
                 var options = {

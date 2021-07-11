@@ -941,6 +941,25 @@ body.inlineFullscreen .UICWebCamClick{
     transform: translate(-50%, -50%);
 }
 
+#UICWebCamFullProgress{
+    position: absolute;
+    left: 8px;
+    bottom: 7px;
+    background-color: #ccccccb3;
+    width: calc(100% - 16px);
+    padding: 10px;
+}
+
+#UICWebCamFullProgress div{
+    float: left;
+    color: #000;
+    margin-left: 8px;
+}
+
+#UICWebCamFullProgress div i{
+    margin-right: 5px;
+}
+
 /* floating webcam fixes*/
 #UICWebCamFullInnerDIV.webcam_rotated .webcam_fixed_ratio,
 #UICWebCamFullInnerDIV.webcam_unrotated .webcam_fixed_ratio .webcam_fixed_ratio_inner,
