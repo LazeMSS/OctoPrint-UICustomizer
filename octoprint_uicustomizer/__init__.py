@@ -112,7 +112,7 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                     # Different versions?
                     if themeVersionLocal != themeVersionRemote:
                         themeName = self._settings.get(["theme"],merged=True,asdict=True)
-                        self._logger.info("Newer themes found - starting update. %s < %s : %s", themeVersionLocal, themeVersionRemote,themeName)
+                        self._logger.info("New themes found - starting update. %s != %s : %s", themeVersionLocal, themeVersionRemote, themeName)
                         self.setThemeFile(str(themeName),False,themeVersionRemote)
 
 

@@ -56,11 +56,13 @@
                             <label class="checkbox" title="Hide the webcamera on the Control tab"><input data-bind="checked: settings.plugins.uicustomizer.hideMainCam" data-settingtype="hideMainCam" data-previewtab="control_link"  type="checkbox"> {{ _('Hide webcamera on Control tab') }}</label>
                         </div>
                         <div class="controls">
-                            <select id="UICwebcamzoomtype" class="pull-right" data-bind="value: settings.plugins.uicustomizer.webcamzoomtype, visible: settings.plugins.uicustomizer.addWebCamZoom">
-                                <option value="float">Floating overlay</option>
-                                <option value="full">Fullscreen</option>
-                            </select>
                             <label class="checkbox" title="Will add an zoom/fullscreen icon to the webcam live feed that will show the webcam video feed into a floating resizeable overlay or fullscreen view"><input data-bind="checked: settings.plugins.uicustomizer.addWebCamZoom" data-settingtype="addWebCamZoom" type="checkbox"> {{ _('Float/Fullscreen webcam icon') }}</label>
+                            <div data-bind="visible: settings.plugins.uicustomizer.addWebCamZoom">
+                                <select id="UICwebcamzoomtype" data-bind="value: settings.plugins.uicustomizer.webcamzoomtype">
+                                    <option value="float">Floating overlay webcam</option>
+                                    <option value="full">Fullscreen webcam</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="controls">
                             <label class="checkbox" title="Compress the temperature controls inputs"><input data-bind="checked: settings.plugins.uicustomizer.compressTempControls" data-settingtype="compressTempControls" data-previewtab="temp_link" type="checkbox"> {{ _('Compress temp. controls') }}</label>

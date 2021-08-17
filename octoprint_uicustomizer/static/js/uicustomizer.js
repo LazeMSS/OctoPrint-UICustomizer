@@ -434,7 +434,7 @@ $(function() {
                     self.updateStandardTheme(OctoPrint.coreui.viewmodels.settingsViewModel.settings.appearance.color());
                 };
             }else{
-                // Remove any non UI Customizer related theming
+                // Add UI Customizer related theming
                 $('html').addClass('UICDefaultTheme UICCustomTheme UICTheme_'+themeName);
                 $('#UICCustStandardTheme,#UICCustThemeify').remove();
             }

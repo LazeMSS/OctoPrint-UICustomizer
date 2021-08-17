@@ -1246,5 +1246,24 @@ html.themeify #UICsetMenuShow{
     stroke-dasharray: 0px;
 }
 
+
+/* Fix for mobile fixed header/footer */
+@media(max-width:979px){
+    .navbar-fixed-top,.navbar-fixed-bottom{
+        position:fixed !important;
+        margin-right: 0px !important;
+        margin-left: 0px !important;
+    }
+    div.navbar-fixed-bottom #footer_version{
+        max-width: 100%;
+        width: 100%;
+        justify-content: center;
+        display: flex;
+    }
+    div.navbar-fixed-bottom #footer_links{
+        display: none;
+    }
+}
+
 /* UICustomizer END */
 
