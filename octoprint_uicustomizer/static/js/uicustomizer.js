@@ -89,7 +89,7 @@ $(function() {
                                 <a class="accordion-toggle" data-toggle="collapse" data-target="#UICGcodeVWidgetContainer">\
                                     <i class="fab icon-black fa-codepen"></i> Gcode\
                                 </a>\
-                                <div class="btn-group UICWidgetSelector"><a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">Zoom:<span id="UICGcodeVWidgetZL"></span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="javascript:void(0);" data-zoomlvl=4>4</a></li><li><a href="javascript:void(0);" data-zoomlvl=3>3</a></li><li><a href="javascript:void(0);" data-zoomlvl=2>2</a></li><li><a href="javascript:void(0);" data-zoomlvl=1.5>1.5</a></li><li><a href="javascript:void(0);" data-zoomlvl=1>1</a></li></ul></div>\
+                                <div class="btn-group UICWidgetSelector"><a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">Zoom:<span id="UICGcodeVWidgetZL"></span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="javascript:void(0);" data-zoomlvl=3>3</a></li><li><a href="javascript:void(0);" data-zoomlvl=2>2</a></li><li><a href="javascript:void(0);" data-zoomlvl=1.5>1.5</a></li><li><a href="javascript:void(0);" data-zoomlvl=1>1</a></li></ul></div>\
                             </div>\
                             <div id="UICGcodeVWidgetContainer" class="accordion-body in collapse">\
                                 <div class="accordion-inner">\
@@ -427,12 +427,15 @@ $(function() {
             // if empty we try the others - else we cleanup from everything else
             if (themeName == "default" || themeName == null){
                 $('html').removeClass('UICCustomTheme');
+                $('html').removeClass (function (index, className) {
+                    return (className.match (/UICTheme_\S+/g) || []).join(' ');
+                });
                 if (self.updateThemify(null) == false){
                     self.updateStandardTheme(OctoPrint.coreui.viewmodels.settingsViewModel.settings.appearance.color());
                 };
             }else{
-                // Remove any non UI Customizer related theming
-                $('html').addClass('UICDefaultTheme UICCustomTheme');
+                // Add UI Customizer related theming
+                $('html').addClass('UICDefaultTheme UICCustomTheme UICTheme_'+themeName);
                 $('#UICCustStandardTheme,#UICCustThemeify').remove();
             }
             if (self.curTheme != themeName && themeName != null){
@@ -875,6 +878,8 @@ $(function() {
                     return false;
                 }
             }
+            var CamType = self.settings.settings.plugins.uicustomizer.webcamzoomtype();
+
 
             // HLS handling
             var hlsCam = false;
@@ -925,7 +930,11 @@ $(function() {
                     $('#UICWebCamFull').remove();
 
                     // Append floating cam to body
-                    $('body').append('<div id="UICWebCamFull" draggable="true" class="UICWebcam"><div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate text-info">Loading webcam&hellip;</span></div><div id="UICWebCamShrink" class="UICWebCamClick"><a href="javascript: void(0);"><i class="fas fa-compress"></i></a></div><div class="UICWebCamTarget"></div><div id="UICWebCamFullProgress"></div></div>');
+                    var CamClass = ""
+                    if (CamType == "float"){
+                        CamClass = " FloatCam";
+                    }
+                    $('body').append('<div id="UICWebCamFull" draggable="true" class="UICWebcam'+CamClass+'"><div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate text-info">Loading webcam&hellip;</span></div><div id="UICWebCamShrink" class="UICWebCamClick"><a href="javascript: void(0);"><i class="fas fa-compress"></i></a></div><div class="UICWebCamTarget"></div><div id="UICWebCamFullProgress"></div></div>');
                     $('#UICWebCamShrink').hide();
 
                     // Set top offset
@@ -1005,7 +1014,7 @@ $(function() {
                         $('#UICWebCamFull img').css({'height':nHeight});
 
                         // Set max if needed
-                        if (!fixed){
+                        if (!fixed && CamType == "float"){
                             $('#UICWebCamFull img').css({'max-width':$(window).width()-120});
                             $('#UICWebCamFull img').css({'max-height':$(window).height()-120});
                         }
@@ -1040,27 +1049,31 @@ $(function() {
                     }
 
                     // Fix on resize done
-                    $('#UICWebCamFull').off('mouseup').on('mouseup',function(){
-                        $('#UICWebCamFull img').css({'width':''});
-                        $('#UICWebCamFull img').css({'height':''});
-                        $('#UICWebCamFull').css('height','');
-                    }).off('dblclick').on('dblclick',function(){
-                        $('#UICWebCamShrink').trigger('click');
-                    }).off('resize').on('resize',function(){
-                        // Resize timer
-                        if ($(this).data("resizeTimer") != undefined){
-                            clearTimeout($(this).data("resizeTimer"));
-                        }
-                        $(this).data("resizeTimer",window.setTimeout(function(){
-                            $('#UICWebCamFull').trigger('mouseup');
-                        },500));
-                    });
+                    if (CamType == "float"){
+                        $('#UICWebCamFull').off('mouseup').on('mouseup',function(){
+                            $('#UICWebCamFull img').css({'width':''});
+                            $('#UICWebCamFull img').css({'height':''});
+                            $('#UICWebCamFull').css('height','');
+                        }).off('dblclick').on('dblclick',function(){
+                            $('#UICWebCamShrink').trigger('click');
+                        }).off('resize').on('resize',function(){
+                            // Resize timer
+                            if ($(this).data("resizeTimer") != undefined){
+                                clearTimeout($(this).data("resizeTimer"));
+                            }
+                            $(this).data("resizeTimer",window.setTimeout(function(){
+                                $('#UICWebCamFull').trigger('mouseup');
+                            },500));
+                        });
 
-                    // Start draghandler
-                    var dm = document.getElementById('UICWebCamFull');
-                    $('#UICWebCamFull').on('dragstart.UICCam',dragstart);
-                    $('body').on('dragover.UICCam',drag_over);
-                    $('body').on('drop.UICCam',drop);
+                        // Start draghandler
+                        var dm = document.getElementById('UICWebCamFull');
+                        $('#UICWebCamFull').on('dragstart.UICCam',dragstart);
+                        $('body').on('dragover.UICCam',drag_over);
+                        $('body').on('drop.UICCam',drop);
+                    }else{
+                        self.openFullscreen(document.getElementById('UICWebCamFull'));
+                    }
 
                     // Close again
                     $('#UICWebCamShrink').one('click',function(){
@@ -1072,8 +1085,7 @@ $(function() {
                         $('#UICWebCamFull').remove();
                     });
 
-                    // Todo: add styling for fullscreen and add overlays with print info and gcode preview etc. https://www.w3schools.com/howto/howto_js_fullscreen.asp
-                    // self.openFullscreen(document.getElementById('UICWebCamFull'));
+
                 });
             });
         }
@@ -1090,16 +1102,6 @@ $(function() {
             }
         }
 
-        /* Close fullscreen */
-        self.closeFullscreen = function(){
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) { /* Safari */
-                document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) { /* IE11 */
-                document.msExitFullscreen();
-            }
-        }
 
         // ------------------------------------------------------------------------------------------------------------------------
         // Hide main cams
@@ -3488,17 +3490,22 @@ $(function() {
                 if (OctoPrint.coreui.selectedTab !== "#gcode") OctoPrint.coreui.viewmodels.gcodeViewModel._renderPercentage(data.progress.completion);
 
                 // Make a clone and parse to
+                var widgetWidth = $('#UICGcodeVWidgetContainer').width();
                 var clone = $('#UICGcodeVWidgetCan')[0];
                 var clonecon = clone.getContext('2d');
                 var source = $('#gcode_canvas')[0];
                 var factor = $('#UICGcodeVWidget').data('zoomlvl');
                 var newWidth = source.width/factor;
-                var newHeight = source.height/factor;
+                if (newWidth > widgetWidth){
+                    newWidth = widgetWidth/factor;
+                }
+                var newHeight = newWidth;
                 if (newWidth != clone.width){
                     clone.width = newWidth;
                 }
                 if (newHeight != clone.height){
-                    clone.height = newHeight;
+                    clone.height = newWidth;
+
                 }
                 clonecon.drawImage( source, 0, 0, clone.width, clone.height);
             }
