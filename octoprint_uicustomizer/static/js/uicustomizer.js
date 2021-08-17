@@ -875,6 +875,8 @@ $(function() {
                     return false;
                 }
             }
+            var CamType = self.settings.settings.plugins.uicustomizer.webcamzoomtype();
+
 
             // HLS handling
             var hlsCam = false;
@@ -925,7 +927,11 @@ $(function() {
                     $('#UICWebCamFull').remove();
 
                     // Append floating cam to body
-                    $('body').append('<div id="UICWebCamFull" draggable="true" class="UICWebcam"><div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate text-info">Loading webcam&hellip;</span></div><div id="UICWebCamShrink" class="UICWebCamClick"><a href="javascript: void(0);"><i class="fas fa-compress"></i></a></div><div class="UICWebCamTarget"></div><div id="UICWebCamFullProgress"></div></div>');
+                    var CamClass = ""
+                    if (CamType == "float"){
+                        CamClass = " FloatCam";
+                    }
+                    $('body').append('<div id="UICWebCamFull" draggable="true" class="UICWebcam'+CamClass+'"><div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate text-info">Loading webcam&hellip;</span></div><div id="UICWebCamShrink" class="UICWebCamClick"><a href="javascript: void(0);"><i class="fas fa-compress"></i></a></div><div class="UICWebCamTarget"></div><div id="UICWebCamFullProgress"></div></div>');
                     $('#UICWebCamShrink').hide();
 
                     // Set top offset
@@ -1005,7 +1011,7 @@ $(function() {
                         $('#UICWebCamFull img').css({'height':nHeight});
 
                         // Set max if needed
-                        if (!fixed){
+                        if (!fixed && CamType == "float"){
                             $('#UICWebCamFull img').css({'max-width':$(window).width()-120});
                             $('#UICWebCamFull img').css({'max-height':$(window).height()-120});
                         }
@@ -1040,27 +1046,31 @@ $(function() {
                     }
 
                     // Fix on resize done
-                    $('#UICWebCamFull').off('mouseup').on('mouseup',function(){
-                        $('#UICWebCamFull img').css({'width':''});
-                        $('#UICWebCamFull img').css({'height':''});
-                        $('#UICWebCamFull').css('height','');
-                    }).off('dblclick').on('dblclick',function(){
-                        $('#UICWebCamShrink').trigger('click');
-                    }).off('resize').on('resize',function(){
-                        // Resize timer
-                        if ($(this).data("resizeTimer") != undefined){
-                            clearTimeout($(this).data("resizeTimer"));
-                        }
-                        $(this).data("resizeTimer",window.setTimeout(function(){
-                            $('#UICWebCamFull').trigger('mouseup');
-                        },500));
-                    });
+                    if (CamType == "float"){
+                        $('#UICWebCamFull').off('mouseup').on('mouseup',function(){
+                            $('#UICWebCamFull img').css({'width':''});
+                            $('#UICWebCamFull img').css({'height':''});
+                            $('#UICWebCamFull').css('height','');
+                        }).off('dblclick').on('dblclick',function(){
+                            $('#UICWebCamShrink').trigger('click');
+                        }).off('resize').on('resize',function(){
+                            // Resize timer
+                            if ($(this).data("resizeTimer") != undefined){
+                                clearTimeout($(this).data("resizeTimer"));
+                            }
+                            $(this).data("resizeTimer",window.setTimeout(function(){
+                                $('#UICWebCamFull').trigger('mouseup');
+                            },500));
+                        });
 
-                    // Start draghandler
-                    var dm = document.getElementById('UICWebCamFull');
-                    $('#UICWebCamFull').on('dragstart.UICCam',dragstart);
-                    $('body').on('dragover.UICCam',drag_over);
-                    $('body').on('drop.UICCam',drop);
+                        // Start draghandler
+                        var dm = document.getElementById('UICWebCamFull');
+                        $('#UICWebCamFull').on('dragstart.UICCam',dragstart);
+                        $('body').on('dragover.UICCam',drag_over);
+                        $('body').on('drop.UICCam',drop);
+                    }else{
+                        self.openFullscreen(document.getElementById('UICWebCamFull'));
+                    }
 
                     // Close again
                     $('#UICWebCamShrink').one('click',function(){
@@ -1072,8 +1082,7 @@ $(function() {
                         $('#UICWebCamFull').remove();
                     });
 
-                    // Todo: add styling for fullscreen and add overlays with print info and gcode preview etc. https://www.w3schools.com/howto/howto_js_fullscreen.asp
-                    // self.openFullscreen(document.getElementById('UICWebCamFull'));
+
                 });
             });
         }
@@ -1090,16 +1099,6 @@ $(function() {
             }
         }
 
-        /* Close fullscreen */
-        self.closeFullscreen = function(){
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) { /* Safari */
-                document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) { /* IE11 */
-                document.msExitFullscreen();
-            }
-        }
 
         // ------------------------------------------------------------------------------------------------------------------------
         // Hide main cams

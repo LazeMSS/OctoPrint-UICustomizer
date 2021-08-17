@@ -908,8 +908,11 @@ body.inlineFullscreen .UICWebCamClick{
     margin-right: 20px;
 }
 
-#UICWebCamFull{
+#UICWebCamFull.FloatCam{
     cursor: move;
+    resize: both;
+}
+#UICWebCamFull{
     position: absolute;
     top: 50%;
     left: 50%;
@@ -921,7 +924,6 @@ body.inlineFullscreen .UICWebCamClick{
     border-radius: 4px; padding: 8px;
     min-height: 100px;
     min-width: 100px;
-    resize: both;
     overflow: hidden;
     max-height: fit-content;
     max-width: fit-content;
