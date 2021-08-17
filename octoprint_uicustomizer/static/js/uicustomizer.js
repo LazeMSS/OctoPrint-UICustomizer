@@ -427,6 +427,9 @@ $(function() {
             // if empty we try the others - else we cleanup from everything else
             if (themeName == "default" || themeName == null){
                 $('html').removeClass('UICCustomTheme');
+                $('html').removeClass (function (index, className) {
+                    return (className.match (/UICTheme_\S+/g) || []).join(' ');
+                });
                 if (self.updateThemify(null) == false){
                     self.updateStandardTheme(OctoPrint.coreui.viewmodels.settingsViewModel.settings.appearance.color());
                 };
