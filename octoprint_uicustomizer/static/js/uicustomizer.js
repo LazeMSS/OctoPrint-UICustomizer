@@ -432,7 +432,7 @@ $(function() {
                 };
             }else{
                 // Remove any non UI Customizer related theming
-                $('html').addClass('UICDefaultTheme UICCustomTheme');
+                $('html').addClass('UICDefaultTheme UICCustomTheme UICTheme_'+themeName);
                 $('#UICCustStandardTheme,#UICCustThemeify').remove();
             }
             if (self.curTheme != themeName && themeName != null){
