@@ -892,6 +892,10 @@ body.inlineFullscreen .UICWebCamClick{
     display: none;
 }
 
+#UICwebcamzoomtype{
+    margin-left: 18px;
+}
+
 .UICWebCamClick{
     position: absolute;
     right: 0px;

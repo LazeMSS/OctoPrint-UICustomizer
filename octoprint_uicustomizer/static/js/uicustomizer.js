@@ -89,7 +89,7 @@ $(function() {
                                 <a class="accordion-toggle" data-toggle="collapse" data-target="#UICGcodeVWidgetContainer">\
                                     <i class="fab icon-black fa-codepen"></i> Gcode\
                                 </a>\
-                                <div class="btn-group UICWidgetSelector"><a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">Zoom:<span id="UICGcodeVWidgetZL"></span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="javascript:void(0);" data-zoomlvl=4>4</a></li><li><a href="javascript:void(0);" data-zoomlvl=3>3</a></li><li><a href="javascript:void(0);" data-zoomlvl=2>2</a></li><li><a href="javascript:void(0);" data-zoomlvl=1.5>1.5</a></li><li><a href="javascript:void(0);" data-zoomlvl=1>1</a></li></ul></div>\
+                                <div class="btn-group UICWidgetSelector"><a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">Zoom:<span id="UICGcodeVWidgetZL"></span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="javascript:void(0);" data-zoomlvl=3>3</a></li><li><a href="javascript:void(0);" data-zoomlvl=2>2</a></li><li><a href="javascript:void(0);" data-zoomlvl=1.5>1.5</a></li><li><a href="javascript:void(0);" data-zoomlvl=1>1</a></li></ul></div>\
                             </div>\
                             <div id="UICGcodeVWidgetContainer" class="accordion-body in collapse">\
                                 <div class="accordion-inner">\
@@ -3490,17 +3490,22 @@ $(function() {
                 if (OctoPrint.coreui.selectedTab !== "#gcode") OctoPrint.coreui.viewmodels.gcodeViewModel._renderPercentage(data.progress.completion);
 
                 // Make a clone and parse to
+                var widgetWidth = $('#UICGcodeVWidgetContainer').width();
                 var clone = $('#UICGcodeVWidgetCan')[0];
                 var clonecon = clone.getContext('2d');
                 var source = $('#gcode_canvas')[0];
                 var factor = $('#UICGcodeVWidget').data('zoomlvl');
                 var newWidth = source.width/factor;
-                var newHeight = source.height/factor;
+                if (newWidth > widgetWidth){
+                    newWidth = widgetWidth/factor;
+                }
+                var newHeight = newWidth;
                 if (newWidth != clone.width){
                     clone.width = newWidth;
                 }
                 if (newHeight != clone.height){
-                    clone.height = newHeight;
+                    clone.height = newWidth;
+
                 }
                 clonecon.drawImage( source, 0, 0, clone.width, clone.height);
             }
