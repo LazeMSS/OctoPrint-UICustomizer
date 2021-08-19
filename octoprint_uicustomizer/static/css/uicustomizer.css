@@ -915,7 +915,11 @@ body.inlineFullscreen .UICWebCamClick{
 #UICWebCamFull.FloatCam{
     cursor: move;
     resize: both;
+    border: 2px  solid rgba(0,0,0,0.5);
+    border-radius: 4px; padding: 8px;
+    background-color: rgba(255,255,255,0.75);
 }
+
 #UICWebCamFull{
     position: absolute;
     top: 50%;
@@ -923,9 +927,6 @@ body.inlineFullscreen .UICWebCamClick{
     transform: translate(-50%, -50%);
     width: calc(100% - 200px);
     z-index: 1045;
-    background-color: rgba(255,255,255,0.75);
-    border: 2px  solid rgba(0,0,0,0.5);
-    border-radius: 4px; padding: 8px;
     min-height: 100px;
     min-width: 100px;
     overflow: hidden;
@@ -948,18 +949,20 @@ body.inlineFullscreen .UICWebCamClick{
 }
 
 #UICWebCamFullProgress{
-    position: absolute;
-    left: 8px;
-    bottom: 7px;
-    background-color: #ccccccb3;
-    width: calc(100% - 16px);
     padding: 10px;
+    background-color: #333333;
+    background-color: var(--background);
+    filter: brightness(1.3);
 }
 
 #UICWebCamFullProgress div{
     float: left;
     color: #000;
     margin-left: 8px;
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
 }
 
 #UICWebCamFullProgress div i{
