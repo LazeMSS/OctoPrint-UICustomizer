@@ -1155,10 +1155,6 @@ body.inlineFullscreen .UICWebCamClick{
     text-align: center;
 }
 
-#UICGcodeVWidgetContainer canvas{
-    border: 1px solid #eee;
-    border-radius: 3px;
-}
 
 /* themify hacks :/*/
 .themeify.dyl #navbar{

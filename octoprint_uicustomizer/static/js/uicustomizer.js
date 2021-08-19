@@ -3490,7 +3490,7 @@ $(function() {
                 if (OctoPrint.coreui.selectedTab !== "#gcode") OctoPrint.coreui.viewmodels.gcodeViewModel._renderPercentage(data.progress.completion);
 
                 // Make a clone and parse to
-                var widgetWidth = $('#UICGcodeVWidgetContainer').width();
+                var widgetWidth = $('#UICGcodeVWidgetContainer div').width();
                 var clone = $('#UICGcodeVWidgetCan')[0];
                 var clonecon = clone.getContext('2d');
                 var source = $('#gcode_canvas')[0];
@@ -3505,7 +3505,6 @@ $(function() {
                 }
                 if (newHeight != clone.height){
                     clone.height = newWidth;
-
                 }
                 clonecon.drawImage( source, 0, 0, clone.width, clone.height);
             }
