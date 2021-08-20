@@ -959,6 +959,7 @@ body.inlineFullscreen .UICWebCamClick{
     float: left;
     color: #000;
     margin-left: 8px;
+    margin-bottom: 4px;
     max-width: 220px;
     white-space: nowrap;
     overflow: hidden;
