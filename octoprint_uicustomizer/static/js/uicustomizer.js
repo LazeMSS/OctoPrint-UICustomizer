@@ -2117,8 +2117,17 @@ $(function() {
             });
 
             // Store all tabs names and add any unknown
+            var offset = $('#tabs > li:not(.tabdrop) a').length;
+            var dropdown = $('#tabs >li > ul.dropdown-menu > li').length;
             $('#tabs li:not(.tabdrop) a').each(function(pos,val){
-                if ($(this).data('orgPos') == undefined){
+                // Handle the dropdown
+                if (dropdown > 0){
+                    if ($(this).parent().parent().hasClass('dropdown-menu')){
+                        $(this).data('orgPos',pos+offset);
+                    }else{
+                        $(this).data('orgPos',offset-dropdown);
+                    }
+                }else{
                     $(this).data('orgPos',pos);
                 }
                 if ($(this).data('orgName') == undefined){
