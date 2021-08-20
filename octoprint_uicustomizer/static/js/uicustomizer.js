@@ -934,7 +934,7 @@ $(function() {
                     if (CamType == "float"){
                         CamClass = " FloatCam";
                     }
-                    $('body').append('<div id="UICWebCamFull" draggable="true" class="UICWebcam'+CamClass+'"><div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate text-info">Loading webcam&hellip;</span></div><div id="UICWebCamShrink" class="UICWebCamClick"><a href="javascript: void(0);"><i class="fas fa-compress"></i></a></div><div class="UICWebCamTarget"></div><div id="UICWebCamFullProgress"></div></div>');
+                    $('body').append('<div id="UICWebCamFull" draggable="true" class="UICWebcam'+CamClass+'"><div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate text-info">Loading webcam&hellip;</span></div><div id="UICWebCamShrink" class="UICWebCamClick"><a href="javascript: void(0);"><i class="fas fa-compress"></i></a></div><div class="UICWebCamTarget"></div><div class="navbar navbar-fixed-bottom" id="UICWebCamFullProgress"></div></div>');
                     $('#UICWebCamShrink').hide();
 
                     // Set top offset
@@ -2117,8 +2117,17 @@ $(function() {
             });
 
             // Store all tabs names and add any unknown
+            var offset = $('#tabs > li:not(.tabdrop) a').length;
+            var dropdown = $('#tabs >li > ul.dropdown-menu > li').length;
             $('#tabs li:not(.tabdrop) a').each(function(pos,val){
-                if ($(this).data('orgPos') == undefined){
+                // Handle the dropdown
+                if (dropdown > 0){
+                    if ($(this).parent().parent().hasClass('dropdown-menu')){
+                        $(this).data('orgPos',pos+offset);
+                    }else{
+                        $(this).data('orgPos',offset-dropdown);
+                    }
+                }else{
                     $(this).data('orgPos',pos);
                 }
                 if ($(this).data('orgName') == undefined){
@@ -3357,39 +3366,39 @@ $(function() {
             if ($('#UICWebCamFullProgress').length){
                 var divstatus = "";
                 if(data.state.text){
-                    divstatus += "<div title=\"Printer state\" class=\"badge\"><i class=\"fas fa-info\"></i>"+data.state.text+"</div>";
+                    divstatus += "<div title=\"Printer state\" class=\"label\"><i class=\"fas fa-info\"></i>"+data.state.text+"</div>";
                 }
                 if(data.job.file.display){
-                    divstatus += "<div class=\"badge\"><i class=\"fas fa-file\"></i>"+data.job.file.display+"</div>";
+                    divstatus += "<div class=\"label\" title=\""+data.job.file.display+"\"><i class=\"fas fa-file\"></i>"+data.job.file.display+"</div>";
                 }
                 if(data.progress.completion){
-                    divstatus += "<div class=\"badge\"><i class=\"fas fa-percent\"></i>"+Math.round(data.progress.completion)+"%</div>";
+                    divstatus += "<div class=\"label\"><i class=\"fas fa-percent\"></i>"+Math.round(data.progress.completion)+"%</div>";
                 }
                 if(data.progress.printTime){
-                    divstatus += "<div title=\"Print time progress/left\" class=\"badge\"><i class=\"fas fa-stopwatch\"></i>"+formatDuration(data.progress.printTime)+" / "+formatDuration(data.progress.printTimeLeft)+"</div>";
+                    divstatus += "<div title=\"Print time progress/left\" class=\"label\"><i class=\"fas fa-stopwatch\"></i>"+formatDuration(data.progress.printTime)+" / "+formatDuration(data.progress.printTimeLeft)+"</div>";
                 }
                 // Show temps
                 if(data.temps && data.temps[0]){
                     if(self.tempModel.hasTools() && data.temps[0].tool0 != undefined){
-                        divstatus += "<div title=\"Tool temperature\" class=\"badge\"><i class=\"fas fa-fire\"></i>"+formatTemperature(data.temps[0].tool0.actual,false)+" / "+formatTemperature(data.temps[0].tool0.target,false)+"</div>";
+                        divstatus += "<div title=\"Tool temperature\" class=\"label\"><i class=\"fas fa-fire\"></i>"+formatTemperature(data.temps[0].tool0.actual,false)+" / "+formatTemperature(data.temps[0].tool0.target,false)+"</div>";
                     }
                     if(self.tempModel.hasBed() && data.temps[0].bed != undefined){
-                        divstatus += "<div title=\"Bed temperature\" class=\"badge\"><i class=\"fas fa-window-minimize\"></i>"+formatTemperature(data.temps[0].bed.actual,false)+" / "+formatTemperature(data.temps[0].bed.target,false)+"</div>";
+                        divstatus += "<div title=\"Bed temperature\" class=\"label\"><i class=\"fas fa-window-minimize\"></i>"+formatTemperature(data.temps[0].bed.actual,false)+" / "+formatTemperature(data.temps[0].bed.target,false)+"</div>";
                     }
                 }else{
-                    if(self.tempModel.hasTools()){
+                    if(self.tempModel.hasTools() && self.tempModel.temperatures['tool0'].actual[self.tempModel.temperatures['tool0'].actual.length-1][1] != undefined){
                         var tempAct  = self.tempModel.temperatures['tool0'].actual[self.tempModel.temperatures['tool0'].actual.length-1][1];
                         var tempTrg  = self.tempModel.temperatures['tool0'].target[self.tempModel.temperatures['tool0'].target.length-1][1];
-                        divstatus += "<div title=\"Tool temperature\" class=\"badge\"><i class=\"fas fa-fire\"></i>"+formatTemperature(tempAct,false)+" / "+formatTemperature(tempTrg,false)+"</div>";
+                        divstatus += "<div title=\"Tool temperature\" class=\"label\"><i class=\"fas fa-fire\"></i>"+formatTemperature(tempAct,false)+" / "+formatTemperature(tempTrg,false)+"</div>";
                     }
-                    if(self.tempModel.hasBed()){
+                    if(self.tempModel.hasBed() && self.tempModel.temperatures['bed'].actual[self.tempModel.temperatures['bed'].actual.length-1][1] != undefined){
                         var tempAct  = self.tempModel.temperatures['bed'].actual[self.tempModel.temperatures['bed'].actual.length-1][1];
                         var tempTrg  = self.tempModel.temperatures['bed'].target[self.tempModel.temperatures['bed'].target.length-1][1];
-                        divstatus += "<div title=\"Bed temperature\" class=\"badge\"><i class=\"fas fa-window-minimize\"></i>"+formatTemperature(tempAct,false)+" / "+formatTemperature(tempTrg,false)+"</div>";
+                        divstatus += "<div title=\"Bed temperature\" class=\"label\"><i class=\"fas fa-window-minimize\"></i>"+formatTemperature(tempAct,false)+" / "+formatTemperature(tempTrg,false)+"</div>";
                     }
                 }
                 if(data.currentZ){
-                    divstatus += "<div title=\"Z-axis position\" class=\"badge\"><i class=\"fas fa-level-down-alt\"></i>"+data.currentZ+"</div>";
+                    divstatus += "<div title=\"Z-axis position\" class=\"label\"><i class=\"fas fa-level-down-alt\"></i>"+data.currentZ+"</div>";
                 }
                 $('#UICWebCamFullProgress').html(divstatus);
             }
@@ -3490,7 +3499,7 @@ $(function() {
                 if (OctoPrint.coreui.selectedTab !== "#gcode") OctoPrint.coreui.viewmodels.gcodeViewModel._renderPercentage(data.progress.completion);
 
                 // Make a clone and parse to
-                var widgetWidth = $('#UICGcodeVWidgetContainer').width();
+                var widgetWidth = $('#UICGcodeVWidgetContainer div').width();
                 var clone = $('#UICGcodeVWidgetCan')[0];
                 var clonecon = clone.getContext('2d');
                 var source = $('#gcode_canvas')[0];
@@ -3505,7 +3514,6 @@ $(function() {
                 }
                 if (newHeight != clone.height){
                     clone.height = newWidth;
-
                 }
                 clonecon.drawImage( source, 0, 0, clone.width, clone.height);
             }
