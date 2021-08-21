@@ -156,6 +156,7 @@ $(function() {
                 }
             }
 
+
             // Load from storage
             self.curTheme = self.getStorage('theme');
 
@@ -341,6 +342,27 @@ $(function() {
             // Refresh all
             window.setTimeout(function() {
                 $(window).trigger('resize');
+
+                // Restore saved accordion states
+                if (self.settings.settings.plugins.uicustomizer.saveAccordions()){
+                    var curAccords = self.getStorage('accordions');
+                    if (curAccords != undefined){
+                        curAccords = JSON.parse(curAccords);
+                        $.each(curAccords,function(id,state){
+                            var target = $(id);
+                            if(target && state != target.hasClass('in')){
+                                $(id).collapse("toggle");
+                                // Files is kinda special
+                                if (id == "#files"){
+                                    $(id).removeClass('overflow_visible');
+                                    OctoPrint.coreui.viewmodels.filesViewModel.filesListVisible(false);
+                                }
+                            }
+                        });
+                    }
+                }
+                // Enable storage of accordion states
+                self.set_saveAccordions(self.settings.settings.plugins.uicustomizer.saveAccordions());
             },500);
 
             // Final check to make sure CSS is not broken by other plugins etc.
@@ -420,6 +442,8 @@ $(function() {
 
             self.set_customCSS(settingsPlugin.customCSS());
 
+
+            self.set_saveAccordions(settingsPlugin.saveAccordions());
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
@@ -838,6 +862,39 @@ $(function() {
                 }
             }else{
                 $('#UICCustomCSSS').remove();
+            }
+        }
+
+        // ------------------------------------------------------------------------------------------------------------------------
+        self.set_saveAccordions = function(enable){
+            $('#page-container-main a.accordion-toggle').off('click.UICAccordStore');
+            if (enable){
+                // Save current state if we don't have anything stored
+                var curAccords = self.getStorage('accordions');
+                if (curAccords == undefined){
+                    curAccords = {};
+                    $('#page-container-main a.accordion-toggle').each(function(){
+                        var targetAcco = $(this).data('target');
+                        // We want the current state here
+                        curAccords[targetAcco] = !$(this).hasClass('collapsed');
+                    });
+                    self.setStorage('accordions',JSON.stringify(curAccords));
+                }
+                // Update status on click
+                $('#page-container-main a.accordion-toggle').on('click.UICAccordStore',function(event){
+                    var targetAcco = $(this).data('target');
+                    var curAccords = self.getStorage('accordions');
+                    // The use could have deleted the storage
+                    if (curAccords != undefined){
+                        curAccords = JSON.parse(curAccords);
+                    }else{
+                        curAccords = {};
+                    }
+                    // The class hasn't shifted yet
+                    curAccords[targetAcco] = $(this).hasClass('collapsed')
+                    self.setStorage('accordions',JSON.stringify(curAccords));
+                    return true;
+                });
             }
         }
 
