@@ -42,7 +42,10 @@
                             <label class="checkbox" title="Maximize the main gcode viewer to take up as much space as possible"><input data-bind="checked: settings.plugins.uicustomizer.gcodeFullWidth" data-settingtype="gcodeFullWidth" data-previewtab="gcode_link" type="checkbox"> {{ _('Gcode full-size') }}</label>
                         </div>
                          <div class="controls">
-                            <label class="checkbox" title="Maximize the files selector to show as many files as possible"><input data-bind="checked: settings.plugins.uicustomizer.filesFullHeight" data-settingtype="filesFullHeight" data-previewtab="gcode_link" type="checkbox"> {{ _('Resizable Files+Terminal') }}</label>
+                            <label class="checkbox" title="Maximize the files selector to show as many files as possible"><input data-bind="checked: settings.plugins.uicustomizer.filesFullHeight" data-settingtype="filesFullHeight" type="checkbox"> {{ _('Resizable Files+Terminal') }}</label>
+                        </div>
+                        <div class="controls">
+                            <label class="checkbox" title="Save accordion/widget open/close state"><input data-bind="checked: settings.plugins.uicustomizer.saveAccordions" data-settingtype="saveAccordions" type="checkbox"> {{ _('Save widgets open/close state') }}</label>
                         </div>
                     </div>
                     <div class="span6">
