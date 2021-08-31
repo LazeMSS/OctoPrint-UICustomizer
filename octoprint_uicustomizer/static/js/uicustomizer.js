@@ -425,10 +425,10 @@ $(function() {
                 window.setTimeout(function() {
                     // Make sure responsive and themes are last
                     var allCSS = $('link[rel="stylesheet"]');
-                    if ($('body').hasClass('UICResponsiveMode') && (allCSS.length-1) > allCSS.index($('link.UICBSResp'))){
+                    if ($('body').hasClass('UICResponsiveMode') && $('link.UICBSResp').length && (allCSS.length-1) > allCSS.index($('link.UICBSResp'))){
                         $('link.UICThemeCSS').appendTo('body');
                     }
-                    if ((allCSS.length-2) > allCSS.index($('link.UICThemeCSS'))){
+                    if ($('link.UICThemeCSS').length && (allCSS.length-2) > allCSS.index($('link.UICThemeCSS'))){
                         $('link.UICBSResp').appendTo('body');
                     };
                 },1000);
@@ -1214,16 +1214,16 @@ $(function() {
             } else if (elem.msRequestFullscreen) { /* IE11 */
                 elem.msRequestFullscreen();
             }
-	    // user exit fullscreen
-	    $(window).off('resize.UICFullscreen').on('resize.UICFullscreen',function(event){
-		if (document.fullscreenElement != undefined && document.fullscreenElement != null && document.fullscreenElement.id == "UICWebCamFull"){
-			return true;
-		}
-		$(window).off('resize.UICFullscreen');
-		if($('#UICWebCamFull').length){
-			$('#UICWebCamShrink').trigger('click');
-		}
-	    })
+            // user exit fullscreen
+            $(window).off('resize.UICFullscreen').on('resize.UICFullscreen',function(event){
+                if (document.fullscreenElement != undefined && document.fullscreenElement != null && document.fullscreenElement.id == "UICWebCamFull"){
+                    return true;
+                }
+                $(window).off('resize.UICFullscreen');
+                if($('#UICWebCamFull').length){
+                    $('#UICWebCamShrink').trigger('click');
+                }
+            });
         }
 
 
