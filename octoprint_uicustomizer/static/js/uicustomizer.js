@@ -55,6 +55,7 @@ $(function() {
         self.ThemesLoaded = false;
         self.ThemesInternalURL = './plugin/uicustomizer/static/themes/';
         self.ThemesExternalURL = 'https://lazemss.github.io/OctoPrint-UICustomizerThemes/';
+        self.GitHubBaseUrL = 'LazeMSS/OctoPrint-UICustomizerThemes/releases/latest';
         self.ThemesBaseURL = self.ThemesInternalURL;
 
 
@@ -126,6 +127,7 @@ $(function() {
         // Load theme first up when ready
         self.curTheme = "default";
 
+
         // ------------------------------------------------------------------------------------------------------------------------
         // Quick debug
         self.logToConsole = function(msg){
@@ -156,7 +158,6 @@ $(function() {
                 }
             }
 
-
             // Load from storage
             self.curTheme = self.getStorage('theme');
 
@@ -164,8 +165,60 @@ $(function() {
             var curVersion = self.settings.settings.plugins.uicustomizer.themeVersion();
             var curVersionStor = self.getStorage('themeversion');
             if (curVersion != curVersionStor && curVersionStor != undefined){
-                new PNotify({title:"UICustomizer themes...", type: "info","text":"UI Customizer themes has been updated: <a href=\"https://github.com/LazeMSS/OctoPrint-UICustomizerThemes/releases/\">Read the release notes</a>","hide":false});
-                self.setStorage('themeversion',self.settings.settings.plugins.uicustomizer.themeVersion());
+                var titleStr = "Themes updated";
+                var textStr = 'UI Customizer themes has been updated.';
+                var textStrFooter = '<hr class="UICUpdateHR">UICustomizer<a target="_blank" class="pull-right" href="https://github.com/'+self.GitHubBaseUrL+'">Release notes <i class="fas fa-external-link-alt"></i></a>';
+
+                // Markup fixer - not pretty
+                var htmlmarkupfix = function(str){
+                    str = str + "\r\n";
+                    var regex = /^(###|##|#)(.*)$/gm;
+                    var newStr = str.replace(regex, "<b>$2</b>");
+
+                    regex = /^(?:[*+-]) */gm;
+                    newStr = newStr.replace(regex, '<li>');
+                    regex = /<li>(.*)/gm;
+                    newStr = newStr.replace(regex, `<li>$1</li>`);
+                    regex = /^(?!<li>)^(?!\s*$)(.+)\r\n<li>/gm;
+                    newStr = newStr.replace(regex, `$1\r\n<ul><li>`);
+                    regex = /^(<li>|<ul><li>)(.*)$(\r\n)(?!<li>)/gm;
+                    newStr = newStr.replace(regex, `$1$2</ul>`);
+                    regex = /^<li>/;
+                    newStr = newStr.replace(regex, `<ul><li>`);
+
+                    regex = /^\d{1,9}[.)]/gm;
+                    newStr = newStr.replace(regex, '<lino>');
+                    regex = /<lino>(.*)/gm;
+                    newStr = newStr.replace(regex, `<lino>$1</lino>`);
+                    regex = /^(?!<lino>)^(?!\s*$)(.+)\r\n<lino>/gm;
+                    newStr = newStr.replace(regex, `$1\r\n<ol><lino>`);
+                    regex = /^(<lino>|<ul><lino>)(.*)$(\r\n)(?!<lino>)/gm;
+                    newStr = newStr.replace(regex, `$1$2</ol>`);
+                    newStr = newStr.replace("lino>","li>");
+
+                    regex = /(<\/li>|<\/ul>)\r\n/gm;
+                    newStr = newStr.replace(regex, "$1");
+                    return $.trim(newStr);
+                };
+
+                $.ajax({
+                    url: "https://api.github.com/repos/"+self.GitHubBaseUrL,
+                    dataType: 'jsonp'
+                }).done(function( response ) {
+                    if ("data" in response){
+                        if ("name" in response.data){
+                            textStr = '<b>'+response.data.name+'</b>' + "\n";
+                        }
+                        if ("body" in response.data){
+                            textStr += htmlmarkupfix(response.data.body);
+                        }
+                    }
+                    new PNotify({title:titleStr, type: "info","text": textStr + textStrFooter,"hide":false});
+                }).fail(function( data ) {
+                    new PNotify({title:titleStr, type: "info","text": textStr + textStrFooter,"hide":false});
+                }).always(function(){
+                    self.setStorage('themeversion',self.settings.settings.plugins.uicustomizer.themeVersion());
+                });
             }
 
             // Store WebCam
@@ -219,6 +272,7 @@ $(function() {
                     prevTab(tab);
                 }
             }
+
 
             // Observe theme changes
             OctoPrint.coreui.viewmodels.settingsViewModel.appearance_color.subscribe(function(color) {
@@ -339,6 +393,7 @@ $(function() {
                 $('div.UICMainMenu').css({'height':'auto'});
             });
 
+
             // Refresh all
             window.setTimeout(function() {
                 $(window).trigger('resize');
@@ -370,8 +425,10 @@ $(function() {
                 window.setTimeout(function() {
                     // Make sure responsive and themes are last
                     var allCSS = $('link[rel="stylesheet"]');
-                    if ((allCSS.length-1) > allCSS.index($('link.UICBSResp')) || (allCSS.length-2) > allCSS.index($('link.UICThemeCSS'))){
+                    if ($('body').hasClass('UICResponsiveMode') && $('link.UICBSResp').length && (allCSS.length-1) > allCSS.index($('link.UICBSResp'))){
                         $('link.UICThemeCSS').appendTo('body');
+                    }
+                    if ($('link.UICThemeCSS').length && (allCSS.length-2) > allCSS.index($('link.UICThemeCSS'))){
                         $('link.UICBSResp').appendTo('body');
                     };
                 },1000);
@@ -441,7 +498,6 @@ $(function() {
             self.set_compressTempControls(settingsPlugin.compressTempControls());
 
             self.set_customCSS(settingsPlugin.customCSS());
-
 
             self.set_saveAccordions(settingsPlugin.saveAccordions());
         }
@@ -991,7 +1047,8 @@ $(function() {
                     if (CamType == "float"){
                         CamClass = " FloatCam";
                     }
-                    $('body').append('<div id="UICWebCamFull" draggable="true" class="UICWebcam'+CamClass+'"><div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate text-info">Loading webcam&hellip;</span></div><div id="UICWebCamShrink" class="UICWebCamClick"><a href="javascript: void(0);"><i class="fas fa-compress"></i></a></div><div class="UICWebCamTarget"></div><div class="navbar navbar-fixed-bottom" id="UICWebCamFullProgress"></div></div>');
+                    var currentState = "<div title=\"Printer state\" class=\"label\"><i class=\"fas fa-info\"></i>"+OctoPrint.coreui.viewmodels.printerStateViewModel.stateString();+"</div>";
+                    $('body').append('<div id="UICWebCamFull" draggable="true" class="UICWebcam'+CamClass+'"><div class="nowebcam text-center"><i class="fas fa-spinner fa-spin"></i> <span class="UIC-pulsate text-info">Loading webcam&hellip;</span></div><div id="UICWebCamShrink" class="UICWebCamClick"><a href="javascript: void(0);"><i class="fas fa-compress"></i></a></div><div class="UICWebCamTarget"></div><div class="navbar navbar-fixed-bottom" id="UICWebCamFullProgress">'+currentState+'</div></div>');
                     $('#UICWebCamShrink').hide();
 
                     // Set top offset
@@ -1157,6 +1214,16 @@ $(function() {
             } else if (elem.msRequestFullscreen) { /* IE11 */
                 elem.msRequestFullscreen();
             }
+            // user exit fullscreen
+            $(window).off('resize.UICFullscreen').on('resize.UICFullscreen',function(event){
+                if (document.fullscreenElement != undefined && document.fullscreenElement != null && document.fullscreenElement.id == "UICWebCamFull"){
+                    return true;
+                }
+                $(window).off('resize.UICFullscreen');
+                if($('#UICWebCamFull').length){
+                    $('#UICWebCamShrink').trigger('click');
+                }
+            });
         }
 
 
@@ -2000,13 +2067,25 @@ $(function() {
             }
             // Build header icons always to fix responsive or on request
             if ((enabled || $('body').hasClass('UICResponsiveMode')) && !$('ul.UICHeaderIcons').length){
-                // Move header icons out of menu
-                $('div.UICMainMenu').after($('<ul class="UICHeaderIcons nav"></ul>').append($('div.UICMainMenu ul.nav > li[id^="navbar_plugin"]:not(.UICExcludeFromTopIcons)')));
-            }
-            if (enabled){
-                $('ul.UICHeaderIcons').addClass('CenterMe');
+                if ($('body').hasClass('UICResponsiveMode')){
+                    $('div.UICMainMenu').after($('<div class="UIHeaderWrap"><ul class="UICHeaderIcons nav"></ul></div>').append($('div.UICMainMenu ul.nav > li[id^="navbar_plugin"]:not(.UICExcludeFromTopIcons)')));
+                }else{
+                    $('div.UICMainMenu').after($('<ul class="UICHeaderIcons nav"></ul>').append($('div.UICMainMenu ul.nav > li[id^="navbar_plugin"]:not(.UICExcludeFromTopIcons)')));
+                }
             }else{
-                $('ul.UICHeaderIcons').removeClass('CenterMe');
+                if($('div.UIHeaderWrap').length){
+                    $('div.UIHeaderWrap').replaceWith(function(){return $( this ).contents()})
+                }
+            }
+            var CenterTarget = $('ul.UICHeaderIcons');
+            if($('div.UIHeaderWrap').length){
+                CenterTarget = $('div.UIHeaderWrap');
+            }
+
+            if (enabled){
+                CenterTarget.addClass('CenterMe');
+            }else{
+                CenterTarget.removeClass('CenterMe');
             }
         }
 
@@ -2059,6 +2138,7 @@ $(function() {
                 if (!$('body').hasClass('UICfixedFooter')){
                     return true;
                 }
+
                 $('body').removeClass('UICfixedFooter');
                 $('div.footer').removeClass('navbar navbar-fixed-bottom');
                 $('div.footer > div.navbar-inner > ul').appendTo('div.footer');
@@ -3419,45 +3499,111 @@ $(function() {
         }
 
         self.fromCurrentData = function(data){
+
             // add the progress data to full screenwebcam
             if ($('#UICWebCamFullProgress').length){
+                // Active state?
+                var printActive = false;
+                if (data.state.flags.printing || data.state.flags.finishing || data.state.flags.paused || data.state.flags.pausing || data.state.flags.resuming){
+                    printActive = true;
+                }
                 var divstatus = "";
-                if(data.state.text){
-                    divstatus += "<div title=\"Printer state\" class=\"label\"><i class=\"fas fa-info\"></i>"+data.state.text+"</div>";
+                // 0: id, 1: label, 2: icon, 3: value, 4: need active print
+                var items = [
+                    ['data.state.text','Printer state','fas fa-info','data.state.text',false],
+                    ['data.job.file.display','data.job.file.display','fas fa-file','data.job.file.display',false],
+                    ['data.progress.completion', '% completed','fas fa-percent','Math.round(data.progress.completion)',true],
+                    ['data.progress.printTime', 'Print time progress/left','fas fa-stopwatch','formatDuration(data.progress.printTime)+" / "+formatDuration(data.progress.printTimeLeft)',true],
+                    ['data.currentZ', 'Z-axis position','fas fa-level-down-alt','data.currentZ'],
+                ];
+                var setLabelFSWC = function(id,title,icon,val,activePrint){
+                    var pItem = $('#UICWCLbl_'+id);
+                    var pclass = '';
+                    if ((activePrint && !printActive) || val == "-"){
+                        val = "-";
+                        pclass = " paused";
+                        title += " (no data available)";
+                    }
+                    if (pItem.length){
+                        if (pItem.data('prevval') != val){
+                            pItem.data('prevval',val);
+                            pItem.find('span').html(val);
+                        }
+                        if (pclass != ""){
+                            pItem.addClass(pclass);
+                        }else{
+                            pItem.removeClass('paused');
+                        }
+                    }else{
+                        divstatus += '<div id="UICWCLbl_'+id+'" data-prevval="'+val+'" title="'+title+'" class="label'+pclass+'"><i class="'+icon+'"></i><span>'+val+'</span></div>';
+                    }
                 }
-                if(data.job.file.display){
-                    divstatus += "<div class=\"label\" title=\""+data.job.file.display+"\"><i class=\"fas fa-file\"></i>"+data.job.file.display+"</div>";
-                }
-                if(data.progress.completion){
-                    divstatus += "<div class=\"label\"><i class=\"fas fa-percent\"></i>"+Math.round(data.progress.completion)+"%</div>";
-                }
-                if(data.progress.printTime){
-                    divstatus += "<div title=\"Print time progress/left\" class=\"label\"><i class=\"fas fa-stopwatch\"></i>"+formatDuration(data.progress.printTime)+" / "+formatDuration(data.progress.printTimeLeft)+"</div>";
-                }
-                // Show temps
+
+                // Build each and update
+                $.each(items,function(x,val){
+                    var title = val[1];
+                    // Title should be full filename
+                    if (val[0] == "data.job.file.display"){
+                        title = eval(val[3]);
+                    }
+                    if (eval(val[0]) != undefined){
+                        setLabelFSWC(x,title,val[2], eval(val[3]),val[4]);
+                    }else{
+                        setLabelFSWC(x,title,val[2], "-",val[4]);
+                    }
+                });
+
+                // Build temps - these are kinda special
                 if(data.temps && data.temps[0]){
                     if(self.tempModel.hasTools() && data.temps[0].tool0 != undefined){
-                        divstatus += "<div title=\"Tool temperature\" class=\"label\"><i class=\"fas fa-fire\"></i>"+formatTemperature(data.temps[0].tool0.actual,false)+" / "+formatTemperature(data.temps[0].tool0.target,false)+"</div>";
+                        var calcVal = formatTemperature(data.temps[0].tool0.actual,false)+" / "+formatTemperature(data.temps[0].tool0.target,false);
+                        setLabelFSWC('t0','Tool temperature','fas fa-fire', calcVal,false);
                     }
                     if(self.tempModel.hasBed() && data.temps[0].bed != undefined){
-                        divstatus += "<div title=\"Bed temperature\" class=\"label\"><i class=\"fas fa-window-minimize\"></i>"+formatTemperature(data.temps[0].bed.actual,false)+" / "+formatTemperature(data.temps[0].bed.target,false)+"</div>";
+                        var calcVal = formatTemperature(data.temps[0].bed.actual,false)+" / "+formatTemperature(data.temps[0].bed.target,false);
+                        setLabelFSWC('bed','Bed temperature','fas fa-window-minimize', calcVal,false);
                     }
                 }else{
                     if(self.tempModel.hasTools() && self.tempModel.temperatures['tool0'].actual[self.tempModel.temperatures['tool0'].actual.length-1][1] != undefined){
                         var tempAct  = self.tempModel.temperatures['tool0'].actual[self.tempModel.temperatures['tool0'].actual.length-1][1];
                         var tempTrg  = self.tempModel.temperatures['tool0'].target[self.tempModel.temperatures['tool0'].target.length-1][1];
-                        divstatus += "<div title=\"Tool temperature\" class=\"label\"><i class=\"fas fa-fire\"></i>"+formatTemperature(tempAct,false)+" / "+formatTemperature(tempTrg,false)+"</div>";
+                        var calcVal = formatTemperature(tempAct,false)+" / "+formatTemperature(tempTrg,false);
+                       setLabelFSWC('t0','Tool temperature','fas fa-fire', calcVal,false);
                     }
                     if(self.tempModel.hasBed() && self.tempModel.temperatures['bed'].actual[self.tempModel.temperatures['bed'].actual.length-1][1] != undefined){
                         var tempAct  = self.tempModel.temperatures['bed'].actual[self.tempModel.temperatures['bed'].actual.length-1][1];
                         var tempTrg  = self.tempModel.temperatures['bed'].target[self.tempModel.temperatures['bed'].target.length-1][1];
-                        divstatus += "<div title=\"Bed temperature\" class=\"label\"><i class=\"fas fa-window-minimize\"></i>"+formatTemperature(tempAct,false)+" / "+formatTemperature(tempTrg,false)+"</div>";
+                        var calcVal = formatTemperature(tempAct,false)+" / "+formatTemperature(tempTrg,false);
+                        setLabelFSWC('bed','Bed temperature','fas fa-window-minimize', calcVal,false);
                     }
                 }
-                if(data.currentZ){
-                    divstatus += "<div title=\"Z-axis position\" class=\"label\"><i class=\"fas fa-level-down-alt\"></i>"+data.currentZ+"</div>";
+
+                // Anything new to add
+                if (divstatus != ""){
+                    if ($('#UICWebCamFullProgress').data('built') == true){
+                        $('#UICWebCamFullProgress').append(divstatus);
+                    }else{
+                        $('#UICWebCamFullProgress').data('built',true)
+                        // Add progessbar
+                        divstatus += '<span id="UICWCLbl_pBar" class="progress progress-striped"><span class="bar"></span></span>';
+                        $('#UICWebCamFullProgress').html(divstatus);
+                    }
                 }
-                $('#UICWebCamFullProgress').html(divstatus);
+
+                // Update progressbar
+                if (printActive){
+                    var roundP = Math.round(data.progress.completion)
+                    if (data.state.flags.printing){
+                        $('#UICWCLbl_pBar').addClass('active');
+                    }else{
+                        $('#UICWCLbl_pBar').removeClass('active');
+                    }
+                    $('#UICWCLbl_pBar').prop('title',roundP+'%');
+                    $('#UICWCLbl_pBar span.bar').width(roundP+'%');
+                }else{
+                    $('#UICWCLbl_pBar').prop('title','0%');
+                    $('#UICWCLbl_pBar span.bar').width('0px');
+                }
             }
 
             // Nothing to show
