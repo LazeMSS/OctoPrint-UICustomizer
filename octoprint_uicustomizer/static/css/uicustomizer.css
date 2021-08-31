@@ -1,5 +1,7 @@
 /* UICustomizer START */
-
+:root {
+  --background: #36393f;
+}
 /* big screens */
 @media (min-width: 980px){
 	body.UICfixedHeader{
@@ -8,6 +10,15 @@
 	.UICHideDesktop{
 		display: none;
 	}
+
+    div.UIHeaderWrap.CenterMe .UICHeaderIcons{
+        position: relative;
+        left: 50%;
+        -webkit-transform: translateX(-50%);
+        -moz-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+        transform: translateX(-50%);
+    }
 
     /*fix for files in large cols - these are replicated in the max-width: 767px section*/
     body.UICResponsiveMode div.UICLargeSpan #files div.gcode_files .action-buttons{
@@ -47,6 +58,11 @@
 	.UICHideDesktop{
 		display: inline-block !important
 	}
+
+    div.UIHeaderWrap{
+        max-width: calc(100vw - 235px) !important;
+        right: 80px !important;
+    }
 
     /* align drop down menu text to the right*/
 	body.UICResponsiveMode #navbar div.nav-collapse {
@@ -109,6 +125,10 @@
 
 /* tiny screns aka mobile */
 @media (max-width: 767px){
+    div.UIHeaderWrap{
+        max-width: calc(100vw - 200px) !important;
+        right: 60px !important;
+    }
     /*fix input fields broken*/
 	body.UICResponsiveMode .search-query-with-clear .search-clear{
 		right: 28px !important;
@@ -176,11 +196,17 @@
         display: inline-block;
         margin-top: 10px;
 	}
+
+    div.UIHeaderWrap{
+        max-width: calc(100vw - 105px) !important;
+        right: 60px !important;
+    }
+
     html.UICDefaultTheme.UICResponsiveMode #navbar a.brand{
         margin-left: 10px;
     }
 
-    .UICHeaderIcons.CenterMe{
+    ul.UICHeaderIcons.CenterMe{
         left: 0px !important;
         -webkit-transform: none !important;
         -moz-transform: none !important;
@@ -191,6 +217,7 @@
         position: relative !important;
         float: left !important;
     }
+
 
     /* ------------------------- small temp tables start -------------------------*/
     #temperature-table input.input-mini, #temperature-table .add-on, #temperature-table span.input-mini {
@@ -260,6 +287,48 @@
 }
 
 
+/* fix navbar icon wraps  */
+div.UIHeaderWrap::-webkit-scrollbar {
+  height: 5px;
+}
+
+div.UIHeaderWrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+div.UIHeaderWrap::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  border: 3px solid currentColor;
+}
+
+div.UIHeaderWrap{
+    scrollbar-width: thin;
+    position: absolute;
+    top: 0px;
+    right: 250px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-width: calc(100vw - 390px);
+    max-height: calc(100% + 10px);
+    width: max-content;
+}
+
+div.UIHeaderWrap.CenterMe{
+    width: 100% !important;
+}
+
+ul.UICHeaderIcons.CenterMe{
+    float: unset;
+    position: absolute;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%);
+    z-index: 1030;
+}
+
+
 /* fix popovers*/
 
 #navbar.navbar-static-top{
@@ -304,20 +373,10 @@ body.UICPreviewON #settings_dialog{
 }
 
 /* center icons */
-.UICHeaderIcons.CenterMe{
-    float: unset;
-    position: absolute;
-    left: 50%;
-    -webkit-transform: translateX(-50%);
-    -moz-transform: translateX(-50%);
-    -ms-transform: translateX(-50%);
-    transform: translateX(-50%);
-    z-index: 1030;
-}
 
 .UICHeaderIcons{
     white-space: nowrap;
-    float: right !important;
+    width: max-content;
 }
 
 /* fix stacked icons*/
@@ -919,6 +978,9 @@ body.inlineFullscreen .UICWebCamClick{
     border-radius: 4px; padding: 8px;
     background-color: rgba(255,255,255,0.75);
 }
+#UICWebCamFull:not(.FloatCam) {
+    border: 1px solid var(--background);
+}
 
 #UICWebCamFull{
     position: absolute;
@@ -938,7 +1000,10 @@ body.inlineFullscreen .UICWebCamClick{
 #UICWebCamFull img,#UICWebCamFull video{
     width: 100%;
     min-width: 200px !important;
+    max-height: 100vh;
+    max-width: 100vw;
 }
+
 #UICWebCamFull .nowebcam{
     width: 100%;
     margin: 0 auto;
@@ -950,20 +1015,32 @@ body.inlineFullscreen .UICWebCamClick{
 
 #UICWebCamFullProgress{
     padding: 10px;
-    background-color: #333333;
     background-color: var(--background);
     filter: brightness(1.3);
 }
 
-#UICWebCamFullProgress div{
+#UICWebCamFullProgress div.label{
     float: left;
     color: #000;
     margin-left: 8px;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
     max-width: 220px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis
+}
+#UICWebCamFullProgress div.label.paused{
+    opacity: 0.4;
+}
+
+div#UICWebCamFullProgress span.progress{
+    display:block;
+    position: absolute;
+    width: 98%;
+    bottom:-20px;
+    left:1%;
+    height: 8px;
+    margin-bottom:23px;
 }
 
 #UICWebCamFullProgress div i{
@@ -1250,6 +1327,13 @@ html.themeify #UICsetMenuShow{
     stroke-dasharray: 0px;
 }
 
+.UICUpdateHR{
+    margin: 15px 0px 8px 0px;
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, transparent, currentColor, transparent);
+}
+
 
 /* Fix for mobile fixed header/footer */
 @media(max-width:979px){
@@ -1273,4 +1357,3 @@ html.themeify #UICsetMenuShow{
 }
 
 /* UICustomizer END */
-
