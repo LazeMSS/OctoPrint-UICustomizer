@@ -1,6 +1,7 @@
 /* UICustomizer START */
 :root {
   --background: #36393f;
+  --uicmainwidth: 230px;
 }
 /* big screens */
 @media (min-width: 980px){
@@ -202,10 +203,6 @@
         right: 60px !important;
     }
 
-    html.UICDefaultTheme.UICResponsiveMode #navbar a.brand{
-        margin-left: 10px;
-    }
-
     ul.UICHeaderIcons.CenterMe{
         left: 0px !important;
         -webkit-transform: none !important;
@@ -216,6 +213,10 @@
         min-height: 41px;
         position: relative !important;
         float: left !important;
+    }
+
+    html.UICDefaultTheme.UICResponsiveMode #navbar a.brand{
+        margin-left: 10px;
     }
 
 
@@ -288,6 +289,9 @@
 
 
 /* fix navbar icon wraps  */
+div.UICMainMenu ul.nav{
+    z-index: 1000;
+}
 div.UIHeaderWrap::-webkit-scrollbar {
   height: 5px;
 }
@@ -305,12 +309,13 @@ div.UIHeaderWrap{
     scrollbar-width: thin;
     position: absolute;
     top: 0px;
-    right: 250px;
+    right: calc(var(--uicmainwidth) + 20px);
     overflow-x: auto;
     overflow-y: hidden;
-    max-width: calc(100vw - 390px);
+    max-width: calc(100vw - var(--uicmainwidth) - 170px);
     max-height: calc(100% + 10px);
     width: max-content;
+    z-index: 900;
 }
 
 div.UIHeaderWrap.CenterMe{
