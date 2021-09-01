@@ -393,7 +393,6 @@ $(function() {
                 $('div.UICMainMenu').css({'height':'auto'});
             });
 
-
             // Refresh all
             window.setTimeout(function() {
                 $(window).trigger('resize');
@@ -416,9 +415,17 @@ $(function() {
                         });
                     }
                 }
+
                 // Enable storage of accordion states
                 self.set_saveAccordions(self.settings.settings.plugins.uicustomizer.saveAccordions());
+
             },500);
+
+            // Fix slow loading plugin navbar icons
+            window.setTimeout(function() {
+                $('ul.UICHeaderIcons').append($('div.UIHeaderWrap > li[id^="navbar_plugin"]:not(.UICExcludeFromTopIcons)'));
+                self.fixWrapWidth();
+            },1000);
 
             // Final check to make sure CSS is not broken by other plugins etc.
             if($('link.UICBSResp').length || $('link.UICThemeCSS').length){
@@ -432,6 +439,29 @@ $(function() {
                         $('link.UICBSResp').appendTo('body');
                     };
                 },1000);
+            }
+
+        }
+
+        // Calc topmenu width
+        self.fixWrapWidth = function(){
+            var menuWidth = $('div.UICMainMenu > ul').outerWidth();
+            if ($(window).width() <= 979 ){
+                // Fix small screens
+                menuWidth = 0;
+                $('div.UICMainMenu > ul > li > a:visible').each(function(){
+                    $(this).parent().css('float','left');
+                    menuWidth += $(this).outerWidth();
+                    if ($(this).find('.UICHideDesktop').length){
+                        menuWidth -= $(this).find('.UICHideDesktop').outerWidth();
+                    }
+                    $(this).parent().css('float','');
+                });
+            }
+            if($('#UICWrapFix').length){
+                $('#UICWrapFix').text(':root {--uicmainwidth: '+menuWidth+'px !important;}');
+            }else{
+                $('head').append('<style id="UICWrapFix">:root {--uicmainwidth: '+menuWidth+'px !important;}</style>');
             }
 
         }
@@ -2059,33 +2089,15 @@ $(function() {
         // ------------------------------------------------------------------------------------------------------------------------
         // Should we center the icons or not?
         self.set_centerTopIcons = function(enabled){
-            // Remove it not request and not running responsive
-            if ((!enabled && !$('body').hasClass('UICResponsiveMode')) && $('ul.UICHeaderIcons').length){
-                $('div.UICMainMenu > ul.nav').prepend($('ul.UICHeaderIcons > li'));
-                $('ul.UICHeaderIcons').remove();
-                return true;
+            self.fixWrapWidth();
+            // Build header icons always to fix wrap or on request
+            if (!$('ul.UICHeaderIcons').length){
+                $('div.UICMainMenu').after($('<div class="UIHeaderWrap"><ul class="UICHeaderIcons nav"></ul></div>').append($('div.UICMainMenu ul.nav > li[id^="navbar_plugin"]:not(.UICExcludeFromTopIcons)')));
             }
-            // Build header icons always to fix responsive or on request
-            if ((enabled || $('body').hasClass('UICResponsiveMode')) && !$('ul.UICHeaderIcons').length){
-                if ($('body').hasClass('UICResponsiveMode')){
-                    $('div.UICMainMenu').after($('<div class="UIHeaderWrap"><ul class="UICHeaderIcons nav"></ul></div>').append($('div.UICMainMenu ul.nav > li[id^="navbar_plugin"]:not(.UICExcludeFromTopIcons)')));
-                }else{
-                    $('div.UICMainMenu').after($('<ul class="UICHeaderIcons nav"></ul>').append($('div.UICMainMenu ul.nav > li[id^="navbar_plugin"]:not(.UICExcludeFromTopIcons)')));
-                }
-            }else{
-                if($('div.UIHeaderWrap').length){
-                    $('div.UIHeaderWrap').replaceWith(function(){return $( this ).contents()})
-                }
-            }
-            var CenterTarget = $('ul.UICHeaderIcons');
-            if($('div.UIHeaderWrap').length){
-                CenterTarget = $('div.UIHeaderWrap');
-            }
-
             if (enabled){
-                CenterTarget.addClass('CenterMe');
+                $('div.UIHeaderWrap').addClass('CenterMe');
             }else{
-                CenterTarget.removeClass('CenterMe');
+                $('div.UIHeaderWrap').removeClass('CenterMe');
             }
         }
 

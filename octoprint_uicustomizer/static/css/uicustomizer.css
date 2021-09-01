@@ -1,6 +1,7 @@
 /* UICustomizer START */
 :root {
   --background: #36393f;
+  --uicmainwidth: 230px;
 }
 /* big screens */
 @media (min-width: 980px){
@@ -206,18 +207,6 @@
         margin-left: 10px;
     }
 
-    ul.UICHeaderIcons.CenterMe{
-        left: 0px !important;
-        -webkit-transform: none !important;
-        -moz-transform: none !important;
-        -ms-transform: none !important;
-        transform: none !important;
-        overflow: auto;
-        min-height: 41px;
-        position: relative !important;
-        float: left !important;
-    }
-
 
     /* ------------------------- small temp tables start -------------------------*/
     #temperature-table input.input-mini, #temperature-table .add-on, #temperature-table span.input-mini {
@@ -288,6 +277,9 @@
 
 
 /* fix navbar icon wraps  */
+div.UICMainMenu ul.nav{
+    z-index: 1000;
+}
 div.UIHeaderWrap::-webkit-scrollbar {
   height: 5px;
 }
@@ -305,27 +297,17 @@ div.UIHeaderWrap{
     scrollbar-width: thin;
     position: absolute;
     top: 0px;
-    right: 250px;
+    right: calc(var(--uicmainwidth) + 20px);
     overflow-x: auto;
     overflow-y: hidden;
-    max-width: calc(100vw - 390px);
+    max-width: calc(100vw - var(--uicmainwidth) - 170px);
     max-height: calc(100% + 10px);
     width: max-content;
+    z-index: 900;
 }
 
 div.UIHeaderWrap.CenterMe{
     width: 100% !important;
-}
-
-ul.UICHeaderIcons.CenterMe{
-    float: unset;
-    position: absolute;
-    left: 50%;
-    -webkit-transform: translateX(-50%);
-    -moz-transform: translateX(-50%);
-    -ms-transform: translateX(-50%);
-    transform: translateX(-50%);
-    z-index: 1030;
 }
 
 
