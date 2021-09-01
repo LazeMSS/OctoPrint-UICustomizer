@@ -2092,12 +2092,15 @@ $(function() {
             self.fixWrapWidth();
             // Build header icons always to fix wrap or on request
             if (!$('ul.UICHeaderIcons').length){
-                $('div.UICMainMenu').after($('<div class="UIHeaderWrap"><ul class="UICHeaderIcons nav"></ul></div>').append($('div.UICMainMenu ul.nav > li[id^="navbar_plugin"]:not(.UICExcludeFromTopIcons)')));
+                // $('div.UICMainMenu').after($('<div class="UIHeaderWrap"><ul class="UICHeaderIcons nav"></ul></div>').append($('div.UICMainMenu ul.nav > li[id^="navbar_plugin"]:not(.UICExcludeFromTopIcons)')));
+                $('div.UICMainMenu').after($('<ul class="UICHeaderIcons nav"></ul>').append($('div.UICMainMenu ul.nav > li[id^="navbar_plugin"]:not(.UICExcludeFromTopIcons)')));
             }
             if (enabled){
-                $('div.UIHeaderWrap').addClass('CenterMe');
+                // $('div.UIHeaderWrap').addClass('CenterMe');
+                $('ul.UICHeaderIcons').addClass('CenterMe');
             }else{
-                $('div.UIHeaderWrap').removeClass('CenterMe');
+                // $('div.UIHeaderWrap').removeClass('CenterMe');
+                $('ul.UICHeaderIcons').removeClass('CenterMe');
             }
         }
 

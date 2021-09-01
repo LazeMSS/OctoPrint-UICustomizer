@@ -203,6 +203,18 @@
         right: 60px !important;
     }
 
+    ul.UICHeaderIcons.CenterMe{
+        left: 0px !important;
+        -webkit-transform: none !important;
+        -moz-transform: none !important;
+        -ms-transform: none !important;
+        transform: none !important;
+        overflow: auto;
+        min-height: 41px;
+        position: relative !important;
+        float: left !important;
+    }
+
     html.UICDefaultTheme.UICResponsiveMode #navbar a.brand{
         margin-left: 10px;
     }
@@ -308,6 +320,17 @@ div.UIHeaderWrap{
 
 div.UIHeaderWrap.CenterMe{
     width: 100% !important;
+}
+
+ul.UICHeaderIcons.CenterMe{
+    float: unset;
+    position: absolute;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%);
+    z-index: 1030;
 }
 
 
