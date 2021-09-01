@@ -248,7 +248,7 @@ $(function() {
             self.UpdateLayout(self.settings.settings.plugins.uicustomizer);
 
             // Fix consolidate_temp_control layout issues
-            if (typeof OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.consolidate_temp_control !== "undefined"){
+            if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('consolidate_temp_control')){
                 $('div.page-container').css({'min-width':''});
                 $('div.footer').css({'padding-left':'','padding-right':''});
                 $('div.UICMainCont > div:first').css({'margin-left':'','padding-right':''});
@@ -365,7 +365,7 @@ $(function() {
 
             // Check for any issues with installed plugins
             $.each(knowPluginIssues,function(key,val){
-                if (typeof OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins[key] !== "undefined"){
+                if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty(key)){
                     self.logToConsole("Plugin issues detected: " + key);
                     if (val.action != null){
                         var optionsCust = $.extend(true,{},options);
@@ -2121,7 +2121,7 @@ $(function() {
         // ------------------------------------------------------------------------------------------------------------------------
         // Set Compact icons
         self.set_navbarplugintempfix = function(enabled){
-            if (!$('#navbar_plugin_navbartemp').length){
+            if (!$('#navbar_plugin_navbartemp').length || !OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('navbartemp')){
                 return true;
             }
             if (enabled){
@@ -2859,7 +2859,7 @@ $(function() {
             });
 
             // Check for navbar
-            if (typeof OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.navbartemp !== "undefined"){
+            if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('navbartemp')){
                 $('#settings_uicustomizer_general input[data-settingtype="navbarplugintempfix"]').prop( "disabled", false );
             }else{
                 $('#settings_uicustomizer_general input[data-settingtype="navbarplugintempfix"]').prop( "disabled", true );
@@ -3120,7 +3120,7 @@ $(function() {
             $('#UICMainTabCustomizerToggle').off('change').on('change',function(){
                 if ($(this).is(':checked')){
                     // Check for themify
-                    if (typeof OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify == "object" && OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.tabs.enableIcons()){
+                    if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('themeify') && OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.tabs.enableIcons()){
                         $('.UICthemeifyAlert').fadeIn();
                     }else{
                         $('.UICthemeifyAlert').hide();
