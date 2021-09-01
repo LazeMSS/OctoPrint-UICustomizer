@@ -247,17 +247,6 @@ $(function() {
             // Load custom layout
             self.UpdateLayout(self.settings.settings.plugins.uicustomizer);
 
-            // Fix consolidate_temp_control layout issues
-            if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('consolidate_temp_control')){
-                $('div.page-container').css({'min-width':''});
-                $('div.footer').css({'padding-left':'','padding-right':''});
-                $('div.UICMainCont > div:first').css({'margin-left':'','padding-right':''});
-                $('div.UICMainCont').removeClass('row-fluid');
-                $('div.UICmainTabs').removeClass('span10');
-                $('div#tabs_content div.tab-pane:not("#tab_plugin_consolidate_temp_control") > div > div.span6').unwrap();
-                $('div#tabs_content div.tab-pane:not("#tab_plugin_consolidate_temp_control") > div.span6').children().unwrap();
-            }
-
             // Rewrite the tab selector for settings - https://github.com/LazeMSS/OctoPrint-UICustomizer/issues/95
             var prevTab = OctoPrint.coreui.viewmodels.settingsViewModel.selectTab;
             OctoPrint.coreui.viewmodels.settingsViewModel.selectTab = function(tab){
@@ -278,15 +267,6 @@ $(function() {
             OctoPrint.coreui.viewmodels.settingsViewModel.appearance_color.subscribe(function(color) {
                 self.updateStandardTheme(color);
             });
-
-            if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('themeify')){
-                OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.theme.subscribe(function(theme) {
-                    self.updateThemify(theme);
-                });
-                OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.enabled.subscribe(function(enabled) {
-                    self.updateThemify(OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.theme());
-                });
-            }
 
             // Remove hardcode css to make it easier to use skins
             var styleSrcs = [];
@@ -324,74 +304,28 @@ $(function() {
                 });
             }
 
-            // Check these plugins
-            var knowPluginIssues = {
-                'widescreen' : {
-                    'text': 'The plugin OctoPrint-WideScreen collides with the functionality of UI Customizer.\n\nEither disable UI Customizer or OctoPrint-WideScreen plugin for optimal performance.',
-                    'action' : function(){
-                        if (!$('#settings_dialog:visible').length){
-                            $('#navbar_show_settings').trigger('click');
-                            $('#settings_plugin_pluginmanager_link a').trigger('click');
-                        }
-                    }
-                },
-                /*
-                'consolidate_temp_control': {
-                    'text': 'Running the plugins Consolidate Temp Control and UI Customizer together can cause problems.\n\nThe UI Customizer plugin has tried to fix these problems but there might be layout issues.',
-                    'action' : null
-                },*/
-            }
 
-            // Notify options main options
-            var options = {
-                title: "Plugin compatibility issue",
-                text: "",
-                type: "notice",
-                hide: false,
-                confirm: {
-                    confirm: true,
-                    buttons: [
-                        {
-                            text: gettext("Cancel"),
-                            click: function (notice) {
-                                notice.remove();
-                                notice.get().trigger("pnotify.cancel", notice);
-                            }
-                        }
-                    ]
-                },
-                buttons: {sticker: false,closer: false}
-            };
-
-            // Check for any issues with installed plugins
-            $.each(knowPluginIssues,function(key,val){
-                if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty(key)){
-                    self.logToConsole("Plugin issues detected: " + key);
-                    if (val.action != null){
-                        var optionsCust = $.extend(true,{},options);
-                        optionsCust.text = val.text;
-                        optionsCust.confirm.buttons.unshift({
-                            text: gettext("Open"),
-                            click: function (notice) {
-                                val.action();
-                                notice.close();
-                            }
-                        });
-                        new PNotify(optionsCust);
-                    }else{
-                        new PNotify({
-                          title: options.title,
-                          text: val.text,
-                          hide: false
-                        });
-                    }
-                }
-            });
-
-             // Fix height problem on first run
+            // Fix height problem on first run
             $('div.UICMainMenu a.dropdown-toggle').one('click.UICMainMenu',function(){
                 $('div.UICMainMenu').css({'height':'auto'});
             });
+
+
+            // Wait for plugins to be ready
+            var subPlugins = OctoPrint.coreui.viewmodels.pluginManagerViewModel.installedPlugins.subscribe(function(data) {
+                /*
+                 * the lines on https://github.com/OctoPrint/OctoPrint/blob/b6ebe7c8539b86acb217483b853910d23518967f/src/octoprint/plugins/pluginmanager/static/js/pluginmanager.js#L538 should probally be swapped
+                */
+                if (OctoPrint.coreui.viewmodels.pluginManagerViewModel.plugins.allItems.length != 0){
+                    self.checkPluginConflicts();
+                }else{
+                    window.setTimeout(function() {
+                        self.checkPluginConflicts();
+                    },500);
+                }
+                subPlugins.dispose();
+            });
+
 
             // Refresh all
             window.setTimeout(function() {
@@ -441,6 +375,80 @@ $(function() {
                 },1000);
             }
 
+        }
+
+        self.checkPluginConflicts = function(){
+            // Notify options main options
+            var options = {
+                title: "Plugin compatibility issue",
+                text: "",
+                type: "notice",
+                hide: false,
+                confirm: {
+                    confirm: true,
+                    buttons: [
+                        {
+                            text: gettext("Close"),
+                            click: function (notice) {
+                                notice.remove();
+                                notice.get().trigger("pnotify.cancel", notice);
+                            }
+                        }
+                    ]
+                },
+                buttons: {sticker: false,closer: false}
+            };
+
+            // Fix consolidate_temp_control layout issues
+            var pluginData = self.findPluginData('consolidate_temp_control',true)
+            if (pluginData){
+                $('div.page-container').css({'min-width':''});
+                $('div.footer').css({'padding-left':'','padding-right':''});
+                $('div.UICMainCont > div:first').css({'margin-left':'','padding-right':''});
+                $('div.UICMainCont').removeClass('row-fluid');
+                $('div.UICmainTabs').removeClass('span10');
+                $('div#tabs_content div.tab-pane:not("#tab_plugin_consolidate_temp_control") > div > div.span6').unwrap();
+                $('div#tabs_content div.tab-pane:not("#tab_plugin_consolidate_temp_control") > div.span6').children().unwrap();
+            }
+
+            // Fix themify
+            pluginData = self.findPluginData('themeify',true)
+            if (pluginData){
+                OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.theme.subscribe(function(theme) {
+                    self.updateThemify(theme);
+                });
+                OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.enabled.subscribe(function(enabled) {
+                    self.updateThemify(OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.theme());
+                });
+            }
+
+            // Check for any issues with installed plugins
+            var genericPluginsWarning = ['widescreen','taborder','statefulsidebar','fullscreen','themeify'];
+            $.each(genericPluginsWarning,function(key,val){
+                var pluginData = self.findPluginData(val,false);
+                if (pluginData != null && 'enabled' in pluginData && pluginData.enabled == true){
+                    self.logToConsole("Plugin issues detected: " + val);
+                    var optionsCust = $.extend(true,{},options);
+                    optionsCust.text = '"'+pluginData.name+'" plugin is installed and enabled. This might cause problems, ie. conflicts, broken layout, etc. when running together with UICustomizer.<br><br>It’s recommended to either disable UICustomizer or '+pluginData.name+'. <hr class="UICUpdateHR">';
+                    optionsCust.confirm.buttons.unshift({
+                        text: "Show plugin manager",
+                        click: function (notice) {
+                            $('#settings_plugin_pluginmanager_pluginlist table tr.UIC-pulsateShort').removeClass('UIC-pulsateShort');
+                            OctoPrint.coreui.viewmodels.settingsViewModel.settingsDialog.off('shown.uic').on('shown.uic', function () {
+                                OctoPrint.coreui.viewmodels.settingsViewModel.settingsDialog.off('shown.uic');
+                                $('#settings_plugin_pluginmanager_pluginlist tr td span[data-bind="text: name"]:contains("'+pluginData.name+'")').closest('tr').addClass('UIC-pulsateShort');
+                            });
+                            // Show - if already shown then highlight
+                            if (OctoPrint.coreui.viewmodels.settingsViewModel.show('#settings_plugin_pluginmanager') == false){
+                                $('#settings_plugin_pluginmanager_pluginlist tr td span[data-bind="text: name"]:contains("'+pluginData.name+'")').closest('tr').addClass('UIC-pulsateShort');
+                            }
+                            notice.remove();
+                            notice.get().trigger("pnotify.cancel", notice);
+                        }
+                    });
+                    new PNotify(optionsCust);
+                }
+            });
         }
 
         // Calc topmenu width
@@ -665,7 +673,7 @@ $(function() {
                 $('#UICCustThemeify').remove();
                 return;
             }
-            if (!OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('themeify') || OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.enabled() == false){
+            if (self.findPluginData('themeify',true) || OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.enabled() == false){
                 self.logToConsole("Removing themeify theme mods");
                 $('#UICCustThemeify').remove();
                 return false;
@@ -1361,7 +1369,7 @@ $(function() {
             }
 
             // Check for multicam
-            if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('multicam') && OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.multicam.multicam_profiles().length > 1 && !$('.UICMultiCamSelector').length ){
+            if (self.findPluginData('multicam',true) && OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.multicam.multicam_profiles().length > 1 && !$('.UICMultiCamSelector').length ){
                 var multicamSelector = $('<div class="btn-group UICMultiCamSelector UICWidgetSelector"><a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);"><span id="UICMultiCamLbl">Cam</span><span class="caret"></span></a><ul class="dropdown-menu"></ul></div>');
                 var ulCamSel = multicamSelector.find('ul');
                 $.each(OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.multicam.multicam_profiles(),function(idx,item){
@@ -2121,7 +2129,7 @@ $(function() {
         // ------------------------------------------------------------------------------------------------------------------------
         // Set Compact icons
         self.set_navbarplugintempfix = function(enabled){
-            if (!$('#navbar_plugin_navbartemp').length || !OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('navbartemp')){
+            if (!$('#navbar_plugin_navbartemp').length || !self.findPluginData('navbartemp',true)){
                 return true;
             }
             if (enabled){
@@ -2753,6 +2761,9 @@ $(function() {
             self.previewHasBeenOn = false;
             var settingsPlugin = self.settings.settings.plugins.uicustomizer;
 
+            // Hide highligths
+            $('#settings_plugin_pluginmanager_pluginlist table tr.UIC-pulsateShort').removeClass('UIC-pulsateShort');
+
             // Load themes
             if (!self.ThemesLoaded){
                 $('#settings_plugin_uicustomizer a[href="#settings_uicustomizer_themes"]').one('click',function(){
@@ -2859,7 +2870,7 @@ $(function() {
             });
 
             // Check for navbar
-            if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('navbartemp')){
+            if (self.findPluginData('navbartemp',true)){
                 $('#settings_uicustomizer_general input[data-settingtype="navbarplugintempfix"]').prop( "disabled", false );
             }else{
                 $('#settings_uicustomizer_general input[data-settingtype="navbarplugintempfix"]').prop( "disabled", true );
@@ -2885,7 +2896,7 @@ $(function() {
                     iconstr = icon.clone().wrap('<p>').parent().html();
                 }
                 // Get plugin data
-                var pdata = self.findPluginData(key);
+                var pdata = self.findPluginData(key,false);
                 if (pdata == null){
                     var name = key.replace("_", " ").toLowerCase();
                 }else{
@@ -3120,7 +3131,7 @@ $(function() {
             $('#UICMainTabCustomizerToggle').off('change').on('change',function(){
                 if ($(this).is(':checked')){
                     // Check for themify
-                    if (OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.hasOwnProperty('themeify') && OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.tabs.enableIcons()){
+                    if (self.findPluginData('themeify',true) && OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.tabs.enableIcons()){
                         $('.UICthemeifyAlert').fadeIn();
                     }else{
                         $('.UICthemeifyAlert').hide();
@@ -3809,7 +3820,7 @@ $(function() {
             return localStorage['plugin.uicustomizer.'+cname];
         }
 
-        self.findPluginData = function(pluginKey){
+        self.findPluginData = function(pluginKey,checkEnabled){
             var returnItem = null;
             $.each(OctoPrint.coreui.viewmodels.pluginManagerViewModel.plugins.allItems,function(x,item){
                 if (item.key == pluginKey){
@@ -3817,6 +3828,13 @@ $(function() {
                     return false;
                 }
             });
+            if (checkEnabled){
+                if (returnItem != null && 'enabled' in returnItem && returnItem.enabled == true){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
             return returnItem;
         }
     }

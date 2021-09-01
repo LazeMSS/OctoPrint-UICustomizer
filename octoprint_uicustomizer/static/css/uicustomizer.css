@@ -209,7 +209,6 @@
         -moz-transform: none !important;
         -ms-transform: none !important;
         transform: none !important;
-        overflow: auto;
         min-height: 41px;
         position: relative !important;
         float: left !important;
@@ -826,6 +825,11 @@ html.touchevents #settings_dialog ::-webkit-scrollbar-thumb:window-inactive {
 .UIC-pulsate{
 	animation: uicPulseFrame 1s ease-out;
     animation-iteration-count: infinite;
+}
+
+.UIC-pulsateShort{
+    animation: uicPulseFrame 1s ease-out;
+    animation-iteration-count: 5;
 }
 
 @keyframes uicPulseFrame {
