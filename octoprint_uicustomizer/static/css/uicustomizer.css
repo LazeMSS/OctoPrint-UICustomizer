@@ -381,6 +381,7 @@ body.UICPreviewON #settings_dialog{
 .UICHeaderIcons{
     white-space: nowrap;
     width: max-content;
+    float: right !important;
 }
 
 /* fix stacked icons*/
