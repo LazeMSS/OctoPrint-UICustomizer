@@ -369,7 +369,7 @@ body.UICPreviewON div#settings_dialog {
 }
 
 /* make the modal backdrop transparent in preview*/
-body.UICPreviewON div.modal-backdrop.fade.in {
+body.UICPreviewON div.modal-backdrop.fade.in,body.UICPreviewON div.modal-backdrop.in {
     opacity: 0.3;
 }
 
