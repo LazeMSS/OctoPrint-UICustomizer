@@ -209,7 +209,6 @@
         -moz-transform: none !important;
         -ms-transform: none !important;
         transform: none !important;
-        overflow: auto;
         min-height: 41px;
         position: relative !important;
         float: left !important;
@@ -320,6 +319,7 @@ div.UIHeaderWrap{
 
 div.UIHeaderWrap.CenterMe{
     width: 100% !important;
+    float: right !important;
 }
 
 ul.UICHeaderIcons.CenterMe{
@@ -369,7 +369,7 @@ body.UICPreviewON div#settings_dialog {
 }
 
 /* make the modal backdrop transparent in preview*/
-body.UICPreviewON div.modal-backdrop.fade.in {
+body.UICPreviewON div.modal-backdrop.fade.in,body.UICPreviewON div.modal-backdrop.in {
     opacity: 0.3;
 }
 
@@ -382,6 +382,11 @@ body.UICPreviewON #settings_dialog{
 .UICHeaderIcons{
     white-space: nowrap;
     width: max-content;
+    float: right !important;
+}
+
+.UIHeaderWrap.CenterMe  ul.UICHeaderIcons{
+    float: unset !important;
 }
 
 /* fix stacked icons*/
@@ -826,6 +831,11 @@ html.touchevents #settings_dialog ::-webkit-scrollbar-thumb:window-inactive {
 .UIC-pulsate{
 	animation: uicPulseFrame 1s ease-out;
     animation-iteration-count: infinite;
+}
+
+.UIC-pulsateShort{
+    animation: uicPulseFrame 1s ease-out;
+    animation-iteration-count: 5;
 }
 
 @keyframes uicPulseFrame {
