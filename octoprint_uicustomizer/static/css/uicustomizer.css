@@ -319,6 +319,7 @@ div.UIHeaderWrap{
 
 div.UIHeaderWrap.CenterMe{
     width: 100% !important;
+    float: right !important;
 }
 
 ul.UICHeaderIcons.CenterMe{
@@ -382,6 +383,10 @@ body.UICPreviewON #settings_dialog{
     white-space: nowrap;
     width: max-content;
     float: right !important;
+}
+
+.UIHeaderWrap.CenterMe  ul.UICHeaderIcons{
+    float: unset !important;
 }
 
 /* fix stacked icons*/

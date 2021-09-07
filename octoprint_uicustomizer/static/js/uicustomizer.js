@@ -312,18 +312,11 @@ $(function() {
 
 
             // Wait for plugins to be ready
-            var subPlugins = OctoPrint.coreui.viewmodels.pluginManagerViewModel.installedPlugins.subscribe(function(data) {
-                /*
-                 * the lines on https://github.com/OctoPrint/OctoPrint/blob/b6ebe7c8539b86acb217483b853910d23518967f/src/octoprint/plugins/pluginmanager/static/js/pluginmanager.js#L538 should probally be swapped
-                */
+            var subPlugins = OctoPrint.coreui.viewmodels.pluginManagerViewModel.plugins.items.subscribe(function(data) {
+                subPlugins.dispose();
                 if (OctoPrint.coreui.viewmodels.pluginManagerViewModel.plugins.allItems.length != 0){
                     self.checkPluginConflicts();
-                }else{
-                    window.setTimeout(function() {
-                        self.checkPluginConflicts();
-                    },500);
                 }
-                subPlugins.dispose();
             });
 
 
@@ -355,15 +348,13 @@ $(function() {
 
             },500);
 
-            // Fix slow loading plugin navbar icons
+            // Fix slow loading plugin navbar icons and fix css problems
             window.setTimeout(function() {
                 $('ul.UICHeaderIcons').append($('div.UIHeaderWrap > li[id^="navbar_plugin"]:not(.UICExcludeFromTopIcons)'));
                 self.fixWrapWidth();
-            },1000);
 
-            // Final check to make sure CSS is not broken by other plugins etc.
-            if($('link.UICBSResp').length || $('link.UICThemeCSS').length){
-                window.setTimeout(function() {
+                // Final check to make sure CSS is not broken by other plugins etc.
+                if($('link.UICBSResp').length || $('link.UICThemeCSS').length){
                     // Make sure responsive and themes are last
                     var allCSS = $('link[rel="stylesheet"]');
                     if ($('body').hasClass('UICResponsiveMode') && $('link.UICBSResp').length && (allCSS.length-1) > allCSS.index($('link.UICBSResp'))){
@@ -372,9 +363,8 @@ $(function() {
                     if ($('link.UICThemeCSS').length && (allCSS.length-2) > allCSS.index($('link.UICThemeCSS'))){
                         $('link.UICBSResp').appendTo('body');
                     };
-                },1000);
-            }
-
+                }
+            },1000);
         }
 
         self.checkPluginConflicts = function(){
