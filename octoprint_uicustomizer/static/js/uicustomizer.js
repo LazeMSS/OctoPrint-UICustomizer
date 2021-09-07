@@ -3469,6 +3469,7 @@ $(function() {
             if (self.settingsBeenShown){
                 if (typeof self.settings.settings.plugins.navbartemp !== "undefined" && self.settings.settings.plugins.uicustomizer.navbarplugintempfix()){
                     self.settings.settings.plugins.navbartemp.useShortNames(true);
+                    self.settings.settings.plugins.navbartemp.soc_name('SoC')
                 }
 
                 // Get the data
