@@ -663,7 +663,7 @@ $(function() {
                 $('#UICCustThemeify').remove();
                 return;
             }
-            if (self.findPluginData('themeify',true) || OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.enabled() == false){
+            if (!self.findPluginData('themeify',true) || OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.themeify.enabled() == false){
                 self.logToConsole("Removing themeify theme mods");
                 $('#UICCustThemeify').remove();
                 return false;
@@ -2866,6 +2866,7 @@ $(function() {
                 $('#settings_uicustomizer_general input[data-settingtype="navbarplugintempfix"]').prop( "disabled", true );
             }
 
+
             // Top icon sorting
             OctoPrint.coreui.viewmodels.pluginManagerViewModel.plugins.allItems; // init it
             var tiCon = $('#settings_uicustomizer_topicons_container');
@@ -3467,7 +3468,7 @@ $(function() {
         self.onSettingsBeforeSave = function () {
             // Update if we have been shown/edited
             if (self.settingsBeenShown){
-                if (typeof self.settings.settings.plugins.navbartemp !== "undefined" && self.settings.settings.plugins.uicustomizer.navbarplugintempfix()){
+                if (self.findPluginData('navbartemp',true) && typeof self.settings.settings.plugins.navbartemp !== "undefined" && self.settings.settings.plugins.uicustomizer.navbarplugintempfix()){
                     self.settings.settings.plugins.navbartemp.useShortNames(true);
                     self.settings.settings.plugins.navbartemp.soc_name('SoC')
                 }
