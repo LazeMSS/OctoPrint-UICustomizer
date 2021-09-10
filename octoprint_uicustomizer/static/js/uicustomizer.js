@@ -159,11 +159,11 @@ $(function() {
             }
 
             // Load from storage
-            self.curTheme = self.getStorage('theme');
+            self.curTheme = self.getStorage('theme',false);
 
             // Set theme version
             var curVersion = self.settings.settings.plugins.uicustomizer.themeVersion();
-            var curVersionStor = self.getStorage('themeversion');
+            var curVersionStor = self.getStorage('themeversion',false);
             if (curVersion != curVersionStor && curVersionStor != undefined){
                 var titleStr = "Themes updated";
                 var textStr = 'UI Customizer themes has been updated.';
@@ -217,7 +217,7 @@ $(function() {
                 }).fail(function( data ) {
                     new PNotify({title:titleStr, type: "info","text": textStr + textStrFooter,"hide":false});
                 }).always(function(){
-                    self.setStorage('themeversion',self.settings.settings.plugins.uicustomizer.themeVersion());
+                    self.setStorage('themeversion',self.settings.settings.plugins.uicustomizer.themeVersion(),false);
                 });
             }
 
@@ -326,9 +326,8 @@ $(function() {
 
                 // Restore saved accordion states
                 if (self.settings.settings.plugins.uicustomizer.saveAccordions()){
-                    var curAccords = self.getStorage('accordions');
+                    var curAccords = self.getStorage('accordions',true);
                     if (curAccords != undefined){
-                        curAccords = JSON.parse(curAccords);
                         $.each(curAccords,function(id,state){
                             var target = $(id);
                             if(target && state != target.hasClass('in')){
@@ -368,6 +367,10 @@ $(function() {
         }
 
         self.checkPluginConflicts = function(){
+            var IgnoredConflictPlugins = self.getStorage('IgnoredConflictPlugins',true);
+            if (IgnoredConflictPlugins == undefined){
+                IgnoredConflictPlugins = {};
+            }
             // Notify options main options
             var options = {
                 title: "Plugin compatibility issue",
@@ -376,17 +379,9 @@ $(function() {
                 hide: false,
                 confirm: {
                     confirm: true,
-                    buttons: [
-                        {
-                            text: gettext("Close"),
-                            click: function (notice) {
-                                notice.remove();
-                                notice.get().trigger("pnotify.cancel", notice);
-                            }
-                        }
-                    ]
+                    buttons: []
                 },
-                buttons: {sticker: false,closer: false}
+                buttons: {sticker: false,closer: true}
             };
 
             // Fix consolidate_temp_control layout issues
@@ -414,28 +409,50 @@ $(function() {
 
             // Check for any issues with installed plugins
             var genericPluginsWarning = ['widescreen','taborder','statefulsidebar','fullscreen','themeify'];
-            $.each(genericPluginsWarning,function(key,val){
-                var pluginData = self.findPluginData(val,false);
+            $.each(genericPluginsWarning,function(key,plugKeyName){
+                if (IgnoredConflictPlugins.hasOwnProperty(plugKeyName) && IgnoredConflictPlugins[plugKeyName] == true){
+                    self.logToConsole("Plugin issues for " + plugKeyName + " ignored.");
+                    return true;
+                }
+                var pluginData = self.findPluginData(plugKeyName,false);
                 if (pluginData != null && 'enabled' in pluginData && pluginData.enabled == true){
-                    self.logToConsole("Plugin issues detected: " + val);
+                    self.logToConsole("Plugin issues detected: " + plugKeyName);
                     var optionsCust = $.extend(true,{},options);
                     optionsCust.text = '"'+pluginData.name+'" plugin is installed and enabled. This might cause problems, ie. conflicts, broken layout, etc. when running together with UICustomizer.<br><br>It’s recommended to either disable UICustomizer or '+pluginData.name+'. <hr class="UICUpdateHR">';
-                    optionsCust.confirm.buttons.unshift({
-                        text: "Show plugin manager",
-                        click: function (notice) {
-                            $('#settings_plugin_pluginmanager_pluginlist table tr.UIC-pulsateShort').removeClass('UIC-pulsateShort');
-                            OctoPrint.coreui.viewmodels.settingsViewModel.settingsDialog.off('shown.uic').on('shown.uic', function () {
-                                OctoPrint.coreui.viewmodels.settingsViewModel.settingsDialog.off('shown.uic');
-                                $('#settings_plugin_pluginmanager_pluginlist tr td span[data-bind="text: name"]:contains("'+pluginData.name+'")').closest('tr').addClass('UIC-pulsateShort');
-                            });
-                            // Show - if already shown then highlight
-                            if (OctoPrint.coreui.viewmodels.settingsViewModel.show('#settings_plugin_pluginmanager') == false){
-                                $('#settings_plugin_pluginmanager_pluginlist tr td span[data-bind="text: name"]:contains("'+pluginData.name+'")').closest('tr').addClass('UIC-pulsateShort');
+                     optionsCust.confirm.buttons =
+                     [
+                        {
+                            text: "Ignore warning",
+                            addClass:"btn-small btn-warning",
+                            click: function (notice) {
+                                IgnoredConflictPlugins = self.getStorage('IgnoredConflictPlugins',true);
+                                if (IgnoredConflictPlugins == undefined){
+                                    IgnoredConflictPlugins = {};
+                                }
+                                IgnoredConflictPlugins[plugKeyName] = true;
+                                self.setStorage('IgnoredConflictPlugins',IgnoredConflictPlugins,true);
+                                notice.remove();
+                                notice.get().trigger("pnotify.cancel", notice);
                             }
-                            notice.remove();
-                            notice.get().trigger("pnotify.cancel", notice);
+                        },
+                        {
+                            text: 'Open Plugin Manager',
+                            addClass:"btn-small btn-info",
+                            click: function (notice) {
+                                $('#settings_plugin_pluginmanager_pluginlist table tr.UIC-pulsateShort').removeClass('UIC-pulsateShort');
+                                OctoPrint.coreui.viewmodels.settingsViewModel.settingsDialog.off('shown.uic').on('shown.uic', function () {
+                                    OctoPrint.coreui.viewmodels.settingsViewModel.settingsDialog.off('shown.uic');
+                                    $('#settings_plugin_pluginmanager_pluginlist tr td span[data-bind="text: name"]:contains("'+pluginData.name+'")').closest('tr').addClass('UIC-pulsateShort');
+                                });
+                                // Show - if already shown then highlight
+                                if (OctoPrint.coreui.viewmodels.settingsViewModel.show('#settings_plugin_pluginmanager') == false){
+                                    $('#settings_plugin_pluginmanager_pluginlist tr td span[data-bind="text: name"]:contains("'+pluginData.name+'")').closest('tr').addClass('UIC-pulsateShort');
+                                }
+                                notice.remove();
+                                notice.get().trigger("pnotify.cancel", notice);
+                            }
                         }
-                    });
+                    ];
                     new PNotify(optionsCust);
                 }
             });
@@ -568,8 +585,8 @@ $(function() {
                 // Preview or for real?
                 if (!preview){
                     // Store it for easier loading
-                    self.setStorage('theme',themeName);
-                    self.setStorage('themeversion',themeversion);
+                    self.setStorage('theme',themeName,false);
+                    self.setStorage('themeversion',themeversion,false);
                 }
 
                 // Load style sheet
@@ -954,7 +971,7 @@ $(function() {
             $('#page-container-main a.accordion-toggle').off('click.UICAccordStore');
             if (enable){
                 // Save current state if we don't have anything stored
-                var curAccords = self.getStorage('accordions');
+                var curAccords = self.getStorage('accordions',true);
                 if (curAccords == undefined){
                     curAccords = {};
                     $('#page-container-main a.accordion-toggle').each(function(){
@@ -962,21 +979,19 @@ $(function() {
                         // We want the current state here
                         curAccords[targetAcco] = !$(this).hasClass('collapsed');
                     });
-                    self.setStorage('accordions',JSON.stringify(curAccords));
+                    self.setStorage('accordions',curAccords,true);
                 }
                 // Update status on click
                 $('#page-container-main a.accordion-toggle').on('click.UICAccordStore',function(event){
                     var targetAcco = $(this).data('target');
-                    var curAccords = self.getStorage('accordions');
+                    var curAccords = self.getStorage('accordions',true);
                     // The use could have deleted the storage
-                    if (curAccords != undefined){
-                        curAccords = JSON.parse(curAccords);
-                    }else{
+                    if (curAccords == undefined){
                         curAccords = {};
                     }
                     // The class hasn't shifted yet
                     curAccords[targetAcco] = $(this).hasClass('collapsed')
-                    self.setStorage('accordions',JSON.stringify(curAccords));
+                    self.setStorage('accordions',curAccords,true);
                     return true;
                 });
             }
@@ -2757,7 +2772,7 @@ $(function() {
             // Load themes
             if (!self.ThemesLoaded){
                 $('#settings_plugin_uicustomizer a[href="#settings_uicustomizer_themes"]').one('click',function(){
-                    if (self.getStorage("getThemesApproved") == 1){
+                    if (self.getStorage("getThemesApproved",true) == 1){
                         // Dont load again
                         self.ThemesLoaded = true;
                         self.loadSettingsThemes(null);
@@ -2769,7 +2784,7 @@ $(function() {
                     <p>In order to download new and updated themes UI Customizer will download the themes, using a secure connection, from <a href="'+self.ThemesExternalURL+'" target="_blank">'+self.ThemesExternalURL+'</a>.</p><p>No personal data is sent to this URL. The only data being sent is your public IP address due to the nature of the internet.</p><p>If you have any plugins (ie. NoScript) installed that might block access to external sites then please allow access to https://github.io</p><p>Click "Continue" to downlad themes.</p>\
                     <button class="btn btn-success">Continue</button>\
                     </div>').find('button').one('click',function(){
-                        self.setStorage("getThemesApproved",1);
+                        self.setStorage("getThemesApproved",1,false);
                         self.ThemesLoaded = true;
                         self.loadSettingsThemes(null);
                         return false;
@@ -3796,20 +3811,27 @@ $(function() {
             return null;
         }
 
-        self.setStorage = function(cname,cvalue){
+        self.setStorage = function(cname,cvalue,jsonData){
             if (!Modernizr.localstorage) return;
             if (window.location.pathname != "/"){
                 cname = window.location.pathname+cname;
             }
+            if (jsonData){
+                cvalue = JSON.stringify(cvalue);
+            }
             localStorage['plugin.uicustomizer.'+cname] = cvalue;
         }
 
-        self.getStorage = function(cname){
+        self.getStorage = function(cname,jsonParse){
             if (!Modernizr.localstorage) return undefined;
             if (window.location.pathname != "/"){
                 cname = window.location.pathname+cname;
             }
-            return localStorage['plugin.uicustomizer.'+cname];
+            var returnVal = localStorage['plugin.uicustomizer.'+cname];
+            if (returnVal != undefined && jsonParse){
+                returnVal = JSON.parse(returnVal);
+            }
+            return returnVal;
         }
 
         self.findPluginData = function(pluginKey,checkEnabled){
