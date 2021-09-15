@@ -1351,6 +1351,9 @@ $(function() {
 
         // Handles the multicam plugin into our webcam widget
         self.multicamPluginHandler = function(){
+            if (!$('#UICWebCamWidget').length){
+                return true;
+            }
             // Check for multicam
             $('div.UICMultiCamSelector').remove();
             if (self.findPluginData('multicam',true) && OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.multicam.multicam_profiles().length > 1){
@@ -2158,6 +2161,7 @@ $(function() {
             if (enabled){
                 OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.navbartemp.useShortNames(true);
                 OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.navbartemp.makeMoreRoom(true);
+                OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.navbartemp.soc_name('SoC');
                 $('#navbar_plugin_navbartemp').addClass('UICIconHack');
             }else{
                 $('#navbar_plugin_navbartemp').removeClass('UICIconHack');
@@ -3501,10 +3505,6 @@ $(function() {
         self.onSettingsBeforeSave = function () {
             // Update if we have been shown/edited
             if (self.settingsBeenShown){
-                if (self.findPluginData('navbartemp',true) && typeof self.settings.settings.plugins.navbartemp !== "undefined" && self.settings.settings.plugins.uicustomizer.navbarplugintempfix()){
-                    self.settings.settings.plugins.navbartemp.useShortNames(true);
-                    self.settings.settings.plugins.navbartemp.soc_name('SoC')
-                }
 
                 // Get the data
                 self.saved = true;
