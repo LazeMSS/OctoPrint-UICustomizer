@@ -329,7 +329,7 @@ $(function() {
             window.setTimeout(function() {
                 $(window).trigger('resize');
 
-                // Restore saved accordion states
+                // Restore saved accordion states and heights
                 if (self.UICsettings.saveAccordions()){
                     var curAccords = self.getStorage('accordions',true);
                     if (curAccords != undefined){
@@ -347,9 +347,21 @@ $(function() {
                     }
                 }
 
-                // Enable storage of accordion states
+                // Disable/Enable storage of accordion states again just to make sure
                 self.set_saveAccordions(self.UICsettings.saveAccordions());
 
+                if (self.UICsettings.filesFullHeight()){
+                    // Restore saved heights
+                    var vertHeights = self.getStorage('vertHeights',true);
+                    if (vertHeights != undefined){
+                        $.each(vertHeights,function(id,height){
+                            var target = $(id);
+                            if(target && height > 0){
+                                target.css('height',height+"px");
+                            }
+                        });
+                    }
+                }
             },500);
 
             // Fix slow loading plugin navbar icons and fix css problems
@@ -559,7 +571,7 @@ $(function() {
             // Full widh Gcode
             self.set_gcodeFullWidth(self.UICsettings.gcodeFullWidth());
 
-            // Full height files
+            // Makes files and terminal full height and resizeable
             self.set_filesFullHeight(self.UICsettings.filesFullHeight());
 
             // Compress the temperature controls
@@ -958,16 +970,65 @@ $(function() {
             }
         }
 
+        // full height and resize able
         self.set_filesFullHeight = function(enable){
-             if (enable){
-                $('#term .terminal pre').addClass('UICResizeAble')
-                $('#files .gcode_files .scroll-wrapper').addClass('UICFullHeight');
-            }else{
+            // Cleanup and remove any observers
+            $('.UICvertResize').off('mousedown.UICvertResizeSave');
+            $(document).off('mouseup.UICvertResizeSave');
+            self.ResizeObserverVertH.disconnect();
+
+            // Remove it
+            if (!enable){
                 $('#files .gcode_files .scroll-wrapper').removeClass('UICFullHeight');
-                $('#term .terminal pre').addClass('UICResizeAble')
+                $('.UICvertResize').removeClass('UICvertResize');
+                return;
             }
+
+            // make them resizable
+            $('#term .terminal pre').addClass('UICvertResize')
+            $('#files .gcode_files .scroll-wrapper').addClass('UICFullHeight UICvertResize');
+
+            // Handle resize event
+            $('.UICvertResize').on('mousedown.UICvertResizeSave',function(event){
+                // Not the same target - ie children etc. - filter don't work
+                if(event.target !== event.currentTarget){
+                    return;
+                }
+                // Save for later
+                var thisItem = $(this);
+                thisItem.data('UICResizing',true);
+                thisItem.removeData('prevVerH');
+
+                // Release on the entire document - we cant trust mouseup on the element due to drag etc
+                $(document).one('mouseup.UICvertResizeSave',function(event){
+                    thisItem.data('UICResizing',false);
+                    var saveH = thisItem.data('prevVerH');
+                    if (saveH > 0){
+                        // Identify the element
+                        if (thisItem.prop('id') != ''){
+                            var saveid = "#"+thisItem.prop('id');
+                        }else{
+                            var saveid = thisItem.prop("tagName") +"."+thisItem.prop("class").replaceAll(" ",".")
+                        }
+
+                        // Get existing
+                        var curHeights = self.getStorage('vertHeights',true);
+                        if (curHeights == undefined){
+                            curHeights = {};
+                        }
+                        curHeights[saveid] = saveH;
+                        self.setStorage('vertHeights',curHeights,true);
+                    }
+                    thisItem.removeData('prevVerH');
+                });
+            });
+            // Observe them
+            $('.UICvertResize').each(function(){
+                self.ResizeObserverVertH.observe(this);
+            });
         }
 
+        // Make the temp displays small
         self.set_compressTempControls= function(enable){
             if (enable){
                 $('#temp').addClass('UICTempTableSmall');
@@ -976,6 +1037,7 @@ $(function() {
             }
         }
 
+        // Advanced css injection
         self.set_customCSS= function(cssStr){
             if ($.trim(cssStr) != ""){
                 // Create or update
@@ -989,35 +1051,50 @@ $(function() {
             }
         }
 
+        self.ResizeObserverVertH = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                var target = $(entry.target);
+                // Ignore items not clicked
+                if (target.data('UICResizing') != true){
+                    return;
+                }
+                target.data('prevVerH',entry.contentRect.height);
+            }
+        });
+
         // ------------------------------------------------------------------------------------------------------------------------
         self.set_saveAccordions = function(enable){
             $('#page-container-main a.accordion-toggle').off('click.UICAccordStore');
-            if (enable){
-                // Save current state if we don't have anything stored
+            // Do nothing
+            if (!enable){
+                return;
+            }
+
+            // Save current state if we don't have anything stored
+            var curAccords = self.getStorage('accordions',true);
+            if (curAccords == undefined){
+                curAccords = {};
+                $('#page-container-main a.accordion-toggle').each(function(){
+                    var targetAcco = $(this).data('target');
+                    // We want the current state here
+                    curAccords[targetAcco] = !$(this).hasClass('collapsed');
+                });
+                self.setStorage('accordions',curAccords,true);
+            }
+
+            // Update status on click
+            $('#page-container-main a.accordion-toggle').on('click.UICAccordStore',function(event){
+                var targetAcco = $(this).data('target');
                 var curAccords = self.getStorage('accordions',true);
+                // The use could have deleted the storage
                 if (curAccords == undefined){
                     curAccords = {};
-                    $('#page-container-main a.accordion-toggle').each(function(){
-                        var targetAcco = $(this).data('target');
-                        // We want the current state here
-                        curAccords[targetAcco] = !$(this).hasClass('collapsed');
-                    });
-                    self.setStorage('accordions',curAccords,true);
                 }
-                // Update status on click
-                $('#page-container-main a.accordion-toggle').on('click.UICAccordStore',function(event){
-                    var targetAcco = $(this).data('target');
-                    var curAccords = self.getStorage('accordions',true);
-                    // The use could have deleted the storage
-                    if (curAccords == undefined){
-                        curAccords = {};
-                    }
-                    // The class hasn't shifted yet
-                    curAccords[targetAcco] = $(this).hasClass('collapsed')
-                    self.setStorage('accordions',curAccords,true);
-                    return true;
-                });
-            }
+                // The class hasn't shifted yet
+                curAccords[targetAcco] = $(this).hasClass('collapsed')
+                self.setStorage('accordions',curAccords,true);
+                return true;
+            });
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
