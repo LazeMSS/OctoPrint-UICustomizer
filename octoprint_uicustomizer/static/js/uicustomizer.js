@@ -407,6 +407,15 @@ $(function() {
                 });
             }
 
+            // Test multicam
+            pluginData = self.findPluginData('multicam',true)
+            if (pluginData){
+                self.multicamPluginHandler();
+                OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.multicam.multicam_profiles.subscribe(function(theme) {
+                    self.multicamPluginHandler();
+                });
+            }
+
             // Check for any issues with installed plugins
             var genericPluginsWarning = ['widescreen','taborder','statefulsidebar','fullscreen','themeify'];
             $.each(genericPluginsWarning,function(key,plugKeyName){
@@ -1340,6 +1349,33 @@ $(function() {
             }
         }
 
+        // Handles the multicam plugin into our webcam widget
+        self.multicamPluginHandler = function(){
+            // Check for multicam
+            $('div.UICMultiCamSelector').remove();
+            if (self.findPluginData('multicam',true) && OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.multicam.multicam_profiles().length > 1){
+                var multicamSelector = $('<div class="btn-group UICMultiCamSelector UICWidgetSelector"><a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);"><span id="UICMultiCamLbl">Cam</span><span class="caret"></span></a><ul class="dropdown-menu"></ul></div>');
+                var ulCamSel = multicamSelector.find('ul');
+                $.each(OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.multicam.multicam_profiles(),function(idx,item){
+                    // Set the label
+                    var className = '';
+                    if (idx == 0){
+                        multicamSelector.find('span:first').text(item.name());
+                        className = ' class="active" ';
+                    }
+                    // Build the selector
+                    ulCamSel.append($('<li'+className+' data-streamURL="'+item.URL()+'"><a href="javascript:void(0);">'+item.name()+'</a></li>').on('click','a',function(event,dontLoad){
+                        $('.UICMultiCamSelector li.active').removeClass('active');
+                        $(this).parent().addClass('active');
+                        $('#UICMultiCamLbl').text(item.name());
+                        if(dontLoad !== true){
+                            OctoPrint.coreui.viewmodels.multiCamViewModel.loadWebcam(item);
+                        }
+                    }));
+                })
+                $('#UICWebCamWidget div.accordion-heading').append(multicamSelector);
+            }
+        }
 
         // ------------------------------------------------------------------------------------------------------------------------
         self.CustomW_initWebCam = function(enable){
@@ -1374,28 +1410,7 @@ $(function() {
             }
 
             // Check for multicam
-            if (self.findPluginData('multicam',true) && OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.multicam.multicam_profiles().length > 1 && !$('.UICMultiCamSelector').length ){
-                var multicamSelector = $('<div class="btn-group UICMultiCamSelector UICWidgetSelector"><a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);"><span id="UICMultiCamLbl">Cam</span><span class="caret"></span></a><ul class="dropdown-menu"></ul></div>');
-                var ulCamSel = multicamSelector.find('ul');
-                $.each(OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.multicam.multicam_profiles(),function(idx,item){
-                    // Set the label
-                    var className = '';
-                    if (idx == 0){
-                        multicamSelector.find('span:first').text(item.name());
-                        className = ' class="active" ';
-                    }
-                    // Build the selector
-                    ulCamSel.append($('<li'+className+' data-streamURL="'+item.URL()+'"><a href="javascript:void(0);">'+item.name()+'</a></li>').on('click','a',function(event,dontLoad){
-                        $('.UICMultiCamSelector li.active').removeClass('active');
-                        $(this).parent().addClass('active');
-                        $('#UICMultiCamLbl').text(item.name());
-                        if(dontLoad !== true){
-                            OctoPrint.coreui.viewmodels.multiCamViewModel.loadWebcam(item);
-                        }
-                    }));
-                })
-                $('#UICWebCamWidget div.accordion-heading').append(multicamSelector);
-            }
+            self.multicamPluginHandler();
 
             // BROKEN due to loading/changes not triggering at the right time: || (typeof OctoPrint.coreui.viewmodels.controlViewModel.webcamHlsEnabled == "function" && OctoPrint.coreui.viewmodels.controlViewModel.webcamHlsEnabled()
             if (/.m3u8/i.test(streamURL)){
@@ -1405,7 +1420,7 @@ $(function() {
 
             // Fix changes - this fixes also multicam etc.
             if ($('body').data("webcamSubscribed") == undefined){
-                var subs = OctoPrint.coreui.viewmodels.settingsViewModel.webcam_streamUrl.subscribe(function(streamURL) {
+                var subs = OctoPrint.coreui.viewmodels.settingsViewModel.webcam_streamUrl.subscribe(function(newStreamURL) {
                     if ($('#settings_dialog:visible').length){
                         self.logToConsole("Webcam url changed inside settings - skipping!");
                         return true;
@@ -1414,42 +1429,44 @@ $(function() {
                     // Update dropdown for multicam
                     if ($('.UICMultiCamSelector').length){
                         $('.UICMultiCamSelector li.active').removeClass('active');
-                        $('.UICMultiCamSelector li[data-streamurl="'+streamURL+'"]:first a').trigger('click',[true]);
+                        $('.UICMultiCamSelector li[data-streamurl="'+newStreamURL+'"]:first a').trigger('click',[true]);
                     }
 
                     // Change URL
-                    self.logToConsole("Webcam URL changed to: "+streamURL);
-                    if (/.m3u8/i.test(streamURL)){
+                    self.logToConsole("Webcam URL changed to: "+newStreamURL);
+                    if (/.m3u8/i.test(newStreamURL)){
                         // We are switching to HLS or not?
                         if (!$('#IUCWebcamContainer video').length){
                             self.logToConsole("Webcam is switching from IMG to HLS format");
                             self.CustomW_initWebCam(enable);
                             return true;
                         }
-                        if ($('#IUCWebcamContainer video').data('streamURL').indexOf(streamURL) != 0){
-                            self.logToConsole("Webcam HLS stream triggered - Starting: " + streamURL);
-                            $('#IUCWebcamContainer video').data('streamURL',streamURL);
+                        if ($('#IUCWebcamContainer video').data('streamURL').indexOf(newStreamURL) != 0){
+                            self.logToConsole("Webcam HLS stream triggered - Starting: " + newStreamURL);
+                            $('#IUCWebcamContainer video').data('streamURL',newStreamURL);
                             $('#IUCWebcamContainer video').data('playing',true);
                             // Start HLS player - a seperate stream is better - tried canvas copy etc.
                             var video = $('#IUCWebcamContainer video')[0];
-                            self.startHLSstream(video,streamURL);
+                            self.startHLSstream(video,newStreamURL);
                         }else{
-                            self.logToConsole("Webcam HLS stream triggered same URL: " + streamURL + "/"+$('#IUCWebcamContainer video').data('streamURL'));
+                            self.logToConsole("Webcam HLS stream triggered same URL: " + newStreamURL + "/"+$('#IUCWebcamContainer video').data('streamURL'));
                         }
                     }else{
                         var imgsrc = $('#IUCWebcamContainerInner img');
                         // We are switching to HLS or not?
                         if (!imgsrc.length){
+                            $('#webcam_image').data("isLoaded",false);
                             self.logToConsole("Webcam is switching from HLS to IMG format");
                             self.CustomW_initWebCam(enable);
                             return true;
                         }
-                        if (imgsrc.attr('src').indexOf(streamURL) != 0){
-                            self.logToConsole("Webcam IMG stream triggered - Starting: " + streamURL);
-                            webcamLoader(streamURL);
-                            imgsrc.attr('src',streamURL);
+                        if (imgsrc.attr('src').indexOf(newStreamURL) != 0){
+                            $('#webcam_image').data("isLoaded",false);
+                            self.logToConsole("Webcam IMG stream triggered - Starting: " + newStreamURL);
+                            webcamLoader(newStreamURL);
+                            imgsrc.attr('src',newStreamURL);
                         }else{
-                            self.logToConsole("Webcam IMG stream triggered same URL: " +streamURL + "/"+imgsrc.attr('src'));
+                            self.logToConsole("Webcam IMG stream triggered same URL: " +newStreamURL + "/"+imgsrc.attr('src'));
                         }
                     }
                 });
@@ -1647,7 +1664,8 @@ $(function() {
                 OctoPrint.coreui.viewmodels.controlViewModel.onWebcamLoaded = (function(old) {
                     function extendWebCam() {
                         self.onWebCamOrg();
-                        if ($('#IUCWebcamContainer:visible').length && $('#webcam_image').data("isHidden") !== true){
+                        var streamURLLoad = self.settings.webcam_streamUrl();
+                        if ($('#IUCWebcamContainer:visible').length){
                             if (OctoPrint.coreui.viewmodels.controlViewModel.webcamLoaded() && $('#webcam_image').data("isLoaded")){
                                 self.logToConsole("extendWebCam skipped");
                                 return true;
@@ -1666,7 +1684,7 @@ $(function() {
                                 $('#IUCWebcamContainer > div').append(clone).find('*').removeAttr('id');
                                 clone.attr('id',"IUCWebcamContainerInner");
                                 // Setup error handling again
-                                webcamLoader(streamURL);
+                                webcamLoader(streamURLLoad);
 
                                 // Fix the fullscreen overlay if present
                                 if ($('#UICWebCamFullInnerDIV').length){
@@ -1675,15 +1693,15 @@ $(function() {
                                     $('#UICWebCamFull img').off('load').on('load',function(){
                                         $('#UICWebCamFull div.nowebcam').remove();
                                     });
-                                    $('#UICWebCamFull img').attr('src',streamURL);
+                                    $('#UICWebCamFull img').attr('src',streamURLLoad);
                                 }
 
                             }
 
                             // Check if the url is right - on first load this sometimes breaks on fast webcam streams: https://github.com/LazeMSS/OctoPrint-UICustomizer/issues/82
-                            if($('#IUCWebcamContainerInner img').attr('src') != streamURL){
+                            if($('#IUCWebcamContainerInner img').attr('src') != streamURLLoad){
                                 self.logToConsole("WebCam updated SRC");
-                                $('#IUCWebcamContainerInner img').attr('src',streamURL);
+                                $('#IUCWebcamContainerInner img').attr('src',streamURLLoad);
                             }
 
                             // Make sure its shown
