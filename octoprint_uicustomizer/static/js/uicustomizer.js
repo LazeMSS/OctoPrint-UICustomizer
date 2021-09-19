@@ -60,7 +60,6 @@ $(function() {
         self.GitHubBaseUrL = 'LazeMSS/OctoPrint-UICustomizerThemes/releases/latest';
         self.ThemesBaseURL = self.ThemesInternalURL;
 
-
         // timer for resize fix modal
         self.modalTimer = null;
 
@@ -3653,14 +3652,14 @@ $(function() {
                 var items = [
                     ['data.state.text','Printer state','fas fa-info','data.state.text',false],
                     ['data.job.file.display','data.job.file.display','fas fa-file','data.job.file.display',false],
-                    ['data.progress.completion', '% completed','fas fa-percent','Math.round(data.progress.completion)',true],
-                    ['data.progress.printTime', 'Print time progress/left','fas fa-stopwatch','formatDuration(data.progress.printTime)+" / "+formatDuration(data.progress.printTimeLeft)',true],
+                    ['data.progress.completion', '% completed','fas fa-percent','OctoPrint.coreui.viewmodels.printerStateViewModel.progressBarString()',true],
+                    ['data.progress.printTime', 'Print time progress/left','fas fa-stopwatch','OctoPrint.coreui.viewmodels.printerStateViewModel.printTimeString()+" / "+OctoPrint.coreui.viewmodels.printerStateViewModel.printTimeLeftExactString()',true],
                     ['data.currentZ', 'Z-axis position','fas fa-level-down-alt','data.currentZ'],
                 ];
                 var setLabelFSWC = function(id,title,icon,val,activePrint){
                     var pItem = $('#UICWCLbl_'+id);
                     var pclass = '';
-                    if ((activePrint && !printActive) || val == "-"){
+                    if ((activePrint && !printActive) || val == "-" || val == ""){
                         val = "-";
                         pclass = " paused";
                         title += " (no data available)";
@@ -3669,6 +3668,7 @@ $(function() {
                         if (pItem.data('prevval') != val){
                             pItem.data('prevval',val);
                             pItem.find('span').html(val);
+                            pItem.attr('title',title);
                         }
                         if (pclass != ""){
                             pItem.addClass(pclass);
@@ -3733,18 +3733,18 @@ $(function() {
 
                 // Update progressbar
                 if (printActive){
-                    var roundP = Math.round(data.progress.completion)
                     if (data.state.flags.printing){
                         $('#UICWCLbl_pBar').addClass('active');
                     }else{
                         $('#UICWCLbl_pBar').removeClass('active');
                     }
-                    $('#UICWCLbl_pBar').prop('title',roundP+'%');
-                    $('#UICWCLbl_pBar span.bar').width(roundP+'%');
+                    $('#UICWCLbl_pBar').prop('title',OctoPrint.coreui.viewmodels.printerStateViewModel.progressBarString());
+                    $('#UICWCLbl_pBar span.bar').width(OctoPrint.coreui.viewmodels.printerStateViewModel.progress()+'%');
                 }else{
                     $('#UICWCLbl_pBar').prop('title','0%');
                     $('#UICWCLbl_pBar span.bar').width('0px');
                 }
+
             }
 
             // Nothing to show
