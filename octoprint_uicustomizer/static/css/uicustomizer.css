@@ -183,7 +183,6 @@
     body.UICResponsiveMode #files .gcode_files .scroll-wrapper.UICFullHeight{
         height: 100%;
         max-height: 75vh;
-        resize: vertical;
     }
 }
 
@@ -286,6 +285,9 @@
     /* ------------------------- small temp tables end -------------------------*/
 }
 
+.UICvertResize{
+    resize: vertical;
+}
 
 /* fix navbar icon wraps  */
 div.UICMainMenu ul.nav{
@@ -422,7 +424,6 @@ html:not(.themeify) #tabs_content{
     height: 100%;
     max-height: 80vh;
     min-height: 70px;
-    resize: vertical;
 }
 
 /* search in settings fix*/
@@ -1320,9 +1321,8 @@ html.themeify #UICsetMenuShow{
 }
 
 
-#term .terminal pre.UICResizeAble{
+#term .terminal pre.UICvertResize{
     height: 600px;
-    resize: vertical;
     max-height: inherit;
 }
 
