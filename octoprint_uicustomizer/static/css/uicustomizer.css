@@ -467,7 +467,9 @@ textarea.UICCustomCSS{
 
 #settings_uicustomizer_topicons_container .accordion-heading > i{
     float: right;
-    margin-top: 4px;
+    margin-top: 5px;
+    min-width: 20px;
+    text-align: center;
 }
 
 #UICSortCols input[type=range]{
