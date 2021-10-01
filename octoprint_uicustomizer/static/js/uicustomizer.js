@@ -3020,6 +3020,10 @@ $(function() {
                 if (key == "toptemp"){
                     iconstr = '<i class="fas fa-thermometer-full"></i>';
                 }
+                // Overwrite pi support
+                if (key == "pi_support"){
+                    iconstr = '<i style="font-weight:bold" class="fab fa-raspberry-pi"></i>';
+                }
                 // Get plugin data
                 var pdata = self.findPluginData(key,false);
                 if (pdata == null){
@@ -3511,6 +3515,10 @@ $(function() {
                     }else{
                         $('div.UICMainMenu ul.nav >li a:hidden').addClass('UICpreviewHide').show();
                     }
+                    // Fix missing rpi icon if nothing wrong
+                    if ($('#navbar_plugin_pi_support i:visible').length == 0){
+                        $('#navbar_plugin_pi_support a').prepend('<i style="font-weight:bold" class="UICRPIFix fab fa-raspberry-pi"></i>');
+                    }
 
                 }else{
                     $('textarea.UICCustomCSS').off('blur.uicus');
@@ -3530,6 +3538,7 @@ $(function() {
                         });
                         $('.UICpreviewHide').hide();
                         $('.UICpreviewHide').removeClass('UICpreviewHide');
+                        $('#navbar_plugin_pi_support i.UICRPIFix').remove();
 
                         self.set_customCSS($('textarea.UICCustomCSS').data('uicPreVal'));
                     }
@@ -3890,6 +3899,7 @@ $(function() {
             // Always hide previewed stuff
             $('.UICpreviewHide').hide();
             $('.UICpreviewHide').removeClass('UICpreviewHide');
+            $('#navbar_plugin_pi_support i.UICRPIFix').remove();
             // Remove preview
             $('body').removeClass('UICPreviewON');
 
