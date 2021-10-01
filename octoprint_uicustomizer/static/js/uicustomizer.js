@@ -3011,6 +3011,14 @@ $(function() {
                 // Add an icon or not?
                 if (icon.length){
                     iconstr = icon.clone().wrap('<p>').parent().html();
+                }else{
+                    if (key == "wifistatus"){
+                        iconstr = '<i class="fas fa-wifi"></i>';
+                    }
+                }
+                // Overwrite our own
+                if (key == "toptemp"){
+                    iconstr = '<i class="fas fa-thermometer-full"></i>';
                 }
                 // Get plugin data
                 var pdata = self.findPluginData(key,false);
