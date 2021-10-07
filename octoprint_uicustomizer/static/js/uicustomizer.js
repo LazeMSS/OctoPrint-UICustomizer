@@ -442,7 +442,7 @@ $(function() {
             }
 
             // Check for any issues with installed plugins
-            var genericPluginsWarning = ['widescreen','taborder','statefulsidebar','fullscreen','themeify'];
+            var genericPluginsWarning = ['widescreen','taborder','statefulsidebar','fullscreen','themeify','octoflat'];
             $.each(genericPluginsWarning,function(key,plugKeyName){
                 if (IgnoredConflictPlugins.hasOwnProperty(plugKeyName) && IgnoredConflictPlugins[plugKeyName] == true){
                     self.logToConsole("Plugin issues for " + plugKeyName + " ignored.");
