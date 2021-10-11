@@ -179,6 +179,27 @@ $(function() {
                     var regex = /^(###|##|#)(.*)$/gm;
                     var newStr = str.replace(regex, "<b>$2</b>");
 
+                    regex = /\*\*/gm;
+                    var boldOn = true;
+                    newStr = newStr.replace(regex, function(x){
+                        boldOn = !boldOn;
+                        if (boldOn){
+                            return "</b>";
+                        }else{
+                            return "<b>";
+                        }
+                    });
+                     regex = /\_/gm;
+                    var italicOn = true;
+                    newStr = newStr.replace(regex, function(x){
+                        italicOn = !italicOn;
+                        if (italicOn){
+                            return "</em>";
+                        }else{
+                            return "<em>";
+                        }
+                    });
+
                     regex = /^(?:[*+-]) */gm;
                     newStr = newStr.replace(regex, '<li>');
                     regex = /<li>(.*)/gm;
