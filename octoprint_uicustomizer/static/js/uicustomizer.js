@@ -40,7 +40,7 @@ $(function() {
         self.coreSettings = parameters[0];
         self.settings = null;
         self.UICsettings = null;
-        self.tempModel = parameters[1];
+        self.tempModel = parameters[2] ? parameters[2] : parameters[1];
         // max column width
         self.maxCWidth = 12;
 
@@ -3963,18 +3963,12 @@ $(function() {
 
     // This is how our plugin registers itself with the application, by adding some configuration information to
     // the global variable ADDITIONAL_VIEWMODELS
-    OCTOPRINT_VIEWMODELS.push([
-        // This is the constructor to call for instantiating the plugin
-        UICustomizerViewModel,
-
-        // This is a list of dependencies to inject into the plugin, the order which you request here is the order
-        // in which the dependencies will be injected into your view model upon instantiation via the parameters
-        // argument
-        ["settingsViewModel","temperatureViewModel"],
-
-        // Finally, this is the list of all elements we want this view model to be bound to.
-        []
-    ]);
+    OCTOPRINT_VIEWMODELS.push({
+        construct: UICustomizerViewModel,
+        dependencies: ["settingsViewModel","temperatureViewModel","plotlytempgraphViewModel"],
+        optional: ["plotlytempgraphViewModel"],
+        elements: []
+    });
 });
 
 /* UICustomizer END */
