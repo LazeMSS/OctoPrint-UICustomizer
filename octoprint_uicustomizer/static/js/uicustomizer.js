@@ -41,6 +41,10 @@ $(function() {
         self.settings = null;
         self.UICsettings = null;
         self.tempModel = parameters[1];
+
+        // Ignore these accordions - warnings about safety should always be shown
+        self.accordIgnore = ['sidebar_plugin_firmware_check_info','sidebar_plugin_firmware_check_warning'];
+
         // max column width
         self.maxCWidth = 12;
 
@@ -354,6 +358,9 @@ $(function() {
                     var curAccords = self.getStorage('accordions',true);
                     if (curAccords != undefined){
                         $.each(curAccords,function(id,state){
+                            if ($.inArray(id.replace("#",""),self.accordIgnore) != -1){
+                                return true;
+                            }
                             var target = $(id);
                             if(target && state != target.hasClass('in')){
                                 $(id).collapse("toggle");
@@ -1096,6 +1103,10 @@ $(function() {
                 curAccords = {};
                 $('#page-container-main a.accordion-toggle').each(function(){
                     var targetAcco = $(this).data('target');
+                    // Ignore these
+                    if ($.inArray(targetAcco.replace("#",""),self.accordIgnore) != -1){
+                        return true;
+                    }
                     // We want the current state here
                     curAccords[targetAcco] = !$(this).hasClass('collapsed');
                 });
@@ -1105,6 +1116,10 @@ $(function() {
             // Update status on click
             $('#page-container-main a.accordion-toggle').on('click.UICAccordStore',function(event){
                 var targetAcco = $(this).data('target');
+                // Ignore these
+                if ($.inArray(targetAcco.replace("#",""),self.accordIgnore) != -1){
+                    return true;
+                }
                 var curAccords = self.getStorage('accordions',true);
                 // The use could have deleted the storage
                 if (curAccords == undefined){
