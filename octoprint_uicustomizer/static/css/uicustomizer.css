@@ -1324,7 +1324,7 @@ html.themeify #UICsetMenuShow{
 
 
 #term .terminal pre.UICvertResize{
-    height: 600px;
+    height: 350px;
     max-height: inherit;
 }
 
