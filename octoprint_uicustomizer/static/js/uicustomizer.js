@@ -28,7 +28,6 @@ delete UICPreLoadTheme,UICThemeV;
 // we will remove it again if user has opted out - this will just make it more clean on showing the UI
 $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicustomizer/static/css/bootstrap-responsive.css">');
 
-
 // Now we start
 $(function() {
     function UICustomizerViewModel(parameters) {
@@ -2551,6 +2550,232 @@ $(function() {
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
+        self.buildCustomTabSettings = function(tabsData){
+             // Build an index based lookup
+            var indexobj = tabsData[0];
+            var listItems = tabsData[1];
+
+            // Build selector - yes I could use knockout but i hate it :)
+            $('#settings_uicustomizer_tabs_look').empty();
+            $.each(listItems,function(idx,val){
+                // PARAMS:
+                // [parid,true,false,'icon','left']
+                // ID, Shown,Customlabel,icon class string, tab design =(true,false,iconOnly,textOnly), icon color
+                // 0 ,   1  ,    2      ,     3           ,      4                                    ,   5
+                // Build values
+                var target = $('#'+val).find('a');
+                var targetLink = target.attr('href');
+                var orgName = target.data('orgName');
+                var localObj = indexobj[val];
+
+                // Build settings for the cols
+                var classVis = 'fa-eye';
+                if (localObj[1] == false){
+                    classVis = "fa-eye-slash";
+                }
+                var custname = '';
+                if (localObj[2] != false){
+                    custname = localObj[2];
+                }
+                // Build colors
+                var color = '';
+                var colorData = false;
+                if (localObj[5] != undefined){
+                    colorData = localObj[5];
+                    color = 'style="color:'+localObj[5]+'"';
+                }
+                // Default is empty icon
+                var icon = 'fas fa-search UICIconEmpty';
+                var disbaledLI = ' disabled';
+                if (localObj[3] != false){
+                    icon = localObj[3];
+                    disbaledLI = '';
+                }else{
+                    color = '';
+                }
+
+
+                // Build new tabs
+                var newTab = $('\
+                    <div class="control-group row-fluid UICRemoveFluidRow" data-tabid="'+val+'">\
+                        <label class="control-label">'+orgName+'</label>\
+                        <div class="controls">\
+                            <div class="input-append input-prepend">\
+                                <button class="UICDragVHandle btn" type="button" title="Sort item"><i class="fas fa-arrows-alt-v"></i></button>\
+                                <input title="Enter tab name, blank = default" class="input-medium UICTabNameInput" placeholder="Name: '+orgName+'" type="text" value="'+custname+'">\
+                                <button class="btn UICTabToggle" type="button" title="Hide/Show tab"><i class="fas '+classVis+'"></i></button>\
+                                <button class="btn UICTabIcon UICShowIconPicker" type="button"><i class="'+icon+'" '+color+' data-color="'+colorData+'"></i></button><div class="btn-group">\
+                                <ul class="dropdown-menu UICTabDesign">\
+                                    <li class="UICTabIconReq'+disbaledLI+'"><a href="#" data-design="true"><span class="visible-phone"><i class="fas fa-align-left UICPadRight"></i><i class="fas fa-heading"></i></span><span class="hidden-phone">Icon+Text</span></a></li>\
+                                    <li class="UICTabIconReq'+disbaledLI+'"><a href="#" data-design="false"><span class="visible-phone"><i class="fas fa-heading UICPadRight"></i><i class="fas fa-align-right"></i></span><span class="hidden-phone">Text+Icon</span></a></li>\
+                                    <li class="UICTabIconReq'+disbaledLI+'"><a href="#" data-design="iconOnly"><i class="visible-phone fas fa-icons"></i><span class="hidden-phone">Icon only</span></a></li>\
+                                    <li><a href="#" data-design="textOnly"><i class="visible-phone fas fa-heading"></i><span class="hidden-phone">Text only</span></a></a></li>\
+                                </ul>\
+                                <button class="btn dropdown-toggle" data-toggle="dropdown" title="Change view mode"><span class="UICTabIconPos"></span> <span class="caret"></span></button>\
+                            </div>\
+                        </div>\
+                    </div>');
+
+                // Toggle tabs on/off
+                newTab.find('button.UICTabToggle').off('click').on('click',function(){
+                    // Hide all popovers
+                    $('.UICShowIconPicker').popover('hide');
+                    var icon = $(this).find('i');
+                    icon.toggleClass('fa-eye fa-eye-slash');
+                    if (self.previewOn){
+                        // Update
+                        var tabData = self.buildCustomTabsSave();
+                        self.set_mainTabsCustomize(true,tabData);
+                        if (icon.hasClass('fa-eye')){
+                            // Remove all other active
+                            $('.UICmainTabs .tab-pane.active').removeClass('active');
+                            // Set this as active
+                            $(target).trigger('click');
+                            $(targetLink).addClass('active');
+                        }else{
+                            // Trigger first visible
+                            $('#tabs li:not(.tabdrop) a:visible:first').trigger('click');
+                        }
+                    }
+                });
+
+                // Change tab text
+                newTab.find('input.UICTabNameInput').off('blur keyup').on('blur keyup',function(){
+                    // Hide all popovers
+                    $('.UICShowIconPicker').popover('hide');
+                    if (self.previewOn){
+                        // Update
+                        var tabData = self.buildCustomTabsSave();
+                        self.set_mainTabsCustomize(true,tabData);
+                    }
+                });
+
+                // Change tab icon
+                var newIconSrc = newTab.find('button.UICTabIcon >i');
+                newTab.find('button.UICTabIcon').removeData("frun").popover(
+                    self.iconSearchPopover(newIconSrc,function(newicon,newcolor){
+                        if (newcolor == null || newicon == false){
+                            newcolor = false;
+                        }
+                        newIconSrc.data('color',newcolor);
+                        // Delete
+                        if (newicon === false){
+                            newTab.find('li.UICTabIconReq').addClass('disabled');
+                            newTab.find('ul.UICTabDesign li:not(.UICTabIconReq) a').trigger('click');
+                            newIconSrc.attr('class','fas fa-search UICIconEmpty');
+                            newIconSrc.css({'color':''});
+                        }else{
+                            newTab.find('ul.UICTabDesign li.UICTabIconReq').removeClass('disabled');
+                            newIconSrc.attr('class',newicon);
+                            if (newcolor != false){
+                                newIconSrc.css({'color':newcolor});
+                            }else{
+                                newIconSrc.css({'color':''});
+                            }
+                        }
+                        if (self.previewOn){
+                             // Update
+                            var tabData = self.buildCustomTabsSave();
+                            self.set_mainTabsCustomize(true,tabData);
+                        }
+                    },true,true,newIconSrc,'#settings_uicustomizer_tabs','left')
+                ).attr('Title','Click to change icon');
+
+
+                // Change icon design
+                newTab.find('button.dropdown-toggle').off('click').on('click',function(){
+                     // Hide all popovers
+                    $('.UICShowIconPicker').popover('hide');
+                });
+                newTab.find('ul.UICTabDesign li a').off('click').on('click',function(event,force){
+                    if (force !== true && $(this).parent().hasClass('disabled')){
+                        return true;
+                    }
+                    newTab.find('ul.UICTabDesign li.active').removeClass('active');
+                    $(this).parent().addClass('active');
+                    newTab.find('span.UICTabIconPos').html($(this).html());
+                    if (self.previewOn){
+                        // Update
+                        var tabData = self.buildCustomTabsSave();
+                        self.set_mainTabsCustomize(true,tabData);
+                    }
+                });
+
+                // Add to the UI
+                $('#settings_uicustomizer_tabs_look ').append(newTab);
+
+                // update selector
+                newTab.find('ul.UICTabDesign li a[data-design="'+localObj[4].toString()+'"]').trigger('click',[true]);
+            })
+
+            // sort the tabs
+            var tabsorter = Sortable.create($('#settings_uicustomizer_tabs_look')[0],{
+                group: 'UICTabSort',
+                draggable: 'div.control-group',
+                delay: 200,
+                delayOnTouchOnly: true,
+                sort: true,
+                chosenClass: 'alert-info',
+                handle: '.UICDragVHandle',
+                direction: 'vertical',
+                dragoverBubble: false,
+                onStart: function(){
+                    $('#drop_overlay').addClass('UICHideHard');
+                },
+                onEnd: function(evt){
+                    $('#drop_overlay').removeClass('UICHideHard in');
+                    if (self.previewOn){
+                        var tabData = self.buildCustomTabsSave();
+                        self.set_mainTabsCustomize(true,tabData);
+                    }
+                }
+            })
+            // Store for later reference
+            $('#settings_uicustomizer_tabs_look').data('sorter',tabsorter);
+
+            // Toggle main customizing on/off
+            $('#UICMainTabCustomizerToggle').off('change').on('change',function(){
+                if ($(this).is(':checked')){
+                    // Check for themify
+                    if (self.findPluginData('themeify',true) && self.settings.plugins.themeify.tabs.enableIcons()){
+                        $('.UICthemeifyAlert').fadeIn();
+                    }else{
+                        $('.UICthemeifyAlert').hide();
+                    }
+                    tabsorter.option("disabled", false);
+                    $('#settings_uicustomizer_tabs_look').fadeTo(300,1);
+                    $('#UICMainTabsIconSize').prop( "disabled", false );
+                    $('#settings_uicustomizer_tabs_look :input').prop( "disabled", false );
+                    if (self.previewOn){
+                        var tabData = self.buildCustomTabsSave();
+                        self.set_mainTabsCustomize(true,tabData);
+                    }
+                }else{
+                    $('.UICthemeifyAlert').hide();
+                    tabsorter.option("disabled", true);
+                    $('#settings_uicustomizer_tabs_look').fadeTo(300,0.5);
+                    $('#UICMainTabsIconSize').prop( "disabled", true );
+                    $('#settings_uicustomizer_tabs_look :input').prop( "disabled", true );
+                    if (self.previewOn){
+                        self.set_mainTabsCustomize(false,false);
+                    }
+                }
+            });
+            if (!$('#UICMainTabCustomizerToggle').is(':checked')){
+                $('#UICMainTabCustomizerToggle').trigger('change');
+            }else{
+                $('.UICthemeifyAlert').hide();
+            }
+
+            // Hook into themifiy settings
+            if ($('input[data-bind="checked: tabIcons.enabled"]').length){
+                $('input[data-bind="checked: tabIcons.enabled"]').off('change.UICThem').on('change.UICThem',function(){
+                    $('#UICMainTabCustomizerToggle').trigger('change');
+                });
+            }
+        }
+
+        // ------------------------------------------------------------------------------------------------------------------------
         // Inspired by: https://itsjavi.com/fontawesome-iconpicker/
         self.iconSearchPopover = function(searchNow,callback,addDelete,addColorSelector,startcolor,container,placement){
             if (addDelete === undefined){
@@ -3110,227 +3335,7 @@ $(function() {
 
             // Get the tabs data
             var tabsData = self.initTabs(self.UICsettings.mainTabs());
-            // Build an index based lookup
-            var indexobj = tabsData[0];
-            var listItems = tabsData[1];
-
-            // Build selector - yes I could use knockout but i hate it :)
-            $('#settings_uicustomizer_tabs_look').empty();
-            $.each(listItems,function(idx,val){
-                // PARAMS:
-                // [parid,true,false,'icon','left']
-                // ID, Shown,Customlabel,icon class string, tab design =(true,false,iconOnly,textOnly), icon color
-                // 0 ,   1  ,    2      ,     3           ,      4                                    ,   5
-                // Build values
-                var target = $('#'+val).find('a');
-                var targetLink = target.attr('href');
-                var orgName = target.data('orgName');
-                var localObj = indexobj[val];
-
-                // Build settings for the cols
-                var classVis = 'fa-eye';
-                if (localObj[1] == false){
-                    classVis = "fa-eye-slash";
-                }
-                var custname = '';
-                if (localObj[2] != false){
-                    custname = localObj[2];
-                }
-                // Build colors
-                var color = '';
-                var colorData = false;
-                if (localObj[5] != undefined){
-                    colorData = localObj[5];
-                    color = 'style="color:'+localObj[5]+'"';
-                }
-                // Default is empty icon
-                var icon = 'fas fa-search UICIconEmpty';
-                var disbaledLI = ' disabled';
-                if (localObj[3] != false){
-                    icon = localObj[3];
-                    disbaledLI = '';
-                }else{
-                    color = '';
-                }
-
-
-                // Build new tabs
-                var newTab = $('\
-                    <div class="control-group row-fluid UICRemoveFluidRow" data-tabid="'+val+'">\
-                        <label class="control-label">'+orgName+'</label>\
-                        <div class="controls">\
-                            <div class="input-append input-prepend">\
-                                <button class="UICDragVHandle btn" type="button" title="Sort item"><i class="fas fa-arrows-alt-v"></i></button>\
-                                <input title="Enter tab name, blank = default" class="input-medium UICTabNameInput" placeholder="Name: '+orgName+'" type="text" value="'+custname+'">\
-                                <button class="btn UICTabToggle" type="button" title="Hide/Show tab"><i class="fas '+classVis+'"></i></button>\
-                                <button class="btn UICTabIcon UICShowIconPicker" type="button"><i class="'+icon+'" '+color+' data-color="'+colorData+'"></i></button><div class="btn-group">\
-                                <ul class="dropdown-menu UICTabDesign">\
-                                    <li class="UICTabIconReq'+disbaledLI+'"><a href="#" data-design="true"><span class="visible-phone"><i class="fas fa-align-left UICPadRight"></i><i class="fas fa-heading"></i></span><span class="hidden-phone">Icon+Text</span></a></li>\
-                                    <li class="UICTabIconReq'+disbaledLI+'"><a href="#" data-design="false"><span class="visible-phone"><i class="fas fa-heading UICPadRight"></i><i class="fas fa-align-right"></i></span><span class="hidden-phone">Text+Icon</span></a></li>\
-                                    <li class="UICTabIconReq'+disbaledLI+'"><a href="#" data-design="iconOnly"><i class="visible-phone fas fa-icons"></i><span class="hidden-phone">Icon only</span></a></li>\
-                                    <li><a href="#" data-design="textOnly"><i class="visible-phone fas fa-heading"></i><span class="hidden-phone">Text only</span></a></a></li>\
-                                </ul>\
-                                <button class="btn dropdown-toggle" data-toggle="dropdown" title="Change view mode"><span class="UICTabIconPos"></span> <span class="caret"></span></button>\
-                            </div>\
-                        </div>\
-                    </div>');
-
-                // Toggle tabs on/off
-                newTab.find('button.UICTabToggle').off('click').on('click',function(){
-                    // Hide all popovers
-                    $('.UICShowIconPicker').popover('hide');
-                    var icon = $(this).find('i');
-                    icon.toggleClass('fa-eye fa-eye-slash');
-                    if (self.previewOn){
-                        // Update
-                        var tabData = self.buildCustomTabsSave();
-                        self.set_mainTabsCustomize(true,tabData);
-                        if (icon.hasClass('fa-eye')){
-                            // Remove all other active
-                            $('.UICmainTabs .tab-pane.active').removeClass('active');
-                            // Set this as active
-                            $(target).trigger('click');
-                            $(targetLink).addClass('active');
-                        }else{
-                            // Trigger first visible
-                            $('#tabs li:not(.tabdrop) a:visible:first').trigger('click');
-                        }
-                    }
-                });
-
-                // Change tab text
-                newTab.find('input.UICTabNameInput').off('blur keyup').on('blur keyup',function(){
-                    // Hide all popovers
-                    $('.UICShowIconPicker').popover('hide');
-                    if (self.previewOn){
-                        // Update
-                        var tabData = self.buildCustomTabsSave();
-                        self.set_mainTabsCustomize(true,tabData);
-                    }
-                });
-
-                // Change tab icon
-                var newIconSrc = newTab.find('button.UICTabIcon >i');
-                newTab.find('button.UICTabIcon').removeData("frun").popover(
-                    self.iconSearchPopover(newIconSrc,function(newicon,newcolor){
-                        if (newcolor == null || newicon == false){
-                            newcolor = false;
-                        }
-                        newIconSrc.data('color',newcolor);
-                        // Delete
-                        if (newicon === false){
-                            newTab.find('li.UICTabIconReq').addClass('disabled');
-                            newTab.find('ul.UICTabDesign li:not(.UICTabIconReq) a').trigger('click');
-                            newIconSrc.attr('class','fas fa-search UICIconEmpty');
-                            newIconSrc.css({'color':''});
-                        }else{
-                            newTab.find('ul.UICTabDesign li.UICTabIconReq').removeClass('disabled');
-                            newIconSrc.attr('class',newicon);
-                            if (newcolor != false){
-                                newIconSrc.css({'color':newcolor});
-                            }else{
-                                newIconSrc.css({'color':''});
-                            }
-                        }
-                        if (self.previewOn){
-                             // Update
-                            var tabData = self.buildCustomTabsSave();
-                            self.set_mainTabsCustomize(true,tabData);
-                        }
-                    },true,true,newIconSrc,'#settings_uicustomizer_tabs','left')
-                ).attr('Title','Click to change icon');
-
-
-                // Change icon design
-                newTab.find('button.dropdown-toggle').off('click').on('click',function(){
-                     // Hide all popovers
-                    $('.UICShowIconPicker').popover('hide');
-                });
-                newTab.find('ul.UICTabDesign li a').off('click').on('click',function(event,force){
-                    if (force !== true && $(this).parent().hasClass('disabled')){
-                        return true;
-                    }
-                    newTab.find('ul.UICTabDesign li.active').removeClass('active');
-                    $(this).parent().addClass('active');
-                    newTab.find('span.UICTabIconPos').html($(this).html());
-                    if (self.previewOn){
-                        // Update
-                        var tabData = self.buildCustomTabsSave();
-                        self.set_mainTabsCustomize(true,tabData);
-                    }
-                });
-
-                // Add to the UI
-                $('#settings_uicustomizer_tabs_look ').append(newTab);
-
-                // update selector
-                newTab.find('ul.UICTabDesign li a[data-design="'+localObj[4].toString()+'"]').trigger('click',[true]);
-            })
-
-            // sort the tabs
-            var tabsorter = Sortable.create($('#settings_uicustomizer_tabs_look')[0],{
-                group: 'UICTabSort',
-                draggable: 'div.control-group',
-                delay: 200,
-                delayOnTouchOnly: true,
-                sort: true,
-                chosenClass: 'alert-info',
-                handle: '.UICDragVHandle',
-                direction: 'vertical',
-                dragoverBubble: false,
-                onStart: function(){
-                    $('#drop_overlay').addClass('UICHideHard');
-                },
-                onEnd: function(evt){
-                    $('#drop_overlay').removeClass('UICHideHard in');
-                    if (self.previewOn){
-                        var tabData = self.buildCustomTabsSave();
-                        self.set_mainTabsCustomize(true,tabData);
-                    }
-                }
-            })
-            // Store for later reference
-            $('#settings_uicustomizer_tabs_look').data('sorter',tabsorter);
-
-            // Toggle main customizing on/off
-            $('#UICMainTabCustomizerToggle').off('change').on('change',function(){
-                if ($(this).is(':checked')){
-                    // Check for themify
-                    if (self.findPluginData('themeify',true) && self.settings.plugins.themeify.tabs.enableIcons()){
-                        $('.UICthemeifyAlert').fadeIn();
-                    }else{
-                        $('.UICthemeifyAlert').hide();
-                    }
-                    tabsorter.option("disabled", false);
-                    $('#settings_uicustomizer_tabs_look').fadeTo(300,1);
-                    $('#UICMainTabsIconSize').prop( "disabled", false );
-                    $('#settings_uicustomizer_tabs_look :input').prop( "disabled", false );
-                    if (self.previewOn){
-                        var tabData = self.buildCustomTabsSave();
-                        self.set_mainTabsCustomize(true,tabData);
-                    }
-                }else{
-                    $('.UICthemeifyAlert').hide();
-                    tabsorter.option("disabled", true);
-                    $('#settings_uicustomizer_tabs_look').fadeTo(300,0.5);
-                    $('#UICMainTabsIconSize').prop( "disabled", true );
-                    $('#settings_uicustomizer_tabs_look :input').prop( "disabled", true );
-                    if (self.previewOn){
-                        self.set_mainTabsCustomize(false,false);
-                    }
-                }
-            });
-            if (!$('#UICMainTabCustomizerToggle').is(':checked')){
-                $('#UICMainTabCustomizerToggle').trigger('change');
-            }else{
-                $('.UICthemeifyAlert').hide();
-            }
-            // Hook into themifiy settings
-            if ($('input[data-bind="checked: tabIcons.enabled"]').length){
-                $('input[data-bind="checked: tabIcons.enabled"]').off('change.UICThem').on('change.UICThem',function(){
-                    $('#UICMainTabCustomizerToggle').trigger('change');
-                });
-            }
+            self.buildCustomTabSettings(tabsData);
 
             // Change icon size
             $('#UICMainTabsIconSize').off('change.uicus').on('change.uicus',function(){
@@ -3512,74 +3517,7 @@ $(function() {
                 self.previewOn = !self.previewOn;
                 $('body').toggleClass('UICPreviewON');
                 $(window).trigger('resize');
-
-                if (self.previewOn){
-                    self.previewHasBeenOn = true;
-
-                    // Set custom css
-                    if($('textarea.UICCustomCSS').data('uicPreVal') == undefined){
-                        $('textarea.UICCustomCSS').data('uicPreVal',$('textarea.UICCustomCSS').val());
-                    }
-                    self.set_customCSS($('textarea.UICCustomCSS').val());
-                    $('textarea.UICCustomCSS').on('blur.uicus',function(){
-                        self.set_customCSS($('textarea.UICCustomCSS').val());
-                    });
-
-                    // Set theme when updating it all
-                    var themeSel = $('#settings_uicustomizer_themesContent li.UICThemeSelected').data('uictheme');
-                    self.set_theme(themeSel,true);
-
-                    // Update all
-                    $('#settings_plugin_uicustomizer input:checkbox[data-settingtype]').trigger('change.uicus');
-                    var colData = self.buildColumns(false);
-                    self.set_mainLayout({'rows': colData[0],'widths':colData[1]});
-
-                    // Trigger us self if checking anything but our own menu item
-                    $('#settingsTabs a, #UICsettingsMenu a:not(.dropdown-toggle)').not('#settings_plugin_uicustomizer_link a').off('click.uicusPrev').one('click.uicusPrev',function(){
-                        $('.UICShowIconPicker').popover('hide');
-                        if (self.previewOn){
-                            $('#UICRealPrevCheck').trigger('click.uicusPrev');
-                        }
-                    });
-
-                    // Update main tabs
-                    $('#UICMainTabCustomizerToggle').trigger('change');
-
-                    // Show all top icons to preview
-                    if ($('ul.UICHeaderIcons').length){
-                        $('ul.UICHeaderIcons >li a:hidden').addClass('UICpreviewHide').show();
-                    }else{
-                        $('div.UICMainMenu ul.nav >li a:hidden').addClass('UICpreviewHide').show();
-                    }
-                    // Fix missing rpi icon if nothing wrong
-                    if ($('#navbar_plugin_pi_support i:visible').length == 0){
-                        $('#navbar_plugin_pi_support a').prepend('<i style="font-weight:bold" class="UICRPIFix fab fa-raspberry-pi"></i>');
-                    }
-
-                }else{
-                    $('textarea.UICCustomCSS').off('blur.uicus');
-                    // Remove preview toggles and restore the views when turning preview off/on
-                    if (self.previewHasBeenOn){
-                        // Restore theme
-                        self.set_theme(self.UICsettings.theme(),false);
-
-                        // Restore
-                        $('.UICPreviewRestore[data-orgvis]').each(function(){
-                            var item = $($(this).data('id'))
-                            if ($(this).data('orgvis')){
-                                item.removeClass('UICHide');
-                            }else{
-                                item.addClass('UICHide');
-                            }
-                        });
-                        $('.UICpreviewHide').hide();
-                        $('.UICpreviewHide').removeClass('UICpreviewHide');
-                        $('#navbar_plugin_pi_support i.UICRPIFix').remove();
-
-                        self.set_customCSS($('textarea.UICCustomCSS').data('uicPreVal'));
-                    }
-                    $('#settingsTabs').off('click.uicusPrev');
-                }
+                self.renderPreview();
             }).find('i').removeClass('fa-check-square').addClass('fa-square');
 
             if ('cancelobjectViewModel' in OctoPrint.coreui.viewmodels){
@@ -3598,6 +3536,76 @@ $(function() {
                     }
                  }
             });
+        }
+
+        self.renderPreview = function(){
+            if (self.previewOn){
+                self.previewHasBeenOn = true;
+
+                // Set custom css
+                if($('textarea.UICCustomCSS').data('uicPreVal') == undefined){
+                    $('textarea.UICCustomCSS').data('uicPreVal',$('textarea.UICCustomCSS').val());
+                }
+                self.set_customCSS($('textarea.UICCustomCSS').val());
+                $('textarea.UICCustomCSS').on('blur.uicus',function(){
+                    self.set_customCSS($('textarea.UICCustomCSS').val());
+                });
+
+                // Set theme when updating it all
+                var themeSel = $('#settings_uicustomizer_themesContent li.UICThemeSelected').data('uictheme');
+                self.set_theme(themeSel,true);
+
+                // Update all
+                $('#settings_plugin_uicustomizer input:checkbox[data-settingtype]').trigger('change.uicus');
+                var colData = self.buildColumns(false);
+                self.set_mainLayout({'rows': colData[0],'widths':colData[1]});
+
+                // Trigger us self if checking anything but our own menu item
+                $('#settingsTabs a, #UICsettingsMenu a:not(.dropdown-toggle)').not('#settings_plugin_uicustomizer_link a').off('click.uicusPrev').one('click.uicusPrev',function(){
+                    $('.UICShowIconPicker').popover('hide');
+                    if (self.previewOn){
+                        $('#UICRealPrevCheck').trigger('click.uicusPrev');
+                    }
+                });
+
+                // Update main tabs
+                $('#UICMainTabCustomizerToggle').trigger('change');
+
+                // Show all top icons to preview
+                if ($('ul.UICHeaderIcons').length){
+                    $('ul.UICHeaderIcons >li a:hidden').addClass('UICpreviewHide').show();
+                }else{
+                    $('div.UICMainMenu ul.nav >li a:hidden').addClass('UICpreviewHide').show();
+                }
+                // Fix missing rpi icon if nothing wrong
+                if ($('#navbar_plugin_pi_support i:visible').length == 0){
+                    $('#navbar_plugin_pi_support a').prepend('<i style="font-weight:bold" class="UICRPIFix fab fa-raspberry-pi"></i>');
+                }
+
+            }else{
+                $('textarea.UICCustomCSS').off('blur.uicus');
+                // Remove preview toggles and restore the views when turning preview off/on
+                if (self.previewHasBeenOn){
+                    // Restore theme
+                    self.set_theme(self.UICsettings.theme(),false);
+
+                    // Restore
+                    $('.UICPreviewRestore[data-orgvis]').each(function(){
+                        var item = $($(this).data('id'))
+                        if ($(this).data('orgvis')){
+                            item.removeClass('UICHide');
+                        }else{
+                            item.addClass('UICHide');
+                        }
+                    });
+                    $('.UICpreviewHide').hide();
+                    $('.UICpreviewHide').removeClass('UICpreviewHide');
+                    $('#navbar_plugin_pi_support i.UICRPIFix').remove();
+
+                    self.set_customCSS($('textarea.UICCustomCSS').data('uicPreVal'));
+                }
+                $('#settingsTabs').off('click.uicusPrev');
+            }
         }
 
          // ------------------------------------------------------------------------------------------------------------------------
@@ -3691,6 +3699,104 @@ $(function() {
             }
         }
 
+        // ------------------------------------------------------------------------------------------------------------------------
+        // When settings are hidden
+        self.onSettingsHidden = function() {
+            self.settingsBeenShown = false;
+            // Revert if not saved and we have been previewing anything
+            if (!self.saved && self.previewHasBeenOn){
+                self.previewHasBeenOn = false;
+                // Cancel the data to revert settings
+                self.coreSettings.cancelData();
+            }
+            // Reset preview of custom css
+            $('textarea.UICCustomCSS').data('uicPreVal',undefined);
+            // Update
+            self.UpdateLayout(self.UICsettings);
+
+            // Always hide previewed stuff
+            $('.UICpreviewHide').hide();
+            $('.UICpreviewHide').removeClass('UICpreviewHide');
+            $('#navbar_plugin_pi_support i.UICRPIFix').remove();
+            // Remove preview
+            $('body').removeClass('UICPreviewON');
+
+            // Remove sorts
+            $(self.SortableSet).each(function(){
+                this.destroy();
+            });
+
+            $('#settings_uicustomizer_topicons_container').data('sorter').destroy();
+            $('#settings_uicustomizer_topicons_container').removeData('sorter');
+            // Remove sorter on tabs
+            $('#settings_uicustomizer_tabs_look').data('sorter').destroy();
+            $('#settings_uicustomizer_tabs_look').removeData('sorter');
+            // Cleanup to prevent listners etc
+            $('#settings_uicustomizer_tabs_look').empty();
+            // Remove popovers
+            $('.UICShowIconPicker').popover('hide');
+            $('#settings_uicustomizer_tabs div.popover').remove();
+
+
+            // Trigger
+            $('#tabs').trigger('resize');
+
+            // Disable event listners
+            $('#settings_plugin_uicustomizer input').off('input.uicus change.uicus click.uicus');
+        }
+
+        // ------------------------------------------------------------------------------------------------------------------------
+        self.loadJSONsettings = function(settingsdata){
+            /*
+             todo:
+             check version !=
+            */
+
+            $.each(settingsdata,function(idx,val){
+                if (idx in OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.uicustomizer){
+                    // Special handling for custom settings :
+                    if (idx == "theme"){
+                        $('li[data-uictheme="'+val+'"] a').trigger('click')
+                    }else if (idx == "rows"){
+                        $.each(val,function(rowid,entries){
+                            $.each(entries,function(entryid,entryVal){
+                                entryid = entryid.slice(3);
+                                var widget = $('#UICSortCols li[data-id="'+entryid+'"]');
+                                if (widget.length){
+                                    widget.appendTo($('#UICSortCols ul').get(rowid));
+                                    var widgetVis = widget.find('input[type="checkbox"]');
+                                    if (widgetVis.prop('checked') != entryVal){
+                                        widget.find('i.UICToggleVis').trigger('click');
+                                    }
+                                }
+                            });
+                        });
+                    }else if (idx == "topIconSort"){
+                        $.each(val.reverse(),function(topid,topicon){
+                            if ($('#settings_uicustomizer_topicons_container div[data-tid="'+topicon+'"]').length){
+                                $('#settings_uicustomizer_topicons_container div[data-tid="'+topicon+'"]').prependTo($('#settings_uicustomizer_topicons_container'));
+                            }
+                        });
+                    }else if (idx == "mainTabs"){
+                        // Tabs needs alot of love
+                        var tabData = OctoPrint.coreui.viewmodels.uICustomizerViewModel.initTabs(val);
+                        self.buildCustomTabSettings(tabData);
+                    }else{
+                        // Hit the knockout view model
+                        OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.uicustomizer[idx](val);
+                    }
+                }else{
+                    console.log(idx, "not found");
+                }
+            })
+            $('#UICMainTabCustomizerToggle').trigger('change');
+            if (self.previewOn){
+                self.renderPreview();
+            }
+        }
+
+        // ------------------------------------------------------------------------------------------------------------------------
+        // Handling of input data
         self.fromCurrentData = function(data){
 
             // add the progress data to full screenwebcam
@@ -3916,52 +4022,6 @@ $(function() {
             }
         }
 
-
-        // ------------------------------------------------------------------------------------------------------------------------
-        // When settings are hidden
-        self.onSettingsHidden = function() {
-            self.settingsBeenShown = false;
-            // Revert if not saved and we have been previewing anything
-            if (!self.saved && self.previewHasBeenOn){
-                self.previewHasBeenOn = false;
-                // Cancel the data to revert settings
-                self.coreSettings.cancelData();
-            }
-            // Reset preview of custom css
-            $('textarea.UICCustomCSS').data('uicPreVal',undefined);
-            // Update
-            self.UpdateLayout(self.UICsettings);
-
-            // Always hide previewed stuff
-            $('.UICpreviewHide').hide();
-            $('.UICpreviewHide').removeClass('UICpreviewHide');
-            $('#navbar_plugin_pi_support i.UICRPIFix').remove();
-            // Remove preview
-            $('body').removeClass('UICPreviewON');
-
-            // Remove sorts
-            $(self.SortableSet).each(function(){
-                this.destroy();
-            });
-
-            $('#settings_uicustomizer_topicons_container').data('sorter').destroy();
-            $('#settings_uicustomizer_topicons_container').removeData('sorter');
-            // Remove sorter on tabs
-            $('#settings_uicustomizer_tabs_look').data('sorter').destroy();
-            $('#settings_uicustomizer_tabs_look').removeData('sorter');
-            // Cleanup to prevent listners etc
-            $('#settings_uicustomizer_tabs_look').empty();
-            // Remove popovers
-            $('.UICShowIconPicker').popover('hide');
-            $('#settings_uicustomizer_tabs div.popover').remove();
-
-
-            // Trigger
-            $('#tabs').trigger('resize');
-
-            // Disable event listners
-            $('#settings_plugin_uicustomizer input').off('input.uicus change.uicus click.uicus');
-        }
 
         // ------------------------------------------------------------------------------------------------------------------------
 
