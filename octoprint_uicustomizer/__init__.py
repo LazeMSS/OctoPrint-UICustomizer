@@ -10,14 +10,12 @@ import sys
 import shutil
 import requests
 
-from flask import send_file
-from flask import url_for
-
 class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                        octoprint.plugin.SettingsPlugin,
                        octoprint.plugin.AssetPlugin,
                        octoprint.plugin.TemplatePlugin,
-                       octoprint.plugin.EventHandlerPlugin):
+                       octoprint.plugin.EventHandlerPlugin,
+                       octoprint.plugin.BlueprintPlugin):
 
     def __init__(self):
         self.themeURL = 'https://lazemss.github.io/OctoPrint-UICustomizerThemes/css/'
@@ -94,7 +92,7 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
         return False
 
     def loginui_theming(self):
-        return [url_for("plugin.uicustomizer.static", filename="themes/css/active.css")]
+        return [flask.url_for("plugin.uicustomizer.static", filename="themes/css/active.css")]
 
 
     # Check for new versions on login
@@ -114,6 +112,24 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                         themeName = self._settings.get(["theme"],merged=True,asdict=True)
                         self._logger.info("New themes found - starting update. %s != %s : %s", themeVersionLocal, themeVersionRemote, themeName)
                         self.setThemeFile(str(themeName),False,themeVersionRemote)
+
+    # def get_api_commands(self):
+    #     return dict(
+    #         getSettings=[]
+    #     )
+
+    # # handle api calls
+    # def on_api_command(self, command, data):
+    #     if not user_permission.can():
+    #         return flask.make_response("Insufficient rights", 403)
+
+    #     # Get cpu temp options found on this system - allows a reload
+    #     if command == "getSettings":
+    #         settingsData = self._settings.get_all_data()
+    #         self._logger.info("Sending settings")
+    #         return {"foo": "bar"}, 200, {"Content-Disposition": "attachment; filename=\"UICustomizerSettings.json\""}
+    #         #"return flask.jsonify(settingsData)
+
 
 
     def on_settings_save(self,data):
@@ -205,6 +221,17 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                 pip="https://github.com/LazeMSS/OctoPrint-UICustomizer/archive/{target_version}.zip"
             )
         )
+
+    # Download services
+    @octoprint.plugin.BlueprintPlugin.route("/download", methods=["GET"])
+    def download(self):
+        if not "settings" in flask.request.values:
+            flask.abort(400, description="Nothing requested to download")
+
+        settingsData = self._settings.get_all_data()
+        settingsData['exportVersion'] = self._plugin_version
+        self._logger.info("Sending settings")
+        return settingsData, 200, {"Content-Disposition": "attachment; filename=\"UICustomizerSettings.json\""}
 
 
 __plugin_name__ = "UI Customizer"
