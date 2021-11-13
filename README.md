@@ -104,9 +104,11 @@ This allows you to change the look & feel of the top icons in top menu/navbar
 
 ### Advanced
 
-![](extras/s5.png)<br/><br/>
+![](extras/s5.png?2)<br/><br/>
 * Disable terminal when hidden - Disables the terminal update when the terminal tab is in the background - gives a small perfomance boost.
 * Custom CSS - Enter any custom CSS styling you want to have applied
+* Export settings - Will export all the UI Customizer settings into a file that can be downloaded
+* Import settings - Will import an exported settings file - this can be usefull if you have settings you want to apply to several OctoPrint installations
 
 ## Donation/support
 If you like my work feel free to support me using paypal: https://www.paypal.com/donate/?business=2STH3SD3KXGNQ&item_name=UI+Customizer
