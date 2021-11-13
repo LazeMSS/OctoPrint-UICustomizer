@@ -467,7 +467,9 @@ textarea.UICCustomCSS{
 
 #settings_uicustomizer_topicons_container .accordion-heading > i{
     float: right;
-    margin-top: 4px;
+    margin-top: 5px;
+    min-width: 20px;
+    text-align: center;
 }
 
 #UICSortCols input[type=range]{
@@ -1322,7 +1324,7 @@ html.themeify #UICsetMenuShow{
 
 
 #term .terminal pre.UICvertResize{
-    height: 600px;
+    height: 350px;
     max-height: inherit;
 }
 
@@ -1369,6 +1371,11 @@ html.themeify #UICsetMenuShow{
     body.UICfixedHeader div.octoprint-container{
         margin-top: 50px;
     }
+}
+
+#UISettingsImportAlert{
+    margin-top:  10px;
+    margin-bottom: 5px;
 }
 
 /* UICustomizer END */

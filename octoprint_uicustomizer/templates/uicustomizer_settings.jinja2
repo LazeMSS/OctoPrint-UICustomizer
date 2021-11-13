@@ -176,8 +176,17 @@
             </div>
             <br>
             <label>Custom CSS</label>
-            <textarea class="UICCustomCSS" class="block monospace" data-bind="value: settings.plugins.uicustomizer.customCSS"></textarea>
+            <textarea class="UICCustomCSS block monospace" data-bind="value: settings.plugins.uicustomizer.customCSS"></textarea>
+            <h5>{{ _('Import/Export settings') }}</h5>
+            <a href="./plugin/uicustomizer/download?settings" class="btn btn-small"><i class="fas fa-download"></i> Export settings</a>
+            <label class="btn btn-small"><i class="fas fa-upload"></i> Import settings<input type="file" id="UICUploadSettings" class="hide" accept=".json"></label>
+            <div class="alert UICHide" id="UISettingsImportAlert"></div>
         </div>
     </div>
-    <div class="UICBottomBar"><a href="https://www.paypal.com/donate/?business=2STH3SD3KXGNQ&item_name=UI+Customizer" target="_blank" class="btn btn-mini btn-info pull-right UICMargLeft" id="UICDonate"><i class="fab fa-paypal UICPadRight"></i>Donate</a><a id="UICReportBug" class="btn btn-mini btn-success"><i class="fas fa-bug UICPadRight"></i>Report a bug</a></div>
+    <div class="UICBottomBar">
+        <div class="btn-group">
+            <a title="Support me using PayPal" href="https://www.paypal.com/donate/?business=2STH3SD3KXGNQ&item_name=UI+Customizer" target="_blank" class="btn btn-mini btn-info" id="UICDonate"><i class="fab fa-paypal UICPadRight"></i>PayPal donation</a>
+            <a title="Support me using GitHub sponsorship" href="https://github.com/sponsors/LazeMSS" target="_blank" class="btn btn-mini btn-info" id="UICDonate"><i class="far fa-heart UICPadRight"></i>GitHub sponsor</a>
+        </div>
+        <a id="UICReportBug" class="btn btn-mini btn-success"><i class="fas fa-bug UICPadRight"></i>Report a bug</a></div>
 </form>
