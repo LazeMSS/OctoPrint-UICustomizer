@@ -229,7 +229,7 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
             flask.abort(400, description="Nothing requested to download")
 
         settingsData = self._settings.get_all_data()
-        settingsData['exportVersion'] = self._plugin_version
+        settingsData['UICSettings'] = self._plugin_version
         self._logger.info("Sending settings")
         return settingsData, 200, {"Content-Disposition": "attachment; filename=\"UICustomizerSettings.json\""}
 

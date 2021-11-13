@@ -176,7 +176,11 @@
             </div>
             <br>
             <label>Custom CSS</label>
-            <textarea class="UICCustomCSS" class="block monospace" data-bind="value: settings.plugins.uicustomizer.customCSS"></textarea>
+            <textarea class="UICCustomCSS block monospace" data-bind="value: settings.plugins.uicustomizer.customCSS"></textarea>
+            <h5>{{ _('Import/Export settings') }}</h5>
+            <a href="./plugin/uicustomizer/download?settings" class="btn btn-small"><i class="fas fa-download"></i> Export settings</a>
+            <label class="btn btn-small"><i class="fas fa-upload"></i> Import settings<input type="file" id="UICUploadSettings" class="hide" accept=".json"></label>
+            <div class="alert UICHide" id="UISettingsImportAlert"></div>
         </div>
     </div>
     <div class="UICBottomBar">

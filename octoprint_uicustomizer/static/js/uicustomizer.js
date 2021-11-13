@@ -3138,6 +3138,71 @@ $(function() {
             self.saved = false;
             self.previewHasBeenOn = false;
 
+
+            // Upload of settings JSON
+            $('#UICUploadSettings').off('change');
+            // Allow upload of the same file
+            $('#UICUploadSettings').off('click').on('click',function(){
+                $(this).val('');
+            });
+            if (window.FileList && window.File && window.FileReader) {
+                $('#UICUploadSettings').on('change',function(event){
+                    $('#UISettingsImportAlert').removeClass('alert-success alert-warning alert-info').hide();
+                    // https://web.dev/read-files/
+                    var file = event.target.files[0];
+                    if (!file.type) {
+                        $('#UISettingsImportAlert').html('<strong>Error</strong><br>The File.type property does not appear to be supported on this browser.').addClass('alert-warning').show();
+                        event.preventDefault();
+                        return false;
+                    }
+                    if (!file.type.match('json')) {
+                        $('#UISettingsImportAlert').html('<strong>Error</strong><br>The selected file does not appear to be an UI Customizer JSON settings file.').addClass('alert-warning').show();
+                        event.preventDefault();
+                        return false;
+                    }
+                    // Read the file
+                    var reader = new FileReader();
+                    reader.addEventListener("load", () => {
+                        try {
+                            var JSONLoadSet = JSON.parse(reader.result);
+                        } catch(e) {
+                            event.preventDefault();
+                            $('#UISettingsImportAlert').html('<strong>Error</strong><br>'+ e).addClass('alert-warning').show();
+                            return false;
+                        }
+                        // Check data
+                        if (!('UICSettings' in JSONLoadSet)){
+                            $('#UISettingsImportAlert').html('<strong>Error</strong><br>The selected file does not appear to be an UI Customizer JSON settings file.').addClass('alert-warning').show();
+                            event.preventDefault();
+                            return false;
+                        }
+                        // Handle the data
+                        self.loadJSONsettings(JSONLoadSet);
+
+                        var localVersion = self.findPluginData('uicustomizer').version;
+                        if (self.findPluginData('uicustomizer').version != JSONLoadSet.UICSettings){
+                            $('#UISettingsImportAlert').html('Settings was successfully imported<br>Note that imported file is from a different version of UI Customizer than the installed version, some settings might not be missing.<br>Installed version: ' + localVersion+"<br>Imported version:"+JSONLoadSet.UICSettings).addClass('alert-info').show();
+                        }else{
+                            $('#UISettingsImportAlert').html('Settings was successfully imported').addClass('alert-success').show();
+                        }
+
+                        JSONLoadSet = null;
+                    }, false);
+
+                    if (file) {
+                        reader.readAsText(file);
+                    }
+                    event.preventDefault();
+                    return false;
+                });
+            }else{
+                $('#UICUploadSettings').on('change',function(event){
+                    alert("You browser does not support file uploading");
+                    event.preventDefault();
+                    return false;
+                });
+            }
+
             // Hide highligths
             $('#settings_plugin_pluginmanager_pluginlist table tr.UIC-pulsateShort').removeClass('UIC-pulsateShort');
 
@@ -3747,11 +3812,6 @@ $(function() {
 
         // ------------------------------------------------------------------------------------------------------------------------
         self.loadJSONsettings = function(settingsdata){
-            /*
-             todo:
-             check version !=
-            */
-
             $.each(settingsdata,function(idx,val){
                 if (idx in OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.uicustomizer){
                     // Special handling for custom settings :
@@ -3786,7 +3846,9 @@ $(function() {
                         OctoPrint.coreui.viewmodels.settingsViewModel.settings.plugins.uicustomizer[idx](val);
                     }
                 }else{
-                    console.log(idx, "not found");
+                    if (idx != 'UICSettings'){
+                        console.log(idx, "not found");
+                    }
                 }
             })
             $('#UICMainTabCustomizerToggle').trigger('change');
