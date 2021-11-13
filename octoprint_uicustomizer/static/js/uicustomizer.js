@@ -3313,9 +3313,9 @@ $(function() {
 
             // Check for navbar
             if (self.findPluginData('navbartemp',true)){
-                $('#settings_uicustomizer_topicons input[data-settingtype="navbarplugintempfix"]').prop( "disabled", false );
+                $('#settings_uicustomizer_topicons input[data-settingtype="navbarplugintempfix"]').prop( "disabled", false ).parent().show();
             }else{
-                $('#settings_uicustomizer_topicons input[data-settingtype="navbarplugintempfix"]').prop( "disabled", true );
+                $('#settings_uicustomizer_topicons input[data-settingtype="navbarplugintempfix"]').prop( "disabled", true ).parent().hide();
             }
 
 
