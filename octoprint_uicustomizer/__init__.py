@@ -113,25 +113,6 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                         self._logger.info("New themes found - starting update. %s != %s : %s", themeVersionLocal, themeVersionRemote, themeName)
                         self.setThemeFile(str(themeName),False,themeVersionRemote)
 
-    # def get_api_commands(self):
-    #     return dict(
-    #         getSettings=[]
-    #     )
-
-    # # handle api calls
-    # def on_api_command(self, command, data):
-    #     if not user_permission.can():
-    #         return flask.make_response("Insufficient rights", 403)
-
-    #     # Get cpu temp options found on this system - allows a reload
-    #     if command == "getSettings":
-    #         settingsData = self._settings.get_all_data()
-    #         self._logger.info("Sending settings")
-    #         return {"foo": "bar"}, 200, {"Content-Disposition": "attachment; filename=\"UICustomizerSettings.json\""}
-    #         #"return flask.jsonify(settingsData)
-
-
-
     def on_settings_save(self,data):
         # save
         octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
