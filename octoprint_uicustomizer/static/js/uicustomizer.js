@@ -469,7 +469,7 @@ $(function() {
             }
 
             // Check for any issues with installed plugins
-            var genericPluginsWarning = ['widescreen','taborder','statefulsidebar','fullscreen','themeify','octoflat'];
+            var genericPluginsWarning = ['widescreen','taborder','statefulsidebar','fullscreen','themeify','octoflat','webcam_iframe'];
             $.each(genericPluginsWarning,function(key,plugKeyName){
                 if (IgnoredConflictPlugins.hasOwnProperty(plugKeyName) && IgnoredConflictPlugins[plugKeyName] == true){
                     self.logToConsole("Plugin issues for " + plugKeyName + " ignored.");
@@ -867,7 +867,7 @@ $(function() {
                 }else{
                     // Find the column index in the reversed order and mark them for deletion - we can just delete empty ones because we can have an empty filler
                     var keyRevFix = Math.abs(2-key)+1;
-                    $('div.UICCol'+keyRevFix).addClass('UICColDELETEME');
+                    $('div.UICCol'+keyRevFix).addClass('UICColHIDEME');
                 }
             });
             cols.reverse();
@@ -917,8 +917,8 @@ $(function() {
                 });
             });
 
-            // Remove marked for delition
-            $('div.UICColDELETEME').remove();
+            // Hide empty
+            $('div.UICColHIDEME').hide();
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
@@ -3317,7 +3317,6 @@ $(function() {
             }else{
                 $('#settings_uicustomizer_topicons input[data-settingtype="navbarplugintempfix"]').prop( "disabled", true ).parent().hide();
             }
-
 
             // Top icon sorting
             OctoPrint.coreui.viewmodels.pluginManagerViewModel.plugins.allItems; // init it
