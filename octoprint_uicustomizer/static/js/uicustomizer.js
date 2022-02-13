@@ -32,10 +32,6 @@ $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicust
 // Now we start
 $(function() {
     function UICustomizerViewModel(parameters) {
-        // Assign the control tab if not done - there is a timing issue in the core loading of the webcam
-        if ($('#control') && (window.location.hash == "#control" || window.location.hash == '') && OctoPrint.coreui.selectedTab == undefined){
-            OctoPrint.coreui.selectedTab = "#control";
-        }
         var self = this;
         // Run in debug/verbose mode
         self.debug = false;
@@ -345,19 +341,6 @@ $(function() {
                 }
             });
 
-            // make sure to start the initial stream if needed for the widget and the UI is not loaded on the control tab
-            if (self.coreSettings.webcam_webcamEnabled() && $('#UICWebCamWidget').length){
-                // Start the cam if we hide the main webcam or if the current tab is not control (which will auto start)
-                if (window.location.hash == "#control" || window.location.hash == ''){
-                    // This can trigger webcamAttachHandler twice but its needed due to a bit of randomness in the main UI loading of the control tab
-                    $('#control_link a').trigger('click');
-                    self.webcamAttachHandler();
-                }else{
-                    self.webcamAttachHandler();
-                    // Kick the stream into gear
-                    OctoPrint.coreui.viewmodels.controlViewModel.onBrowserTabVisibilityChange(true);
-                }
-            }
 
 
             // Observe theme changes
@@ -419,6 +402,12 @@ $(function() {
             // Refresh all
             window.setTimeout(function() {
                 $(window).trigger('resize');
+
+                // make sure to start the initial stream if needed for the webcam widget
+                if (self.coreSettings.webcam_webcamEnabled() && $('#UICWebCamWidget').length){
+                    self.webcamAttachHandler();
+                    OctoPrint.coreui.viewmodels.controlViewModel.onBrowserTabVisibilityChange(true);
+                }
 
                 // Restore saved accordion states and heights
                 if (self.UICsettings.saveAccordions()){

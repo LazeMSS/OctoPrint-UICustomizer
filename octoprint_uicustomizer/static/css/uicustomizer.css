@@ -1032,6 +1032,7 @@ body.inlineFullscreen .UICWebCamClick{
     z-index: -10;
     cursor: wait !important;
     text-shadow: 0px 0px 15px #000000;
+    user-select: none;
 }
 
 #UICWebCamFull.FloatCam #UICWebCamTarget{
@@ -1061,6 +1062,7 @@ body.inlineFullscreen .UICWebCamClick{
     font-size: 4vw;
     z-index: -10;
     cursor: wait !important;
+    user-select: none;
 }
 
 #UICWebCamFull.FullCam.UICnoCursor{
@@ -1116,6 +1118,7 @@ body.inlineFullscreen .UICWebCamClick{
     min-height: 80px;
     line-height: 80px;
     z-index: -5;
+    user-select: none;
 }
 
 #IUCWebcamContainer div.accordion-inner{
