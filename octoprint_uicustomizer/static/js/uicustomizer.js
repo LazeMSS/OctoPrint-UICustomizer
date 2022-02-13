@@ -157,11 +157,11 @@ $(function() {
             if (typeof OctoPrint.coreui.viewmodels.touchUIViewModel != "undefined"){
                 if(window.location.hash == "#touch"){
                     OctoPrint.coreui.viewmodels.touchUIViewModel.DOM.storage.set('active',true);
-                    $('#page-container-loading-header').html($('#page-container-loading-header').html()+ "<br><small>Disabling UI Customizer..</small>")
+                    $('#page-container-loading-header').html($('#page-container-loading-header').html()+ "<br><small>Disabling UI Customizer..</small>");
                     $('link.UICThemeCSS,link.UICBSResp').remove();
                     return;
                 }else if(OctoPrint.coreui.viewmodels.touchUIViewModel.DOM.storage.get('active') == true){
-                    $('#page-container-loading-header').html($('#page-container-loading-header').html()+ "<br><small>Disabling Touch UI and reloading...</small>")
+                    $('#page-container-loading-header').html($('#page-container-loading-header').html()+ "<br><small>Disabling Touch UI and reloading...</small>");
                     OctoPrint.coreui.viewmodels.touchUIViewModel.DOM.storage.set('active',false);
                     document.location.hash = "";
                     document.location.reload();
