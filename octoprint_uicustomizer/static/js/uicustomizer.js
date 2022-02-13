@@ -2035,9 +2035,16 @@ $(function() {
 
             var totalw = 0
             var widths = $('#UICSortCols input.uiccolwidth').map(function(){totalw += $(this).val()*1; return $(this).val();}).get();
-            // Fallback if something went wrong - we make it all 1 wide
+            // Fallback if something went wrong
             if (totalw > self.maxCWidth){
-                widths = Array($('#UICSortCols input.uiccolwidth').length).fill(1);
+                var indexpos = widths.indexOf(Math.max(...widths)+'');
+                var diff = totalw-self.maxCWidth;
+                widths[indexpos] -= diff;
+                if (widths[indexpos] < 0){
+                    widths = Array($('#UICSortCols input.uiccolwidth').length).fill('1');
+                }else{
+                    widths[indexpos] = widths[indexpos] +'';
+                }
             }
             return [ko.observableArray(colsSave), ko.observableArray(widths)];
         }
