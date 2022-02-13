@@ -61,7 +61,7 @@ The configuration is split into 6 tabs - all have an preview option in the top r
 * Fixed footer/bottombar - should the bottom bar stay fixed when scrolling or not
 * Hide webcamera on Control tab - should the webcamera on the Control tab be hidden or pop back into when control tab is active
 * Compact menu - should the "dropdown" menu be a single compact menu
-* Float/Fullscreen webcam icon - will add an zoom icon to the webcam live feed that will popup out the webcam video feed into a floating resizeable overlay or fullscreen
+* Float/Fullscreen webcam  - will add an zoom icon to the webcam that will popup out the webcam video into a floating resizeable overlay or fullscreen
 * Gcode full-size - maximize the main gcode viewer to take up as much space as possible
 * Resizable Files+Terminal - when turned on the Files and Terminal are resizable
 * Compress temp. controls - compress/minimize the temperature controls in the temperature main tab

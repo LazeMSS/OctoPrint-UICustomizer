@@ -2011,6 +2011,20 @@ $(function() {
         // ------------------------------------------------------------------------------------------------------------------------
         // Build columns layout and width
         self.buildColumns = function(prefix){
+            var totalw = 0
+            var widths = $('#UICSortCols input.uiccolwidth').map(function(){totalw += $(this).val()*1; return $(this).val();}).get();
+            // Fallback if something went wrong
+            if (totalw > self.maxCWidth){
+                var indexpos = widths.indexOf(Math.max(...widths)+'');
+                var diff = totalw-self.maxCWidth;
+                widths[indexpos] -= diff;
+                if (widths[indexpos] < 0){
+                    widths = Array($('#UICSortCols input.uiccolwidth').length).fill('4');
+                }else{
+                    widths[indexpos] = widths[indexpos] +'';
+                }
+            }
+
             var prefixItem = '';
             var colsSave = [];
             $('#UICSortCols ul').each(function(key,val){
@@ -2033,19 +2047,6 @@ $(function() {
             });
             self.logToConsole("Built these cols:"+JSON.stringify(colsSave));
 
-            var totalw = 0
-            var widths = $('#UICSortCols input.uiccolwidth').map(function(){totalw += $(this).val()*1; return $(this).val();}).get();
-            // Fallback if something went wrong
-            if (totalw > self.maxCWidth){
-                var indexpos = widths.indexOf(Math.max(...widths)+'');
-                var diff = totalw-self.maxCWidth;
-                widths[indexpos] -= diff;
-                if (widths[indexpos] < 0){
-                    widths = Array($('#UICSortCols input.uiccolwidth').length).fill('1');
-                }else{
-                    widths[indexpos] = widths[indexpos] +'';
-                }
-            }
             return [ko.observableArray(colsSave), ko.observableArray(widths)];
         }
 

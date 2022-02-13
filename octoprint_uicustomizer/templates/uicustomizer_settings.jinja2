@@ -59,7 +59,7 @@
                             <label class="checkbox" title="Hide the webcamera on the Control tab"><input data-bind="checked: settings.plugins.uicustomizer.hideMainCam" data-settingtype="hideMainCam" data-previewtab="control_link"  type="checkbox"> {{ _('Hide webcamera on Control tab') }}</label>
                         </div>
                         <div class="controls">
-                            <label class="checkbox" title="Will add an zoom/fullscreen icon to the webcam live feed that will show the webcam video feed into a floating resizeable overlay or fullscreen view"><input data-bind="checked: settings.plugins.uicustomizer.addWebCamZoom" data-settingtype="addWebCamZoom" type="checkbox"> {{ _('Float/Fullscreen webcam icon') }}</label>
+                            <label class="checkbox" title="Will add an zoom/fullscreen icon to the webcam live feed that will show the webcam video feed in a floating resizeable overlay or fullscreen view"><input data-bind="checked: settings.plugins.uicustomizer.addWebCamZoom" data-settingtype="addWebCamZoom" type="checkbox"> {{ _('Float/Fullscreen webcam') }}</label>
                             <div data-bind="visible: settings.plugins.uicustomizer.addWebCamZoom">
                                 <select id="UICwebcamzoomtype" data-bind="value: settings.plugins.uicustomizer.webcamzoomtype">
                                     <option value="float">Floating overlay webcam</option>
@@ -88,21 +88,21 @@
                     <div class="span4">
                         <h5 class="text-center">{{ _('Left column') }}</h5>{{ _('Width:') }}
                         <div class="pull-right">
-                            <input class="uiccolwidth" data-bind="value: settings.plugins.uicustomizer.widths()[0]" max="10" min="0" type="range"> <span>3</span>
+                            <input class="uiccolwidth" data-bind="value: settings.plugins.uicustomizer.widths()[0]" max="10" min="0" type="range"> <span></span>
                         </div>
                         <ul class="nav nav-stacked"></ul>
                     </div>
                     <div class="span4">
                         <h5 class="text-center">{{ _('Center column') }}</h5>{{ _('Width:') }}
                         <div class="pull-right">
-                            <input class="uiccolwidth" data-bind="value: settings.plugins.uicustomizer.widths()[1]" max="10" min="0" type="range"> <span>6</span>
+                            <input class="uiccolwidth" data-bind="value: settings.plugins.uicustomizer.widths()[1]" max="10" min="0" type="range"> <span></span>
                         </div>
                         <ul class="nav nav-stacked"></ul>
                     </div>
                     <div class="span4">
                         <h5 class="text-center">{{ _('Right column') }}</h5>{{ _('Width:') }}
                         <div class="pull-right">
-                            <input class="uiccolwidth" data-bind="value: settings.plugins.uicustomizer.widths()[2]" max="10" min="0" type="range"> <span>3</span>
+                            <input class="uiccolwidth" data-bind="value: settings.plugins.uicustomizer.widths()[2]" max="10" min="0" type="range"> <span></span>
                         </div>
                         <ul class="nav nav-stacked"></ul>
                     </div>
