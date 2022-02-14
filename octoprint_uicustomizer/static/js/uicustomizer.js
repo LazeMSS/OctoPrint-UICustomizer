@@ -2015,6 +2015,7 @@ $(function() {
             var widths = $('#UICSortCols input.uiccolwidth').map(function(){totalw += $(this).val()*1; return $(this).val();}).get();
             // Fallback if something went wrong
             if (totalw > self.maxCWidth){
+                alert("Total collumn Width is " + totalw + " max allowed" + self.maxCWidth);
                 var indexpos = widths.indexOf(Math.max(...widths)+'');
                 var diff = totalw-self.maxCWidth;
                 widths[indexpos] -= diff;
@@ -3374,7 +3375,7 @@ $(function() {
                 self.saved = true;
                 var colData = self.buildColumns(true);
                 if (colData[0]().length == 0 || $.isEmptyObject(colData[0]()[0])){
-                    console.log(colData);
+                    console.log(colData[0]());
                     alert("Critical failure saving UI Customizer settings - not saved!\nPlease look in the developer console.");
                     return false;
                 }
