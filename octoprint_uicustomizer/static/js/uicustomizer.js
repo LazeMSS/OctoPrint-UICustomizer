@@ -1258,15 +1258,15 @@ $(function() {
                     zoomclick.trigger('click.UICWebCamClick');
                 });
 
-                if (!('ontouchstart' in window) || !(navigator.msMaxTouchPoints > 0)){
-                    /*zoomclick.hide();
+                if (!('ontouchstart' in window)){
+                    zoomclick.hide();
                     main.off('mouseenter.UICWebCamZoom mousemove.UICWebCamZoom').on('mouseenter.UICWebCamZoom mousemove.UICWebCamZoom',function(e){
                         if (OctoPrint.coreui.viewmodels.controlViewModel.webcamLoaded() && $(this).find(childstr).length){
                             zoomclick.show();
                         }
                     }).off('mouseleave.UICWebCamZoom').on('mouseleave.UICWebCamZoom',function(e){
                         zoomclick.hide();
-                    });*/
+                    });
                 }
 
                 zoomclick.off('click.UICWebCamClick').on('click.UICWebCamClick',function(){
