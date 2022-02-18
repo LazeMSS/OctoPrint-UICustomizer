@@ -106,7 +106,6 @@
     /*fix modals on small screens*/
 	body.UICResponsiveMode .modal-body, body.UICResponsiveMode .modal-overflow .modal-body{
 		position: relative;
-    	max-height: 40px;
 		padding: 15px;
     	overflow-y: auto !important;
 	}
@@ -130,6 +129,14 @@
         max-width: calc(100vw - 200px) !important;
         right: 60px !important;
     }
+
+    /* try and prevent modals with oversize content from going nuts */
+    body.UICResponsiveMode div.modal-overflow{
+        max-height: 95vh !important;
+        margin-top: 2.5vh !important;
+        overflow: auto !important;
+    }
+
     /*fix input fields broken*/
 	body.UICResponsiveMode .search-query-with-clear .search-clear{
 		right: 28px !important;
@@ -964,77 +971,111 @@ body.UICResponsiveMode select{
 }
 
 /* webcam zoom/float */
+
 /* fixes problem with fullscreen plugin*/
 body.inlineFullscreen .UICWebCamClick{
     display: none;
 }
 
-#UICwebcamzoomtype{
-    margin-left: 18px;
-}
-
 .UICWebCamClick{
     position: absolute;
     right: 0px;
+    top: 0px;
     font-size: 1.5em;
     z-index: 900;
     background-color: #eeeeeea1;
-    margin: 5px 15px 0px 0px;
+    margin: 15px 15px 0px 0px;
     padding: 4px 5px;
     border-radius: 3px;
     text-align: center;
 }
 
-#IUCWebcamContainer .UICWebCamClick{
-    margin-right: 20px;
+#UICWebCamTarget{
+    z-index: 1020;
 }
 
-#UICWebCamFull.FloatCam{
-    cursor: move;
-    resize: both;
-    border: 2px  solid rgba(0,0,0,0.5);
-    border-radius: 4px; padding: 8px;
-    background-color: rgba(255,255,255,0.75);
-}
-#UICWebCamFull:not(.FloatCam) {
-    border: 1px solid var(--background);
-}
-
-#UICWebCamFull{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: calc(100% - 200px);
-    z-index: 1045;
-    min-height: 100px;
-    min-width: 100px;
-    overflow: hidden;
-    max-height: fit-content;
-    max-width: fit-content;
-    object-fit: contain;
-}
-
-#UICWebCamFull img,#UICWebCamFull video{
+#UICWebCamTarget img,#UICWebCamTarget video{
     width: 100%;
     min-width: 200px !important;
     max-height: 100vh;
     max-width: 100vw;
 }
 
-#UICWebCamFull .nowebcam{
-    width: 100%;
-    margin: 0 auto;
+
+/* floating webcam */
+
+#UICWebCamFull.FloatCam{
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    width: calc(100% - 25vw);
+    z-index: 1045;
+    min-height: 25vh;
+    min-width: 25vw;
+    overflow: hidden;
+    max-height: fit-content;
+    max-width: fit-content;
+    object-fit: contain;
+    cursor: move;
+    resize: both;
+    border: 3px  solid var(--background);
+    border-radius: 4px;
+    background-color: var(--background);
 }
 
+#UICWebCamFull.FloatCam div.UICwebcamLoading{
+    width: 100%;
+    top: 30%;
+    font-size: 3vw;
+    position: absolute;
+    z-index: -10;
+    cursor: wait !important;
+    text-shadow: 0px 0px 15px #000000;
+    user-select: none;
+}
+
+#UICWebCamFull.FloatCam #UICWebCamTarget{
+    min-width: 50vw;
+}
+
+#UICWebCamFull.FloatCam #UICWebCamTarget img{
+    height: 100%;
+    object-fit: contain;
+}
+
+#UICWebCamFull.FloatCam #UICWebCamTarget *{
+    pointer-events: none
+}
+
+/* fullscreen webcam */
+#UICWebCamFull.FullCam{
+    background-color: var(--background);
+}
+
+#UICWebCamFull.FullCam div.UICwebcamLoading{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    font-size: 4vw;
+    z-index: -10;
+    cursor: wait !important;
+    user-select: none;
+}
+
+#UICWebCamFull.FullCam.UICnoCursor{
+    cursor: none !important;
+}
+
+
+/* webcam progress bar */
 #UICWebCamFullProgress{
-    padding: 10px;
+    padding: 15px 10px 20px 10px;
     background-color: var(--background);
     filter: brightness(1.3);
+    box-shadow: 0px -4px 8px 0px rgb(0 0 0 / 60%);
 }
 
 #UICWebCamFullProgress div.label{
@@ -1047,15 +1088,16 @@ body.inlineFullscreen .UICWebCamClick{
     overflow: hidden;
     text-overflow: ellipsis
 }
+
 #UICWebCamFullProgress div.label.paused{
     opacity: 0.4;
 }
 
-div#UICWebCamFullProgress span.progress{
+#UICWebCamFullProgress span.progress{
     display:block;
     position: absolute;
     width: 98%;
-    bottom:-20px;
+    bottom:-15px;
     left:1%;
     height: 8px;
     margin-bottom:23px;
@@ -1065,75 +1107,40 @@ div#UICWebCamFullProgress span.progress{
     margin-right: 5px;
 }
 
-/* floating webcam fixes*/
-#UICWebCamFullInnerDIV.webcam_rotated .webcam_fixed_ratio,
-#UICWebCamFullInnerDIV.webcam_unrotated .webcam_fixed_ratio .webcam_fixed_ratio_inner,
-#UICWebCamFullInnerDIV.webcam_unrotated .webcam_fixed_ratio.ratio169,
-#UICWebCamFullInnerDIV.webcam_unrotated .webcam_fixed_ratio.ratio43
-{
-    position: relative !important;
-    padding-bottom: 0px !important;
-}
-#UICWebCamFullInnerDIV.webcam_rotated,
-#UICWebCamFullInnerDIV.webcam_rotated .webcam_rotated {
-    padding-bottom: 0%;
+/* webcam widget */
+
+#IUCWebcamContainer div.UICWebCamClick{
+    right: 5px;
 }
 
-
-.UICWebcam .webcam_rotated {
-    position: relative;
-    width: 100%;
-    padding-bottom: 100%;
-    pointer-events: none
+#IUCWebcamContainer div.UICwebcamdockinfo{
+    text-align: center;
+    min-height: 80px;
+    line-height: 80px;
+    z-index: -5;
+    user-select: none;
 }
 
-.UICWebcam .webcam_rotated .webcam_fixed_ratio {
+#IUCWebcamContainer div.accordion-inner{
+    min-height: 80px;
+}
+
+#IUCWebcamContainer div.UICWebCamWidgetWait, #IUCWebcamContainer div.nowebcam{
+    height: 100px;
+    line-height: 100px;
     position: absolute;
-    transform: rotate(-90deg);
-    top: 0;
-    bottom: 0;
-    pointer-events: none
-}
-
-.UICWebcam .webcam_rotated .webcam_fixed_ratio .webcam_fixed_ratio_inner {
+    text-align: center;
     width: 100%;
-    height: 100%;
-    pointer-events: none
+    left: 15px;
+    top: 0px;
+    z-index: -1;
 }
 
-.UICWebcam .webcam_unrotated .webcam_fixed_ratio {
-    width: 100%;
-    pointer-events: none;
-    padding-bottom: 100%;
-    position: relative
+/*hide zoom click if only*/
+#IUCWebcamContainerSrc > div:only-child{
+    display:none;
 }
 
-.UICWebcam .webcam_unrotated .webcam_fixed_ratio.ratio43 {
-    padding-bottom: 75%
-}
-
-.UICWebcam .webcam_unrotated .webcam_fixed_ratio.ratio169 {
-    padding-bottom: 56.25%
-}
-
-.UICWebcam .webcam_unrotated .webcam_fixed_ratio.ratio1610 {
-    padding-bottom: 62.5%
-}
-
-.UICWebcam .webcam_unrotated .webcam_fixed_ratio .webcam_fixed_ratio_inner {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    pointer-events: none
-}
-
-.UICWebcam img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
 
 .UICHideHard{
     display: none !important;
