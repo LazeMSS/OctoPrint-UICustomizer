@@ -531,7 +531,7 @@ $(function() {
             }
 
             // Check for any issues with installed plugins
-            var genericPluginsWarning = ['widescreen','taborder','statefulsidebar','fullscreen','themeify','octoflat','webcam_iframe'];
+            var genericPluginsWarning = ['widescreen','taborder','statefulsidebar','fullscreen','themeify','octoflat','webcam_iframe','floatingnavbar','prettygcode'];
             $.each(genericPluginsWarning,function(key,plugKeyName){
                 if (IgnoredConflictPlugins.hasOwnProperty(plugKeyName) && IgnoredConflictPlugins[plugKeyName] == true){
                     self.logToConsole("Plugin issues for " + plugKeyName + " ignored.");
@@ -1362,7 +1362,6 @@ $(function() {
                             document.exitFullscreen();
                             return;
                         }
-
                         $('#UICWebCamFull').off('dragstart.UICCam');
                         $('body').off('dragover.UICCam');
                         $('body').off('drop.UICCam');
@@ -2015,7 +2014,6 @@ $(function() {
             var widths = $('#UICSortCols input.uiccolwidth').map(function(){totalw += $(this).val()*1; return $(this).val();}).get();
             // Fallback if something went wrong
             if (totalw > self.maxCWidth){
-                alert("Total collumn Width is " + totalw + " max allowed" + self.maxCWidth);
                 var indexpos = widths.indexOf(Math.max(...widths)+'');
                 var diff = totalw-self.maxCWidth;
                 widths[indexpos] -= diff;
@@ -3448,6 +3446,8 @@ $(function() {
 
             // Disable event listners
             $('#settings_plugin_uicustomizer input').off('input.uicus change.uicus click.uicus');
+            // Fix webcam
+            self.webcamAttachHandler();
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
