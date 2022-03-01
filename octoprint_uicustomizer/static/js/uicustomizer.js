@@ -31,6 +31,7 @@ $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicust
 
 // Now we start
 $(function() {
+    $('#webcam_container > #webcam_rotator').attr('data-webcamorg','true');
     function UICustomizerViewModel(parameters) {
         var self = this;
         // Run in debug/verbose mode
@@ -146,6 +147,7 @@ $(function() {
         // ------------------------------------------------------------------------------------------------------------------------
         // Initial bound and init the custom layout
         self.onAllBound = function(){
+
             self.settings = self.coreSettings.settings;
             self.UICsettings = self.coreSettings.settings.plugins.uicustomizer;
 
@@ -302,6 +304,10 @@ $(function() {
                         }
                         if (previous == "#control"){
                             self.webcamAttachHandler();
+                        }
+                        if (OctoPrint.coreui.viewmodels.controlViewModel.webcamDisableTimeout != undefined) {
+                            clearTimeout(OctoPrint.coreui.viewmodels.controlViewModel.webcamDisableTimeout);
+                            OctoPrint.coreui.viewmodels.controlViewModel.webcamDisableTimeout = undefined;
                         }
                         return;
                     }
@@ -473,6 +479,10 @@ $(function() {
 
 
         self.handleOtherPlugins = function(){
+            // Remove all broken webcam duplicates
+            $('[id="webcam_rotator"]').not('[data-webcamorg="true"]').removeAttr('id');
+            $('#webcam_rotator').removeAttr('data-webcamorg');
+
             var IgnoredConflictPlugins = self.getStorage('IgnoredConflictPlugins',true);
             if (IgnoredConflictPlugins == undefined){
                 IgnoredConflictPlugins = {};
@@ -3566,13 +3576,13 @@ $(function() {
                         setLabelFSWC('bed','Bed temperature','fas fa-window-minimize', calcVal,false);
                     }
                 }else{
-                    if(self.tempModel.hasTools() && self.tempModel.temperatures['tool0'].actual[self.tempModel.temperatures['tool0'].actual.length-1][1] != undefined){
+                    if(self.tempModel.hasTools() && self.tempModel.temperatures['tool0'].actual.length > 0 && self.tempModel.temperatures['tool0'].actual[self.tempModel.temperatures['tool0'].actual.length-1][1] != undefined){
                         var tempAct  = self.tempModel.temperatures['tool0'].actual[self.tempModel.temperatures['tool0'].actual.length-1][1];
                         var tempTrg  = self.tempModel.temperatures['tool0'].target[self.tempModel.temperatures['tool0'].target.length-1][1];
                         var calcVal = formatTemperature(tempAct,false)+" / "+formatTemperature(tempTrg,false);
                        setLabelFSWC('t0','Tool temperature','fas fa-fire', calcVal,false);
                     }
-                    if(self.tempModel.hasBed() && self.tempModel.temperatures['bed'].actual[self.tempModel.temperatures['bed'].actual.length-1][1] != undefined){
+                    if(self.tempModel.hasBed() && self.tempModel.temperatures['bed'].actual.length > 0 && self.tempModel.temperatures['bed'].actual[self.tempModel.temperatures['bed'].actual.length-1][1] != undefined){
                         var tempAct  = self.tempModel.temperatures['bed'].actual[self.tempModel.temperatures['bed'].actual.length-1][1];
                         var tempTrg  = self.tempModel.temperatures['bed'].target[self.tempModel.temperatures['bed'].target.length-1][1];
                         var calcVal = formatTemperature(tempAct,false)+" / "+formatTemperature(tempTrg,false);
