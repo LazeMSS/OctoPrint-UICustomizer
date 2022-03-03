@@ -480,7 +480,7 @@ $(function() {
 
         self.handleOtherPlugins = function(){
             // Remove all broken webcam duplicates
-            $('[id="webcam_rotator"]').parent().addClass('webcam_container_clone');
+            $('[id="webcam_rotator"]').parent().addClass('UIC_webcam_container_clone');
             $('[id="webcam_rotator"]').not('[data-webcamorg="true"]').removeAttr('id');
             $('#webcam_rotator').removeAttr('data-webcamorg');
 
@@ -1303,7 +1303,7 @@ $(function() {
                             <a href="#"><i class="fas fa-compress"></i></a>
                         </div>
                         <div class="UICwebcamLoading text-center UIC-pulsate text-info"><i class="fas fa-spinner fa-spin"></i> Loading webcam&hellip;</div>
-                        <div id="UICWebCamTarget" class="webcam_container_clone"></div>
+                        <div id="UICWebCamTarget" class="UIC_webcam_container_clone"></div>
                         <div class="navbar navbar-fixed-bottom" id="UICWebCamFullProgress">
                             <div title="Printer state" class="label"><i class="fas fa-info"></i>${OctoPrint.coreui.viewmodels.printerStateViewModel.stateString()}</div>
                         </div>
