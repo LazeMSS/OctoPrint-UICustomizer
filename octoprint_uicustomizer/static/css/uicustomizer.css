@@ -1387,4 +1387,69 @@ html.themeify #UICsetMenuShow{
     margin-bottom: 5px;
 }
 
+/*webcam rotator handling*/
+
+.webcam_container_clone {
+    width: 100%;
+    position: relative;
+    outline: 0;
+    background-color: #000
+}
+
+.webcam_container_clone .webcam_rotated {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    pointer-events: none
+}
+
+.webcam_container_clone .webcam_rotated .webcam_fixed_ratio {
+    position: absolute;
+    transform: rotate(-90deg);
+    top: 0;
+    bottom: 0;
+    pointer-events: none
+}
+
+.webcam_container_clone .webcam_rotated .webcam_fixed_ratio .webcam_fixed_ratio_inner {
+    width: 100%;
+    height: 100%;
+    pointer-events: none
+}
+
+.webcam_container_clone .webcam_unrotated .webcam_fixed_ratio {
+    width: 100%;
+    pointer-events: none;
+    padding-bottom: 100%;
+    position: relative
+}
+
+.webcam_container_clone .webcam_unrotated .webcam_fixed_ratio.ratio43 {
+    padding-bottom: 75%
+}
+
+.webcam_container_clone .webcam_unrotated .webcam_fixed_ratio.ratio169 {
+    padding-bottom: 56.25%
+}
+
+.webcam_container_clone .webcam_unrotated .webcam_fixed_ratio.ratio1610 {
+    padding-bottom: 62.5%
+}
+
+.webcam_container_clone .webcam_unrotated .webcam_fixed_ratio .webcam_fixed_ratio_inner {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    pointer-events: none
+}
+
+.webcam_container_clone img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain
+}
+
+
 /* UICustomizer END */
