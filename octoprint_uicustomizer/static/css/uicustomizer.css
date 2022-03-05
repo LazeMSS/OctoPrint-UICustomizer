@@ -1,8 +1,9 @@
 /* UICustomizer START */
-:root {
-  --background: #36393f;
-  --uicmainwidth: 230px;
+:root   {
+    --background: #36393f;
+    --uicmainwidth: 230px;
 }
+
 /* big screens */
 @media (min-width: 980px){
 	body.UICfixedHeader{
@@ -268,23 +269,23 @@
     }
     #temperature-table .btn button.btn, #temperature-table input[type="submit"].btn {
         *padding-top: 1px;
-        *padding-bottom: 1px
+        *padding-bottom: 1px;
     }
     #temperature-table .btn-group>.btn {
-        font-size: 10.5px
+        font-size: 10.5px;
     }
     #temperature-table .btn-group>.btn+.dropdown-toggle {
         *padding-top: 2px;
         padding-right: 5px;
         *padding-bottom: 2px;
-        padding-left: 5px
+        padding-left: 5px;
     }
 
     #temperature-table .btn .caret {
-        margin-top: 6px
+        margin-top: 6px;
     }
     #temperature-table .btn .label,#temperature-table .btn .badge {
-        top: 0
+        top: 0;
     }
 
     /* ------------------------- small temp tables end -------------------------*/
@@ -1022,6 +1023,7 @@ body.inlineFullscreen .UICWebCamClick{
     border: 3px  solid var(--background);
     border-radius: 4px;
     background-color: var(--background);
+    padding-bottom: 62px;
 }
 
 #UICWebCamFull.FloatCam div.UICwebcamLoading{
@@ -1119,6 +1121,7 @@ body.inlineFullscreen .UICWebCamClick{
     line-height: 80px;
     z-index: -5;
     user-select: none;
+    display: none;
 }
 
 #IUCWebcamContainer div.accordion-inner{
@@ -1137,7 +1140,7 @@ body.inlineFullscreen .UICWebCamClick{
 }
 
 /*hide zoom click if only*/
-#IUCWebcamContainerSrc > div:only-child{
+#IUCWebcamContainerSrc > div.UICWebCamClick:only-child{
     display:none;
 }
 
@@ -1384,5 +1387,70 @@ html.themeify #UICsetMenuShow{
     margin-top:  10px;
     margin-bottom: 5px;
 }
+
+/*webcam rotator handling*/
+
+.UIC_webcam_container_clone {
+    width: 100%;
+    position: relative;
+    outline: 0;
+    background-color: #000;
+}
+
+.UIC_webcam_container_clone .webcam_rotated {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    pointer-events: none;
+}
+
+.UIC_webcam_container_clone .webcam_rotated .webcam_fixed_ratio {
+    position: absolute;
+    transform: rotate(-90deg);
+    top: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.UIC_webcam_container_clone .webcam_rotated .webcam_fixed_ratio .webcam_fixed_ratio_inner {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.UIC_webcam_container_clone .webcam_unrotated .webcam_fixed_ratio {
+    width: 100%;
+    pointer-events: none;
+    padding-bottom: 100%;
+    position: relative;
+}
+
+.UIC_webcam_container_clone .webcam_unrotated .webcam_fixed_ratio.ratio43 {
+    padding-bottom: 75%;
+}
+
+.UIC_webcam_container_clone .webcam_unrotated .webcam_fixed_ratio.ratio169 {
+    padding-bottom: 56.25%;
+}
+
+.UIC_webcam_container_clone .webcam_unrotated .webcam_fixed_ratio.ratio1610 {
+    padding-bottom: 62.5%;
+}
+
+.UIC_webcam_container_clone .webcam_unrotated .webcam_fixed_ratio .webcam_fixed_ratio_inner {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+}
+
+.UIC_webcam_container_clone img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
 
 /* UICustomizer END */

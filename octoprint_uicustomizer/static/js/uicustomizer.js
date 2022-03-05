@@ -31,6 +31,7 @@ $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicust
 
 // Now we start
 $(function() {
+    $('#webcam_container > #webcam_rotator').attr('data-webcamorg','true');
     function UICustomizerViewModel(parameters) {
         var self = this;
         // Run in debug/verbose mode
@@ -146,6 +147,7 @@ $(function() {
         // ------------------------------------------------------------------------------------------------------------------------
         // Initial bound and init the custom layout
         self.onAllBound = function(){
+
             self.settings = self.coreSettings.settings;
             self.UICsettings = self.coreSettings.settings.plugins.uicustomizer;
 
@@ -302,6 +304,10 @@ $(function() {
                         }
                         if (previous == "#control"){
                             self.webcamAttachHandler();
+                        }
+                        if (OctoPrint.coreui.viewmodels.controlViewModel.webcamDisableTimeout != undefined) {
+                            clearTimeout(OctoPrint.coreui.viewmodels.controlViewModel.webcamDisableTimeout);
+                            OctoPrint.coreui.viewmodels.controlViewModel.webcamDisableTimeout = undefined;
                         }
                         return;
                     }
@@ -473,6 +479,11 @@ $(function() {
 
 
         self.handleOtherPlugins = function(){
+            // Remove all broken webcam duplicates
+            $('[id="webcam_rotator"]').parent().addClass('UIC_webcam_container_clone');
+            $('[id="webcam_rotator"]').not('[data-webcamorg="true"]').removeAttr('id');
+            $('#webcam_rotator').removeAttr('data-webcamorg');
+
             var IgnoredConflictPlugins = self.getStorage('IgnoredConflictPlugins',true);
             if (IgnoredConflictPlugins == undefined){
                 IgnoredConflictPlugins = {};
@@ -531,7 +542,7 @@ $(function() {
             }
 
             // Check for any issues with installed plugins
-            var genericPluginsWarning = ['widescreen','taborder','statefulsidebar','fullscreen','themeify','octoflat','webcam_iframe'];
+            var genericPluginsWarning = ['widescreen','taborder','statefulsidebar','fullscreen','themeify','octoflat','webcam_iframe','floatingnavbar'];
             $.each(genericPluginsWarning,function(key,plugKeyName){
                 if (IgnoredConflictPlugins.hasOwnProperty(plugKeyName) && IgnoredConflictPlugins[plugKeyName] == true){
                     self.logToConsole("Plugin issues for " + plugKeyName + " ignored.");
@@ -1292,7 +1303,7 @@ $(function() {
                             <a href="#"><i class="fas fa-compress"></i></a>
                         </div>
                         <div class="UICwebcamLoading text-center UIC-pulsate text-info"><i class="fas fa-spinner fa-spin"></i> Loading webcam&hellip;</div>
-                        <div id="UICWebCamTarget"></div>
+                        <div id="UICWebCamTarget" class="UIC_webcam_container_clone"></div>
                         <div class="navbar navbar-fixed-bottom" id="UICWebCamFullProgress">
                             <div title="Printer state" class="label"><i class="fas fa-info"></i>${OctoPrint.coreui.viewmodels.printerStateViewModel.stateString()}</div>
                         </div>
@@ -1362,7 +1373,6 @@ $(function() {
                             document.exitFullscreen();
                             return;
                         }
-
                         $('#UICWebCamFull').off('dragstart.UICCam');
                         $('body').off('dragover.UICCam');
                         $('body').off('drop.UICCam');
@@ -2015,7 +2025,6 @@ $(function() {
             var widths = $('#UICSortCols input.uiccolwidth').map(function(){totalw += $(this).val()*1; return $(this).val();}).get();
             // Fallback if something went wrong
             if (totalw > self.maxCWidth){
-                alert("Total collumn Width is " + totalw + " max allowed" + self.maxCWidth);
                 var indexpos = widths.indexOf(Math.max(...widths)+'');
                 var diff = totalw-self.maxCWidth;
                 widths[indexpos] -= diff;
@@ -3448,6 +3457,8 @@ $(function() {
 
             // Disable event listners
             $('#settings_plugin_uicustomizer input').off('input.uicus change.uicus click.uicus');
+            // Fix webcam
+            self.webcamAttachHandler();
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
@@ -3566,13 +3577,13 @@ $(function() {
                         setLabelFSWC('bed','Bed temperature','fas fa-window-minimize', calcVal,false);
                     }
                 }else{
-                    if(self.tempModel.hasTools() && self.tempModel.temperatures['tool0'].actual[self.tempModel.temperatures['tool0'].actual.length-1][1] != undefined){
+                    if(self.tempModel.hasTools() && self.tempModel.temperatures['tool0'].actual.length > 0 && self.tempModel.temperatures['tool0'].actual[self.tempModel.temperatures['tool0'].actual.length-1][1] != undefined){
                         var tempAct  = self.tempModel.temperatures['tool0'].actual[self.tempModel.temperatures['tool0'].actual.length-1][1];
                         var tempTrg  = self.tempModel.temperatures['tool0'].target[self.tempModel.temperatures['tool0'].target.length-1][1];
                         var calcVal = formatTemperature(tempAct,false)+" / "+formatTemperature(tempTrg,false);
                        setLabelFSWC('t0','Tool temperature','fas fa-fire', calcVal,false);
                     }
-                    if(self.tempModel.hasBed() && self.tempModel.temperatures['bed'].actual[self.tempModel.temperatures['bed'].actual.length-1][1] != undefined){
+                    if(self.tempModel.hasBed() && self.tempModel.temperatures['bed'].actual.length > 0 && self.tempModel.temperatures['bed'].actual[self.tempModel.temperatures['bed'].actual.length-1][1] != undefined){
                         var tempAct  = self.tempModel.temperatures['bed'].actual[self.tempModel.temperatures['bed'].actual.length-1][1];
                         var tempTrg  = self.tempModel.temperatures['bed'].target[self.tempModel.temperatures['bed'].target.length-1][1];
                         var calcVal = formatTemperature(tempAct,false)+" / "+formatTemperature(tempTrg,false);
