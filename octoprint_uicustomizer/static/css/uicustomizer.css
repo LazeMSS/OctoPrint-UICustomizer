@@ -983,7 +983,7 @@ body.inlineFullscreen .UICWebCamClick{
     right: 0px;
     top: 0px;
     font-size: 1.5em;
-    z-index: 900;
+    z-index: 1025;
     background-color: #eeeeeea1;
     margin: 15px 15px 0px 0px;
     padding: 4px 5px;
@@ -1029,12 +1029,16 @@ body.inlineFullscreen .UICWebCamClick{
 #UICWebCamFull.FloatCam div.UICwebcamLoading{
     width: 100%;
     top: 30%;
-    font-size: 3vw;
+    font-size: 2vw;
     position: absolute;
     z-index: -10;
     cursor: wait !important;
     text-shadow: 0px 0px 15px #000000;
     user-select: none;
+}
+#UICWebCamFull.FloatCam div.UICwebcamLoading i{
+    display: block;
+    margin-bottom: 25px;
 }
 
 #UICWebCamFull.FloatCam #UICWebCamTarget{

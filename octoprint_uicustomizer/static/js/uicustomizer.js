@@ -31,7 +31,8 @@ $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicust
 
 // Now we start
 $(function() {
-    $('#webcam_container > #webcam_rotator').attr('data-webcamorg','true');
+    $('#control > #webcam_container > #webcam_rotator').attr('data-webcamorg','true');
+    $('#control > #webcam_container').attr('data-webcamorg','true');
     function UICustomizerViewModel(parameters) {
         var self = this;
         // Run in debug/verbose mode
@@ -482,7 +483,9 @@ $(function() {
             // Remove all broken webcam duplicates
             $('[id="webcam_rotator"]').parent().addClass('UIC_webcam_container_clone');
             $('[id="webcam_rotator"]').not('[data-webcamorg="true"]').removeAttr('id');
+            $('[id="webcam_container"]').not('[data-webcamorg="true"]').removeAttr('id');
             $('#webcam_rotator').removeAttr('data-webcamorg');
+            $('#webcam_container').removeAttr('data-webcamorg');
 
             var IgnoredConflictPlugins = self.getStorage('IgnoredConflictPlugins',true);
             if (IgnoredConflictPlugins == undefined){
