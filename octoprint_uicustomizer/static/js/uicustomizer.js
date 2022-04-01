@@ -86,7 +86,7 @@ $(function() {
                             </div>\
                             <div id="IUCWebcamContainer" class="accordion-body in collapse">\
                                 <div class="accordion-inner">\
-                                    <div id="IUCWebcamContainerSrc"></div>\
+                                    <div id="IUCWebcamContainerSrc" class="UIC_webcam_container_clone"></div>\
                                     <div class="UICwebcamdockinfo muted">Webcam is active in Control section</div>\
                                     <div class="UICWebCamWidgetWait text-center UIC-pulsate text-info"><i class="fas fa-spinner fa-spin"></i> Loading webcam&hellip;</div>\
                                 </div>\
