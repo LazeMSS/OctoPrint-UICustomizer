@@ -2588,6 +2588,10 @@ $(function() {
                             $(this).prev().css('color',$(this).val());
                             $(this).closest('div.popover').find('.UICiconSearchResults').css('color',$(this).val());
                         });
+                        if (strcolor != false){
+                            colorSelector.find('.UICTabIconColor').data('color',strcolor);
+                            $('div.UICiconSearchResults').css('color',strcolor);
+                        }
                         inputcontainer.append(colorSelector);
                         var noColor = $('<button class="btn UICTabIconClear" title="No icon color is applied"><span class="UIC-fa-stack"><i class="fas fa-slash"></i> <i class="fas fa-eye-dropper fa-stack-1x"></i></span></button>');
                         noColor.on('click',function(){
@@ -2623,6 +2627,9 @@ $(function() {
                             colorSelector.trigger('change');
                         }
                         if (defaultstr != ""){
+                            if (strcolor != false){
+                                $('div.UICiconSearchResults').css('color',strcolor);
+                            }
                             searchInput.trigger('keyup');
                         }
                     },200);
@@ -2643,7 +2650,14 @@ $(function() {
                 target.html('<div class="text-center UICiconSearchInfo"><i class="fas fa-heart-broken"></i> Sorry no results found&hellip;</div>')
                 return true;
             }
+            var color = null;
+            var colorsel = $('div.UICIconPickHeader input.UICTabIconColor');
+            if (colorsel.length && colorsel.data('color') != undefined){
+                color = colorsel.data('color');
+            }
+
             // Cleanup
+            var iconsFound = false;
             target.html('');
             $.each(jsonData.data.search,function(id,val){
                 if (!val.hasOwnProperty('id')){
@@ -2658,6 +2672,7 @@ $(function() {
                         if (search == val.id){
                         //     matched = 'class="UICIconSelected"';
                         }
+                        iconsFound = true;
                         target.append('<a role="button" '+matched+' href="javascript:void(0)" title="' + val.label +'"><i class="fa' + itypeL + ' fa-' + val.id +'"></i></a>');
                     })
                 }
@@ -2679,6 +2694,9 @@ $(function() {
                 target.find('.UICIconSelected').removeClass('UICIconSelected');
                 $(this).addClass('UICIconSelected');
             });
+            if (iconsFound){
+                target.prepend($('<div class="searchResultHelper"><span class="label label-info">Click icon to save changes</span></div>'));
+            }
         }
 
 

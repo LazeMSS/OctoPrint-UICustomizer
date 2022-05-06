@@ -642,6 +642,19 @@ div#settings_uicustomizer_tabs_look div.btn-group span.caret{
     opacity: 0.80;
 }
 
+.UICiconSearchResults .searchResultHelper{
+    clear: both;
+    padding-bottom: 10px;
+}
+
+.UICiconSearchResults .searchResultHelper span{
+    display: block;
+    text-align: center;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+
 /* input filters for search*/
 .UICiconSearchFilter{
     width: 95% !important;
