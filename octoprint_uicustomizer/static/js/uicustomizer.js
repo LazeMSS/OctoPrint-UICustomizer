@@ -302,6 +302,7 @@ $(function() {
                         // undock/Redock the main cam
                         if (current == "#control"){
                             self.webcamAttachHandler();
+                            OctoPrint.coreui.viewmodels.controlViewModel.onBrowserTabVisibilityChange(true);
                         }
                         if (previous == "#control"){
                             self.webcamAttachHandler();
@@ -319,15 +320,30 @@ $(function() {
             // When octoprint get focus back from the user we check to see if we wan't the streamning to start or not - by default streamning will only resume if the control tab is open
             var orgBTabVis = OctoPrint.coreui.viewmodels.controlViewModel.onBrowserTabVisibilityChange;
             OctoPrint.coreui.viewmodels.controlViewModel.onBrowserTabVisibilityChange = function(status){
-                // Back + webcam enabled + webcam widget active or webcam fullscreen open
-                if (status && self.coreSettings.webcam_webcamEnabled() && (self.webcamInWidgetCheck() || $('#UICWebCamFull:visible').length)){
-                    var selTab = OctoPrint.coreui.selectedTab;
-                    OctoPrint.coreui.selectedTab = '#control';
-                    // Trigger change
-                    orgBTabVis(true);
-                    // Restore
-                    OctoPrint.coreui.selectedTab = selTab;
-                    return;
+                if (self.coreSettings.webcam_webcamEnabled()){
+                    // Back
+                    if (status){
+                        var bForceWCLoad = false;
+                        // full screen
+                        if ($('#UICWebCamFull:visible').length){
+                            bForceWCLoad = true;
+                        // On the control tab
+                        }else if (OctoPrint.coreui.selectedTab == "#control" && !self.UICsettings.hideMainCam()){
+                            bForceWCLoad = true;
+                        // Webcam widget active
+                        }else if ($('#IUCWebcamContainer').hasClass('in')){
+                            bForceWCLoad = true;
+                        }
+                        if (bForceWCLoad){
+                            var selTab = OctoPrint.coreui.selectedTab;
+                            OctoPrint.coreui.selectedTab = '#control';
+                            // Trigger change
+                            orgBTabVis(true);
+                            // Restore
+                            OctoPrint.coreui.selectedTab = selTab;
+                            return;
+                        }
+                    }
                 }
                 orgBTabVis(status);
             }
@@ -411,7 +427,7 @@ $(function() {
                 $(window).trigger('resize');
 
                 // make sure to start the initial stream if needed for the webcam widget
-                if (self.coreSettings.webcam_webcamEnabled() && $('#UICWebCamWidget').length){
+                if (self.coreSettings.webcam_webcamEnabled() && $('#UICWebCamWidget').length && $('#IUCWebcamContainer').hasClass('in')){
                     self.webcamAttachHandler();
                     OctoPrint.coreui.viewmodels.controlViewModel.onBrowserTabVisibilityChange(true);
                 }
@@ -1519,6 +1535,14 @@ $(function() {
                 return;
             }
             $('#IUCWebcamContainer div.nowebcam').remove();
+
+            // Stop stream
+            $('#UICWebCamWidget').on('hidden.bs.collapse.UIC',function(){
+                OctoPrint.coreui.viewmodels.controlViewModel.onBrowserTabVisibilityChange(false);
+            });
+            $('#UICWebCamWidget').on('shown.bs.collapse.UIC',function(){
+                OctoPrint.coreui.viewmodels.controlViewModel.onBrowserTabVisibilityChange(true);
+            });
         }
 
         self.webcamInWidgetCheck = function(){
@@ -1545,6 +1569,11 @@ $(function() {
                 // Always hide the main webcam if told so - make sure all is hidden
                 if (self.UICsettings.hideMainCam()){
                     self.set_hideMainCam(true);
+                }
+
+                // kill stream if widget is hidden
+                if (!$('#IUCWebcamContainer').hasClass('in')){
+                    OctoPrint.coreui.viewmodels.controlViewModel.onBrowserTabVisibilityChange(false);
                 }
 
             }else{
@@ -3326,7 +3355,7 @@ $(function() {
                 if ($('#navbar_plugin_pi_support i:visible').length == 0){
                     $('#navbar_plugin_pi_support a').prepend('<i style="font-weight:bold" class="UICRPIFix fab fa-raspberry-pi"></i>');
                 }
-
+                window.scrollTo(0,0);
             }else{
                 $('textarea.UICCustomCSS').off('blur.uicus');
                 // Remove preview toggles and restore the views when turning preview off/on
