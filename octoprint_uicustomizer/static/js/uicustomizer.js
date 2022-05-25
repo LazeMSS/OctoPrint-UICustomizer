@@ -31,7 +31,8 @@ $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicust
 
 // Now we start
 $(function() {
-    $('#webcam_container > #webcam_rotator').attr('data-webcamorg','true');
+    $('#control > #webcam_container > #webcam_rotator').attr('data-webcamorg','true');
+    $('#control > #webcam_container').attr('data-webcamorg','true');
     function UICustomizerViewModel(parameters) {
         var self = this;
         // Run in debug/verbose mode
@@ -85,7 +86,7 @@ $(function() {
                             </div>\
                             <div id="IUCWebcamContainer" class="accordion-body in collapse">\
                                 <div class="accordion-inner">\
-                                    <div id="IUCWebcamContainerSrc"></div>\
+                                    <div id="IUCWebcamContainerSrc" class="UIC_webcam_container_clone"></div>\
                                     <div class="UICwebcamdockinfo muted">Webcam is active in Control section</div>\
                                     <div class="UICWebCamWidgetWait text-center UIC-pulsate text-info"><i class="fas fa-spinner fa-spin"></i> Loading webcam&hellip;</div>\
                                 </div>\
@@ -301,6 +302,7 @@ $(function() {
                         // undock/Redock the main cam
                         if (current == "#control"){
                             self.webcamAttachHandler();
+                            OctoPrint.coreui.viewmodels.controlViewModel.onBrowserTabVisibilityChange(true);
                         }
                         if (previous == "#control"){
                             self.webcamAttachHandler();
@@ -318,15 +320,30 @@ $(function() {
             // When octoprint get focus back from the user we check to see if we wan't the streamning to start or not - by default streamning will only resume if the control tab is open
             var orgBTabVis = OctoPrint.coreui.viewmodels.controlViewModel.onBrowserTabVisibilityChange;
             OctoPrint.coreui.viewmodels.controlViewModel.onBrowserTabVisibilityChange = function(status){
-                // Back + webcam enabled + webcam widget active or webcam fullscreen open
-                if (status && self.coreSettings.webcam_webcamEnabled() && (self.webcamInWidgetCheck() || $('#UICWebCamFull:visible').length)){
-                    var selTab = OctoPrint.coreui.selectedTab;
-                    OctoPrint.coreui.selectedTab = '#control';
-                    // Trigger change
-                    orgBTabVis(true);
-                    // Restore
-                    OctoPrint.coreui.selectedTab = selTab;
-                    return;
+                if (self.coreSettings.webcam_webcamEnabled()){
+                    // Back
+                    if (status){
+                        var bForceWCLoad = false;
+                        // full screen
+                        if ($('#UICWebCamFull:visible').length){
+                            bForceWCLoad = true;
+                        // On the control tab
+                        }else if (OctoPrint.coreui.selectedTab == "#control" && !self.UICsettings.hideMainCam()){
+                            bForceWCLoad = true;
+                        // Webcam widget active
+                        }else if ($('#IUCWebcamContainer').hasClass('in')){
+                            bForceWCLoad = true;
+                        }
+                        if (bForceWCLoad){
+                            var selTab = OctoPrint.coreui.selectedTab;
+                            OctoPrint.coreui.selectedTab = '#control';
+                            // Trigger change
+                            orgBTabVis(true);
+                            // Restore
+                            OctoPrint.coreui.selectedTab = selTab;
+                            return;
+                        }
+                    }
                 }
                 orgBTabVis(status);
             }
@@ -410,7 +427,7 @@ $(function() {
                 $(window).trigger('resize');
 
                 // make sure to start the initial stream if needed for the webcam widget
-                if (self.coreSettings.webcam_webcamEnabled() && $('#UICWebCamWidget').length){
+                if (self.coreSettings.webcam_webcamEnabled() && $('#UICWebCamWidget').length && $('#IUCWebcamContainer').hasClass('in')){
                     self.webcamAttachHandler();
                     OctoPrint.coreui.viewmodels.controlViewModel.onBrowserTabVisibilityChange(true);
                 }
@@ -482,7 +499,9 @@ $(function() {
             // Remove all broken webcam duplicates
             $('[id="webcam_rotator"]').parent().addClass('UIC_webcam_container_clone');
             $('[id="webcam_rotator"]').not('[data-webcamorg="true"]').removeAttr('id');
+            $('[id="webcam_container"]').not('[data-webcamorg="true"]').removeAttr('id');
             $('#webcam_rotator').removeAttr('data-webcamorg');
+            $('#webcam_container').removeAttr('data-webcamorg');
 
             var IgnoredConflictPlugins = self.getStorage('IgnoredConflictPlugins',true);
             if (IgnoredConflictPlugins == undefined){
@@ -1516,6 +1535,14 @@ $(function() {
                 return;
             }
             $('#IUCWebcamContainer div.nowebcam').remove();
+
+            // Stop stream
+            $('#UICWebCamWidget').on('hidden.bs.collapse.UIC',function(){
+                OctoPrint.coreui.viewmodels.controlViewModel.onBrowserTabVisibilityChange(false);
+            });
+            $('#UICWebCamWidget').on('shown.bs.collapse.UIC',function(){
+                OctoPrint.coreui.viewmodels.controlViewModel.onBrowserTabVisibilityChange(true);
+            });
         }
 
         self.webcamInWidgetCheck = function(){
@@ -1542,6 +1569,11 @@ $(function() {
                 // Always hide the main webcam if told so - make sure all is hidden
                 if (self.UICsettings.hideMainCam()){
                     self.set_hideMainCam(true);
+                }
+
+                // kill stream if widget is hidden
+                if (!$('#IUCWebcamContainer').hasClass('in')){
+                    OctoPrint.coreui.viewmodels.controlViewModel.onBrowserTabVisibilityChange(false);
                 }
 
             }else{
@@ -2585,6 +2617,10 @@ $(function() {
                             $(this).prev().css('color',$(this).val());
                             $(this).closest('div.popover').find('.UICiconSearchResults').css('color',$(this).val());
                         });
+                        if (strcolor != false){
+                            colorSelector.find('.UICTabIconColor').data('color',strcolor);
+                            $('div.UICiconSearchResults').css('color',strcolor);
+                        }
                         inputcontainer.append(colorSelector);
                         var noColor = $('<button class="btn UICTabIconClear" title="No icon color is applied"><span class="UIC-fa-stack"><i class="fas fa-slash"></i> <i class="fas fa-eye-dropper fa-stack-1x"></i></span></button>');
                         noColor.on('click',function(){
@@ -2620,6 +2656,9 @@ $(function() {
                             colorSelector.trigger('change');
                         }
                         if (defaultstr != ""){
+                            if (strcolor != false){
+                                $('div.UICiconSearchResults').css('color',strcolor);
+                            }
                             searchInput.trigger('keyup');
                         }
                     },200);
@@ -2640,7 +2679,14 @@ $(function() {
                 target.html('<div class="text-center UICiconSearchInfo"><i class="fas fa-heart-broken"></i> Sorry no results found&hellip;</div>')
                 return true;
             }
+            var color = null;
+            var colorsel = $('div.UICIconPickHeader input.UICTabIconColor');
+            if (colorsel.length && colorsel.data('color') != undefined){
+                color = colorsel.data('color');
+            }
+
             // Cleanup
+            var iconsFound = false;
             target.html('');
             $.each(jsonData.data.search,function(id,val){
                 if (!val.hasOwnProperty('id')){
@@ -2655,6 +2701,7 @@ $(function() {
                         if (search == val.id){
                         //     matched = 'class="UICIconSelected"';
                         }
+                        iconsFound = true;
                         target.append('<a role="button" '+matched+' href="javascript:void(0)" title="' + val.label +'"><i class="fa' + itypeL + ' fa-' + val.id +'"></i></a>');
                     })
                 }
@@ -2676,6 +2723,9 @@ $(function() {
                 target.find('.UICIconSelected').removeClass('UICIconSelected');
                 $(this).addClass('UICIconSelected');
             });
+            if (iconsFound){
+                target.prepend($('<div class="searchResultHelper"><span class="label label-info">Click icon to save changes</span></div>'));
+            }
         }
 
 
@@ -3305,7 +3355,7 @@ $(function() {
                 if ($('#navbar_plugin_pi_support i:visible').length == 0){
                     $('#navbar_plugin_pi_support a').prepend('<i style="font-weight:bold" class="UICRPIFix fab fa-raspberry-pi"></i>');
                 }
-
+                window.scrollTo(0,0);
             }else{
                 $('textarea.UICCustomCSS').off('blur.uicus');
                 // Remove preview toggles and restore the views when turning preview off/on
