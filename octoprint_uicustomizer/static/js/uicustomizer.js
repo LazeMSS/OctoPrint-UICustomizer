@@ -1460,8 +1460,10 @@ $(function() {
                     $(this).parent().addClass('active');
                     $('#UICGcodeVWidgetZL').text($(this).text());
                     $('#UICGcodeVWidget').data('zoomlvl',$(this).data('zoomlvl'));
-                    // Save the settings
-                    OctoPrint.settings.savePluginSettings('uicustomizer',{'gcodeZoom':$(this).data('zoomlvl')})
+                    // Save the settings but not when the settings has been opened
+                    if (!self.settingsBeenShown){
+                        OctoPrint.settings.savePluginSettings('uicustomizer',{'gcodeZoom':$(this).data('zoomlvl')});
+                    }
                 });
                 if (typeof self.UICsettings.gcodeZoom == "undefined" && $('#UICGcodeVWidget ul.dropdown-menu a[data-zoomlvl="'+self.UICsettings.gcodeZoom()+'"]').length == 0){
                     $('#UICGcodeVWidget ul.dropdown-menu a:first').trigger('click');
@@ -3466,7 +3468,6 @@ $(function() {
         // ------------------------------------------------------------------------------------------------------------------------
         // When settings are hidden
         self.onSettingsHidden = function() {
-            self.settingsBeenShown = false;
             // Revert if not saved and we have been previewing anything
             if (!self.saved && self.previewHasBeenOn){
                 self.previewHasBeenOn = false;
@@ -3509,6 +3510,8 @@ $(function() {
             $('#settings_plugin_uicustomizer input').off('input.uicus change.uicus click.uicus');
             // Fix webcam
             self.webcamAttachHandler();
+
+            self.settingsBeenShown = false;
         }
 
         // ------------------------------------------------------------------------------------------------------------------------

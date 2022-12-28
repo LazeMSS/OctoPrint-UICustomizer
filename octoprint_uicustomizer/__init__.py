@@ -22,6 +22,7 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
         self.themeVersion = 'https://api.github.com/repos/LazeMSS/OctoPrint-UICustomizerThemes/releases/latest'
 
     def on_after_startup(self):
+        # self._logger.warning(self.get_plugin_data_folder())
         self._logger.info("UI Customizer is initialized.")
 
     def get_assets(self):
@@ -214,6 +215,8 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
         self._logger.info("Sending settings")
         return settingsData, 200, {"Content-Disposition": "attachment; filename=\"UICustomizerSettings.json\""}
 
+    def is_blueprint_csrf_protected(self):
+        return True
 
 __plugin_name__ = "UI Customizer"
 __plugin_pythoncompat__ = ">=2.7,<4"
