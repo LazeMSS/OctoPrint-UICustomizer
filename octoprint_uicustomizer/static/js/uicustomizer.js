@@ -1558,7 +1558,7 @@ $(function() {
 
         self.webcamAttachHandler = function(){
             var curCam = '#webcam_rotator';
-            if ((determineWebcamStreamType(self.coreSettings.webcam_streamUrl()) != "mjpg")){
+            if (self.coreSettings.webcam_streamUrl() != "" && determineWebcamStreamType(self.coreSettings.webcam_streamUrl()) != "mjpg"){
                 curCam = '#webcam_hls';
             }
             var curCamParent = '#'+$(curCam).parent().attr('id');
@@ -1584,7 +1584,7 @@ $(function() {
 
             }else{
                 self.set_hideMainCam(false);
-                if ((determineWebcamStreamType(self.coreSettings.webcam_streamUrl()) != "mjpg")){
+                if (curCam == '#webcam_hls'){
                     targetParent = '#webcam_hls_container';
                 }else{
                     targetParent = '#webcam_container';
