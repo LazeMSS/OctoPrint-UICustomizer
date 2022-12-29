@@ -6,24 +6,27 @@ $('head').prepend('<link rel="stylesheet" href="./plugin/uicustomizer/static/css
 // Preloader to  make it pretty
 $('head').prepend('<meta id="UICViewport" name="viewport" content="width=device-width, initial-scale=1.0">');
 
-// Set theme onload
+// Set theme onload from storage if possible
 var UICPreLoadTheme  = "default";
 var UICThemeV = 0;
 if (Modernizr.localstorage){
     if (window.location.pathname != "/"){
         UICPreLoadTheme = localStorage['plugin.uicustomizer.'+window.location.pathname+'theme'];
+        UICThemeV = localStorage['plugin.uicustomizer.'+window.location.pathname+'themeversion'];
     }else{
         UICPreLoadTheme = localStorage['plugin.uicustomizer.theme'];
+        UICThemeV = localStorage['plugin.uicustomizer.themeversion'];
     }
+
     if (UICPreLoadTheme == undefined || UICPreLoadTheme == "" || UICPreLoadTheme == null){
         UICPreLoadTheme = "default";
     }
-    UICThemeV = localStorage['plugin.uicustomizer.themeversion'];
-    if (UICThemeV == undefined){
+    if (UICThemeV == undefined || UICThemeV == "" || UICThemeV == null){
         UICThemeV = 0;
     }
 }
-$('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/static/themes/css/active.css?theme='+UICPreLoadTheme+'&v='+UICThemeV+'">');
+// Prevent browser caching we use the names
+$('body').append('<link class="UICThemeCSS" rel="stylesheet" href="./plugin/uicustomizer/theme/'+UICPreLoadTheme+'.css?v='+UICThemeV+'">');
 delete UICPreLoadTheme,UICThemeV;
 // we will remove it again if user has opted out - this will just make it more clean on showing the UI
 $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicustomizer/static/css/bootstrap-responsive.css">');
@@ -62,9 +65,10 @@ $(function() {
 
         self.ThemesLoaded = false;
         self.ThemesInternalURL = './plugin/uicustomizer/static/themes/';
+        self.ThemesBaseURL = self.ThemesInternalURL;
+
         self.ThemesExternalURL = 'https://lazemss.github.io/OctoPrint-UICustomizerThemes/';
         self.GitHubBaseUrL = 'LazeMSS/OctoPrint-UICustomizerThemes/releases/latest';
-        self.ThemesBaseURL = self.ThemesInternalURL;
 
         // timer for resize fix modal
         self.modalTimer = null;
@@ -730,7 +734,7 @@ $(function() {
                 if('themeVersion' in self.UICsettings){
                     themeversion = self.UICsettings.themeVersion();
                 }
-                var themeURL = self.ThemesBaseURL+"css/"+themeName+'.css?theme='+themeName+'&v='+themeversion;
+                var themeURL = "./plugin/uicustomizer/theme/"+themeName+'.css?v='+themeversion;
 
                 // Preview or for real?
                 if (!preview){
@@ -2741,11 +2745,11 @@ $(function() {
                         self.loadSettingsThemes(response,self.ThemesExternalURL);
                     },
                     // Try local as a workaround
-                    error: function (jqXHR, textStatus, errorThrown ) {
-                        console.log("FAILED TO LOAD: "+ self.ThemesExternalURL,errorThrown)
+                    error: function (jqXHR) {
+                        console.log("FAILED TO LOAD: "+ self.ThemesExternalURL, jqXHR);
                         new PNotify({
                             title: 'Unable to load themes',
-                            text: 'Failed to load "'+self.ThemesExternalURL+'themes.json" file - internal files loaded as fallback.<br><br>Do you have any plugins blocking access to external sites, for example NoScript.<br><br><code>Error message: ' + errorThrown + '</code>',
+                            text: 'Failed to load "'+self.ThemesExternalURL+'themes.json" file - internal files loaded as fallback.<br><br>Do you have any plugins blocking access to external sites, for example NoScript.<br><br><code>Error message: ' + jqXHR.status + " " + jqXHR.statusText   + '</code>',
                             type: "error",
                             hide: false
                         });
@@ -2754,8 +2758,8 @@ $(function() {
                             success: function(response){
                                 self.loadSettingsThemes(response,self.ThemesInternalURL);
                             },
-                            error: function (request, status, error) {
-                                alert("FAILED TO LOAD THEMES!");
+                            error: function (jqXHR2) {
+                                alert("FAILED TO LOAD THEMES!: " + jqXHR2.status + " " + jqXHR2.statusText );
                             }
                         });
                     }
@@ -3453,6 +3457,7 @@ $(function() {
                 if (self.ThemesLoaded){
                     self.logToConsole(" ----> Themes have been loaded - we can save <----");
                     self.UICsettings.theme($('#settings_uicustomizer_themesContent li.UICThemeSelected').data('uictheme'));
+                    // we are usin the external URL for themes - normal but it might fail and we use the local
                     if (self.ThemesBaseURL != self.ThemesInternalURL){
                         self.UICsettings.themeLocal(false);
                     }else{

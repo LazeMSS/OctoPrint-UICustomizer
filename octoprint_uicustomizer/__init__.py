@@ -18,6 +18,7 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                        octoprint.plugin.BlueprintPlugin):
 
     def __init__(self):
+        self.baseFolder  = os.path.join(os.path.dirname(os.path.realpath(__file__)),'static','themes','css')
         self.themeURL = 'https://lazemss.github.io/OctoPrint-UICustomizerThemes/css/'
         self.themeVersion = 'https://api.github.com/repos/LazeMSS/OctoPrint-UICustomizerThemes/releases/latest'
 
@@ -38,9 +39,7 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
             self.setThemeFile(curTheme,themeLocal)
 
     def setThemeFile(self,source,localTheme = True,themeVersion = False):
-        baseFolder = os.path.join(os.path.dirname(os.path.realpath(__file__)),'static','themes','css')
-        targetTheme = os.path.join(baseFolder,'active.css')
-        srcTheme = os.path.join(baseFolder,source+'.css')
+        srcTheme = os.path.join(self.baseFolder,source+'.css')
 
         # Download the file or not
         if localTheme == False and source != "default":
@@ -48,43 +47,29 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
             try:
                 r = requests.get(dlURL, allow_redirects=True)
             except Exception as e:
-                self._logger.error("Failed to download theme: %s (%s)",dlURL,e);
+                self._logger.error("Failed to download theme: %s (%s)",dlURL,e)
                 return
 
             if r.status_code == 200:
                 with open(srcTheme, 'wb') as f:
                     f.write(r.content)
-                    self._logger.info("Downloaded theme: "+dlURL)
+                    self._logger.info("Downloaded theme: "+dlURL + " into: " + srcTheme)
             else:
-                self._logger.warning("Unable to download theme: "+dlURL);
+                self._logger.warning("Unable to download theme: "+dlURL + " into: " + srcTheme)
 
-        if os.path.exists(baseFolder) and os.path.isfile(srcTheme):
-            # remove old
-            try:
-                os.remove(targetTheme)
-            except OSError:
-                pass
+        # Set the theme version
+        if themeVersion == False:
+            themeVersion = self.getRemoteThemeVersion()
 
-            # symlink on linux else we copy
-            if sys.platform.startswith("linux"):
-                os.symlink(srcTheme, targetTheme)
-            else:
-                shutil.copy2(srcTheme, targetTheme)
-
-            # Set the theme version
-            if themeVersion == False:
-                themeVersion = self.getRemoteThemeVersion()
-            if themeVersion != False:
-                self._settings.set(["themeVersion"],str(themeVersion))
-
-        else:
-            self._logger.warning("Unable to set the theme: %s",srcTheme)
+        # anything found then lets store it
+        if themeVersion != False:
+            self._settings.set(["themeVersion"],str(themeVersion))
 
     def getRemoteThemeVersion(self):
         try:
             r = requests.get(self.themeVersion, allow_redirects=True)
         except Exception as e:
-            self._logger.error("Failed to get theme version: %s (%s)",self.themeVersion,e);
+            self._logger.error("Failed to get theme version: %s (%s)",self.themeVersion,e)
             return False
         if r.status_code == 200:
             jsonVersion = r.json()
@@ -93,8 +78,8 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
         return False
 
     def loginui_theming(self):
-        return [flask.url_for("plugin.uicustomizer.static", filename="themes/css/active.css")]
-
+        theme = self._settings.get(["theme"],merged=True,asdict=True)
+        return [flask.url_for("plugin.uicustomizer.static", filename="../theme/"+theme+".css")]
 
     # Check for new versions on login
     def on_event(self,event,payload):
@@ -118,11 +103,11 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
         # save
         octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
 
-        # Theme selected - lets fix it
+        # Theme selected - lets download and update
         if 'theme' in data and data['theme']:
             # Local or not
             themeLocal = self._settings.get(["themeLocal"],merged=True,asdict=True)
-            self._logger.info("Setting theme \"%s\"",str(data['theme']))
+            self._logger.info("Saving theme \"%s\"",str(data['theme']))
             self.setThemeFile(str(data['theme']),themeLocal)
 
     # default settings
@@ -218,6 +203,15 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
     def is_blueprint_csrf_protected(self):
         return True
 
+    def route_hook(self, server_routes, *args, **kwargs):
+        from octoprint.server.util.tornado import LargeResponseHandler, path_validation_factory
+        from octoprint.util import is_hidden_path
+        return [
+            (r"theme/(.*)", LargeResponseHandler,
+             {'path': self.baseFolder, 'as_attachment': False, 'path_validation': path_validation_factory(
+                 lambda path: not is_hidden_path(path), status_code=404)})
+        ]
+
 __plugin_name__ = "UI Customizer"
 __plugin_pythoncompat__ = ">=2.7,<4"
 
@@ -228,5 +222,6 @@ def __plugin_load__():
     global __plugin_hooks__
     __plugin_hooks__ = {
         "octoprint.theming.login": __plugin_implementation__.loginui_theming,
+        "octoprint.server.http.routes": __plugin_implementation__.route_hook,
         "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information
     }
