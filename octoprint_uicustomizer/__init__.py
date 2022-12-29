@@ -89,6 +89,7 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
             # only check for new themes every hour
             curTime = int(time.time())
             if (curTime-self.remoteThemeCheck > 3600):
+                self._logger.info("Checking for updated themes")
                 self.remoteThemeCheck = curTime
                 themeLocal = self._settings.get(["themeLocal"],merged=True,asdict=True)
                 # Using remote themes?
