@@ -9,6 +9,7 @@ import flask
 import sys
 import shutil
 import requests
+import time
 
 class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                        octoprint.plugin.SettingsPlugin,
@@ -18,6 +19,7 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
                        octoprint.plugin.BlueprintPlugin):
 
     def __init__(self):
+        self.remoteThemeCheck = 0
         self.baseFolder  = os.path.join(os.path.dirname(os.path.realpath(__file__)),'static','themes','css')
         self.themeURL = 'https://lazemss.github.io/OctoPrint-UICustomizerThemes/css/'
         self.themeVersion = 'https://api.github.com/repos/LazeMSS/OctoPrint-UICustomizerThemes/releases/latest'
@@ -84,20 +86,24 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
     # Check for new versions on login
     def on_event(self,event,payload):
         if event == "UserLoggedIn":
-            themeLocal = self._settings.get(["themeLocal"],merged=True,asdict=True)
-            # Using remote themes?
-            if themeLocal == False:
-                # Get the remote theme version
-                themeVersionRemote = self.getRemoteThemeVersion()
-                # Did we get the version no
-                if themeVersionRemote != False:
-                    # Get local versio no
-                    themeVersionLocal = str(self._settings.get(["themeVersion"],merged=True,asdict=True))
-                    # Different versions?
-                    if themeVersionLocal != themeVersionRemote:
-                        themeName = self._settings.get(["theme"],merged=True,asdict=True)
-                        self._logger.info("New themes found - starting update. %s != %s : %s", themeVersionLocal, themeVersionRemote, themeName)
-                        self.setThemeFile(str(themeName),False,themeVersionRemote)
+            # only check for new themes every hour
+            curTime = int(time.time())
+            if (curTime-self.remoteThemeCheck > 3600):
+                self.remoteThemeCheck = curTime
+                themeLocal = self._settings.get(["themeLocal"],merged=True,asdict=True)
+                # Using remote themes?
+                if themeLocal == False:
+                    # Get the remote theme version
+                    themeVersionRemote = self.getRemoteThemeVersion()
+                    # Did we get the version no
+                    if themeVersionRemote != False:
+                        # Get local versio no
+                        themeVersionLocal = str(self._settings.get(["themeVersion"],merged=True,asdict=True))
+                        # Different versions?
+                        if themeVersionLocal != themeVersionRemote:
+                            themeName = self._settings.get(["theme"],merged=True,asdict=True)
+                            self._logger.info("New themes found - starting update. %s != %s : %s", themeVersionLocal, themeVersionRemote, themeName)
+                            self.setThemeFile(str(themeName),False,themeVersionRemote)
 
     def on_settings_save(self,data):
         # save
