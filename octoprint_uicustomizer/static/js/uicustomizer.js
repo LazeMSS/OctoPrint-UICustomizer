@@ -3259,8 +3259,13 @@ $(function() {
 
                             // To much diff?
                             if(thisDiff < 1){
-                                diff -= (thisVal-1);
-                                $(item).val(1).trigger('input');
+                                if ($(item).parent().next().is(':empty')){
+                                    diff -= thisVal;
+                                    $(item).val(0).trigger('input');
+                                }else{
+                                    diff -= (thisVal-1);
+                                    $(item).val(1).trigger('input');
+                                }
                             }else{
                                 diff -= thisDiff;
                                 $(item).val(thisDiff).trigger('input');
