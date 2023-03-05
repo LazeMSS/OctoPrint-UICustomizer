@@ -2934,7 +2934,7 @@ $(function() {
                     // Show warning
                     $('#settings_uicustomizer_themesContent').html('<div class="alert alert-info">\
                     <strong>Information regarding themes</strong>\
-                    <p>In order to download new and updated themes UI Customizer will download the themes, using a secure connection, from <a href="'+self.ThemesExternalURL+'" target="_blank">'+self.ThemesExternalURL+'</a>.</p><p>No personal data is sent to this URL. The only data being sent is your public IP address due to the nature of the internet.</p><p>If you have any plugins (ie. NoScript) installed that might block access to external sites then please allow access to https://github.io</p><p>Click "Continue" to downlad themes.</p>\
+                    <p>In order to download new and updated themes UI Customizer will download the themes, using a secure connection, from <a href="'+self.ThemesExternalURL+'" target="_blank">'+self.ThemesExternalURL+'</a>.</p><p>No personal data is sent to this URL. The only data being sent is your public IP address due to the nature of the internet.</p><p>If you have any plugins (ie. NoScript) installed that might block access to external sites then please allow access to https://github.io</p><p>Click "Continue" to download themes.</p>\
                     <button class="btn btn-success">Continue</button>\
                     </div>').find('button').one('click',function(){
                         self.setStorage("getThemesApproved",1,false);
