@@ -46,6 +46,7 @@ $(function() {
         self.settings = null;
         self.UICsettings = null;
         self.tempModel = parameters[2] ? parameters[2] : parameters[1];
+        self.classiCam = parameters[3] ? parameters[3] : false;
 
         // Ignore these accordions - warnings about safety should always be shown
         self.accordIgnore = ['sidebar_plugin_firmware_check_info','sidebar_plugin_firmware_check_warning'];
@@ -155,6 +156,10 @@ $(function() {
 
             self.settings = self.coreSettings.settings;
             self.UICsettings = self.coreSettings.settings.plugins.uicustomizer;
+
+            if ('webcamError' in OctoPrint.coreui.viewmodels.controlViewModel){
+                self.classiCam = OctoPrint.coreui.viewmodels.controlViewModel;
+            }
 
             // Cleanup everything if using touch ui
             if (typeof OctoPrint.coreui.viewmodels.touchUIViewModel != "undefined"){
@@ -311,9 +316,9 @@ $(function() {
                         if (previous == "#control"){
                             self.webcamAttachHandler();
                         }
-                        if (OctoPrint.coreui.viewmodels.controlViewModel.webcamDisableTimeout != undefined) {
-                            clearTimeout(OctoPrint.coreui.viewmodels.controlViewModel.webcamDisableTimeout);
-                            OctoPrint.coreui.viewmodels.controlViewModel.webcamDisableTimeout = undefined;
+                        if (self.classiCam != false && self.classiCam.webcamDisableTimeout != undefined) {
+                            clearTimeout(self.classiCam.webcamDisableTimeout);
+                            self.classiCam.webcamDisableTimeout = undefined;
                         }
                         return;
                     }
@@ -352,21 +357,23 @@ $(function() {
                 orgBTabVis(status);
             }
 
-            OctoPrint.coreui.viewmodels.controlViewModel.webcamLoaded.subscribe(function(loadStatus){
-                if (self.coreSettings.webcam_webcamEnabled() && self.webcamInWidgetCheck()){
-                    if (loadStatus){
-                        $('.UICWebCamWidgetWait,.UICwebcamLoading').hide();
-                    }else{
+            if (self.classiCam != false){
+                self.classiCam.webcamLoaded.subscribe(function(loadStatus){
+                    if (self.coreSettings.webcam_webcamEnabled() && self.webcamInWidgetCheck()){
+                        if (loadStatus){
+                            $('.UICWebCamWidgetWait,.UICwebcamLoading').hide();
+                        }else{
+                            $('.UICWebCamWidgetWait,.UICwebcamLoading').show();
+                        }
+                    }
+                });
+
+                self.classiCam.webcamError.subscribe(function(){
+                    if (self.coreSettings.webcam_webcamEnabled() && self.webcamInWidgetCheck()){
                         $('.UICWebCamWidgetWait,.UICwebcamLoading').show();
                     }
-                }
-            });
-
-            OctoPrint.coreui.viewmodels.controlViewModel.webcamError.subscribe(function(){
-                if (self.coreSettings.webcam_webcamEnabled() && self.webcamInWidgetCheck()){
-                    $('.UICWebCamWidgetWait,.UICwebcamLoading').show();
-                }
-            });
+                });
+            }
 
 
 
@@ -1295,7 +1302,7 @@ $(function() {
                 if (!('ontouchstart' in window)){
                     zoomclick.hide();
                     main.off('mouseenter.UICWebCamZoom mousemove.UICWebCamZoom').on('mouseenter.UICWebCamZoom mousemove.UICWebCamZoom',function(e){
-                        if (OctoPrint.coreui.viewmodels.controlViewModel.webcamLoaded() && $(this).find(childstr).length){
+                        if (self.classiCam != false && self.classiCam.webcamLoaded() && $(this).find(childstr).length){
                             zoomclick.show();
                         }
                     }).off('mouseleave.UICWebCamZoom').on('mouseleave.UICWebCamZoom',function(e){
@@ -3857,8 +3864,8 @@ $(function() {
 
     OCTOPRINT_VIEWMODELS.push({
         construct: UICustomizerViewModel,
-        dependencies: ["settingsViewModel","temperatureViewModel","plotlytempgraphViewModel"],
-        optional: ["plotlytempgraphViewModel"],
+        dependencies: ["settingsViewModel","temperatureViewModel","plotlytempgraphViewModel","classicWebcamViewModel"],
+        optional: ["plotlytempgraphViewModel","classicWebcamViewModel"],
         elements: []
     });
 });
