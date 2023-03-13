@@ -2947,7 +2947,7 @@ $(function() {
             self.previewHasBeenOn = false;
 
             // Hide webcam on setting open
-            $('#UICWebCamFull div.UICWebCamClick').trigger('click');
+            $('#UICWebCamShrink').trigger('click');
 
             // Upload of settings JSON
             $('#UICUploadSettings').off('change');
