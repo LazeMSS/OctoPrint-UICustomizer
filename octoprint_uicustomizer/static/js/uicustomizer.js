@@ -1649,13 +1649,11 @@ $(function() {
             var curCamParent = '#'+$(curCam).parent().attr('id');
             var targetParent = '';
             var hideThese = 'div.UICWebCamWidgetWait, #IUCWebcamContainerSrc';
-            var showloaders = 'div.UICwebcamdockinfo';
 
             // Is the webcam in the widget?
             if (self.webcamInWidget()){
                 targetParent = '#IUCWebcamContainerSrc';
                 hideThese = 'div.UICwebcamdockinfo, #webcam_hls_container, #webcam_container';
-                showloaders = 'div.UICWebCamWidgetWait';
 
                 // Always hide the main webcam if told so - make sure all is hidden
                 if (self.UICsettings.hideMainCam()){
@@ -1682,13 +1680,11 @@ $(function() {
                 }else{
                     targetParent = '#webcam_container';
                 }
+		$('div.UICwebcamdockinfo').show();
             }
             // Hide any other from the current one
             if (hideThese != ""){
                 $(hideThese).hide();
-            }
-            if (showloaders != ""){
-                $(showloaders).show();
             }
             if (curCamParent == targetParent){
                 return;

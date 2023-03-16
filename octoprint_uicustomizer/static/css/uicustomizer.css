@@ -1144,9 +1144,9 @@ body.inlineFullscreen .UICWebCamClick{
     z-index: -5;
     user-select: none;
     display: none;
-    background: #0000001a;
+    background: #00000005;
     border-radius: 0.6em;
-    border-color: #0000001a;
+    border-color: #00000008;
     border-width: 1px;
     border-style: solid;
 }
