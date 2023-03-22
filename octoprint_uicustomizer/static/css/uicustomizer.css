@@ -1132,6 +1132,11 @@ body.inlineFullscreen .UICWebCamClick{
     right: 5px;
 }
 
+#IUCWebcamContainer div.keycontrol_overlay{
+    display: none !important;
+    pointer-events:none;
+}
+
 #IUCWebcamContainer div.UICwebcamdockinfo{
     text-align: center;
     min-height: 80px;
@@ -1139,6 +1144,11 @@ body.inlineFullscreen .UICWebCamClick{
     z-index: -5;
     user-select: none;
     display: none;
+    background: #00000005;
+    border-radius: 0.6em;
+    border-color: #00000008;
+    border-width: 1px;
+    border-style: solid;
 }
 
 #IUCWebcamContainer div.accordion-inner{
@@ -1151,9 +1161,17 @@ body.inlineFullscreen .UICWebCamClick{
     position: absolute;
     text-align: center;
     width: 100%;
-    left: 15px;
     top: 0px;
-    z-index: -1;
+    z-index: 1;
+}
+
+#IUCWebcamContainer #webcam_plugins_container {
+    min-height: fit-content;
+}
+
+#IUCWebcamContainer div.nowebcam div.text.webcam_error{
+    line-height: normal;
+    transform: none;
 }
 
 /*hide zoom click if only*/
@@ -1468,6 +1486,5 @@ html.themeify #UICsetMenuShow{
     height: 100%;
     object-fit: contain;
 }
-
 
 /* UICustomizer END */
