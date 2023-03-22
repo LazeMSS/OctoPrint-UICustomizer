@@ -1247,8 +1247,13 @@ $(function() {
 
         // ------------------------------------------------------------------------------------------------------------------------
         self.set_addWebCamZoom = function(enable){
-            var streamURL = self.coreSettings.webcam_streamUrl();
-            var hlsCam = (determineWebcamStreamType(streamURL) != "mjpg");
+            if (self.newCam){
+                var streamURL = self.camModel.webcamStreamType();
+                var hlsCam = (self.camModel.webcamStreamType() != "mjpg");
+            }else{
+                var streamURL = self.coreSettings.webcam_streamUrl();
+                var hlsCam = (determineWebcamStreamType(streamURL) != "mjpg");
+            }
             // Remove all webcam zoom to cleanup
             $('#UICWebCamFull').remove();
             $('div.UICWebCamClick').remove();
@@ -1332,8 +1337,14 @@ $(function() {
                         main.hide();
                     }
 
-                    var streamURL = self.coreSettings.webcam_streamUrl();
-                    var hlsCam =  (determineWebcamStreamType(streamURL) != "mjpg");;
+                    // Get the data
+                    if (self.newCam){
+                        streamURL = self.camModel.webcamStreamType();
+                        hlsCam = (self.camModel.webcamStreamType() != "mjpg");
+                    }else{
+                        streamURL = self.coreSettings.webcam_streamUrl();
+                        hlsCam = (determineWebcamStreamType(streamURL) != "mjpg");
+                    }
 
                     // Append floating cam to body
                     var CamClass = " FullCam"
@@ -1557,7 +1568,7 @@ $(function() {
             $('#IUCWebcamContainerSrc,div.UICWebCamWidgetWait').remove();
 
             // Not configured - then show a warning
-            if (self.coreSettings.webcam_webcamEnabled() == false || self.coreSettings.webcam_streamUrl() == ""){
+            if (OctoPrint.coreui.viewmodels.classicWebcamSettingsViewModel.webcamEnabled() == false || OctoPrint.coreui.viewmodels.classicWebcamSettingsViewModel.streamUrl() == ""){
                 $('#IUCWebcamContainer div.nowebcam').remove();
                 $('#IUCWebcamContainer > div').append('<div class="nowebcam"><i class="fas fa-question"></i> <span>Webcam not configured&hellip;</span></div>');
                 $('#IUCWebcamContainer').find('.UICWebCamWidgetWait,.UICwebcamdockinfo').hide();
@@ -1649,11 +1660,13 @@ $(function() {
             var curCamParent = '#'+$(curCam).parent().attr('id');
             var targetParent = '';
             var hideThese = 'div.UICWebCamWidgetWait, #IUCWebcamContainerSrc';
+            var showloaders = 'div.UICwebcamdockinfo';
 
             // Is the webcam in the widget?
             if (self.webcamInWidget()){
                 targetParent = '#IUCWebcamContainerSrc';
                 hideThese = 'div.UICwebcamdockinfo, #webcam_hls_container, #webcam_container';
+                showloaders = 'div.UICWebCamWidgetWait';
 
                 // Always hide the main webcam if told so - make sure all is hidden
                 if (self.UICsettings.hideMainCam()){
@@ -1680,11 +1693,13 @@ $(function() {
                 }else{
                     targetParent = '#webcam_container';
                 }
-		$('div.UICwebcamdockinfo').show();
             }
             // Hide any other from the current one
             if (hideThese != ""){
                 $(hideThese).hide();
+            }
+            if (showloaders != ""){
+                $(showloaders).show();
             }
             if (curCamParent == targetParent){
                 return;
