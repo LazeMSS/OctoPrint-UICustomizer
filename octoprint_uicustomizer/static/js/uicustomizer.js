@@ -46,7 +46,7 @@ $(function() {
         self.settings = null;
         self.UICsettings = null;
         self.tempModel = parameters[2] ? parameters[2] : parameters[1];
-        self.newCam = parameters[3] ? true : false;
+        self.newCam = ((VERSION >=  "1.9.0") && (parameters[3] ? true : false));
         self.camModel = parameters[3];
 
         // Ignore these accordions - warnings about safety should always be shown
@@ -185,7 +185,11 @@ $(function() {
                 });
             }else{
                 // Assign the fallback method
-                self.camModel = OctoPrint.coreui.viewmodels.controlViewModel;
+                if (VERSION >=  "1.9.0"){
+                    self.camModel = null;
+                }else{
+                    self.camModel = OctoPrint.coreui.viewmodels.controlViewModel;
+                }
             }
 
             // Load from storage
@@ -310,7 +314,7 @@ $(function() {
             }
 
             // All the old school webcam stuff
-            if (!self.newCam){
+            if (!self.newCam && self.camModel != null){
                 // Unload on tab change wrapper for handle webcam widget/fullscreen not getting disabled
                 var orgTabChange = OctoPrint.coreui.viewmodels.controlViewModel.onTabChange;
                 OctoPrint.coreui.viewmodels.controlViewModel.onTabChange = function(current, previous){
@@ -567,7 +571,7 @@ $(function() {
 
             // Test multicam
             pluginData = self.findPluginData('multicam',true)
-            if (pluginData){
+            if (pluginData && (VERSION <  "1.9.0")){
                 self.multicamPluginHandler();
                 self.settings.plugins.multicam.multicam_profiles.subscribe(function(theme) {
                     self.multicamPluginHandler();
