@@ -46,8 +46,8 @@ $(function() {
         self.settings = null;
         self.UICsettings = null;
         self.tempModel = parameters[2] ? parameters[2] : parameters[1];
-        self.newCam = parameters[3] ? true : false;
-        self.camModel = parameters[3];
+        self.newCam = (typeof self.coreSettings.webcam_webcams != undefined);
+        self.classicCam = parameters[3];
 
         // Ignore these accordions - warnings about safety should always be shown
         self.accordIgnore = ['sidebar_plugin_firmware_check_info','sidebar_plugin_firmware_check_warning'];
@@ -63,6 +63,7 @@ $(function() {
         self.settingsBeenShown = false;
 
         self.gCodeViewerActive = false;
+        self.gCodePerCentEvent = null;
         self.tempGraphActive = false;
 
         self.ThemesLoaded = false;
@@ -184,8 +185,9 @@ $(function() {
                     }
                 });
             }else{
-                // Assign the fallback method
-                self.camModel = OctoPrint.coreui.viewmodels.controlViewModel;
+                if (self.classicCam == null){
+                    self.classicCam = OctoPrint.coreui.viewmodels.controlViewModel;
+                }
             }
 
             // Load from storage
@@ -309,8 +311,8 @@ $(function() {
                 }
             }
 
-            // All the old school webcam stuff
-            if (!self.newCam){
+            // All the old school webcam stuff START-------------------------------------------------------------------------------------------------------------------
+            if (!self.newCam && self.classicCam != null){
                 // Unload on tab change wrapper for handle webcam widget/fullscreen not getting disabled
                 var orgTabChange = OctoPrint.coreui.viewmodels.controlViewModel.onTabChange;
                 OctoPrint.coreui.viewmodels.controlViewModel.onTabChange = function(current, previous){
@@ -329,9 +331,9 @@ $(function() {
                             if (previous == "#control"){
                                 self.webcamAttachHandler();
                             }
-                            if (self.camModel.webcamDisableTimeout != undefined) {
-                                clearTimeout(self.camModel.webcamDisableTimeout);
-                                self.camModel.webcamDisableTimeout = undefined;
+                            if (self.classicCam.webcamDisableTimeout != undefined) {
+                                clearTimeout(self.classicCam.webcamDisableTimeout);
+                                self.classicCam.webcamDisableTimeout = undefined;
                             }
                             return;
                         }
@@ -370,7 +372,7 @@ $(function() {
                     orgBTabVis(status);
                 }
 
-                self.camModel.webcamLoaded.subscribe(function(loadStatus){
+                self.classicCam.webcamLoaded.subscribe(function(loadStatus){
                     if (self.coreSettings.webcam_webcamEnabled() && self.webcamInWidget()){
                         if (loadStatus){
                             $('.UICWebCamWidgetWait,.UICwebcamLoading').hide();
@@ -380,12 +382,13 @@ $(function() {
                     }
                 });
 
-                self.camModel.webcamError.subscribe(function(){
+                self.classicCam.webcamError.subscribe(function(){
                     if (self.coreSettings.webcam_webcamEnabled() && self.webcamInWidget()){
                         $('.UICWebCamWidgetWait,.UICwebcamLoading').show();
                     }
                 });
             }
+            // All the old school webcam stuff END-------------------------------------------------------------------------------------------------------------------
 
 
             // Observe theme changes
@@ -480,6 +483,14 @@ $(function() {
                     self.cloneGcodeWidget();
                 }
 
+                // Auto load gcode if possible
+                gCodePerCentEvent = OctoPrint.coreui.viewmodels.gcodeViewModel.ui_progress_percentage.subscribe(function(per){
+                    if (OctoPrint.coreui.viewmodels.gcodeViewModel.tabActive == false && self.gCodeViewerActive){
+                        OctoPrint.coreui.viewmodels.gcodeViewModel.tabActive = true;
+                    }
+                });
+
+
                 // Disable/Enable storage of accordion states again just to make sure
                 self.set_saveAccordions(self.UICsettings.saveAccordions());
 
@@ -567,7 +578,7 @@ $(function() {
 
             // Test multicam
             pluginData = self.findPluginData('multicam',true)
-            if (pluginData){
+            if (pluginData && !self.newCam){
                 self.multicamPluginHandler();
                 self.settings.plugins.multicam.multicam_profiles.subscribe(function(theme) {
                     self.multicamPluginHandler();
@@ -1247,19 +1258,12 @@ $(function() {
 
         // ------------------------------------------------------------------------------------------------------------------------
         self.set_addWebCamZoom = function(enable){
-            if (self.newCam){
-                var streamURL = self.camModel.webcamStreamType();
-                var hlsCam = (self.camModel.webcamStreamType() != "mjpg");
-            }else{
-                var streamURL = self.coreSettings.webcam_streamUrl();
-                var hlsCam = (determineWebcamStreamType(streamURL) != "mjpg");
-            }
             // Remove all webcam zoom to cleanup
             $('#UICWebCamFull').remove();
             $('div.UICWebCamClick').remove();
 
             // Nothing to do
-            if (!enable || (self.coreSettings.webcam_webcamEnabled() == false || streamURL == "")){
+            if (!enable || (self.coreSettings.webcam_webcamEnabled() == false)){
                 return true;
             }
 
@@ -1299,10 +1303,8 @@ $(function() {
                 var containers = {'#webcam_plugins_container' : 'webcam_plugins_container'}
             }else{
                 var containers = {'#webcam_container' : '#webcam_rotator', '#webcam_hls_container' : '#webcam_hls', '#IUCWebcamContainerSrc' : '#webcam_rotator, #webcam_hls'};
-                if (hlsCam){
-                    // fix position of hls container
-                    $('#webcam_hls_container').css('position','relative');
-                }
+                // fix position of hls container
+                $('#webcam_hls_container').css('position','relative');
             }
 
             // Append containers to all webcams
@@ -1310,7 +1312,11 @@ $(function() {
                 let main = $(mainstr);
 
                 // Zoom widget
-                var zoomclick = $('<div class="UICWebCamClick"><a href="javascript:void(0);"><i class="fas fa-expand"></i></a></div>');
+                if (self.newCam && self.coreSettings.webcam_webcams().length > 1){
+                    var zoomclick = $('<div class="UICWebCamClick UICWebCamClickMulti"><a href="javascript:void(0);"><i class="fas fa-expand"></i></a></div>');
+                }else{
+                    var zoomclick = $('<div class="UICWebCamClick"><a href="javascript:void(0);"><i class="fas fa-expand"></i></a></div>');
+                }
                 main.prepend(zoomclick);
                 // Double click
                 main.off('dblclick').on('dblclick',function(){
@@ -1320,9 +1326,7 @@ $(function() {
                 if (!('ontouchstart' in window)){
                     zoomclick.hide();
                     main.off('mouseenter.UICWebCamZoom mousemove.UICWebCamZoom').on('mouseenter.UICWebCamZoom mousemove.UICWebCamZoom',function(e){
-                        if (hlsCam || self.camModel.webcamLoaded()){
-                            zoomclick.show();
-                        }
+                        zoomclick.show();
                     }).off('mouseleave.UICWebCamZoom').on('mouseleave.UICWebCamZoom',function(e){
                         zoomclick.hide();
                     });
@@ -1335,15 +1339,6 @@ $(function() {
                     $('#IUCWebcamContainer').find('.UICWebCamWidgetWait,.UICwebcamdockinfo').hide();
                     if (!self.newCam){
                         main.hide();
-                    }
-
-                    // Get the data
-                    if (self.newCam){
-                        streamURL = self.camModel.webcamStreamType();
-                        hlsCam = (self.camModel.webcamStreamType() != "mjpg");
-                    }else{
-                        streamURL = self.coreSettings.webcam_streamUrl();
-                        hlsCam = (determineWebcamStreamType(streamURL) != "mjpg");
                     }
 
                     // Append floating cam to body
@@ -1481,6 +1476,7 @@ $(function() {
             self.logToConsole('CustomW_initGcode',enable);
             self.gCodeViewerActive = enable;
             if (enable){
+                OctoPrint.coreui.viewmodels.gcodeViewModel.tabActive = true;
                 $('#UICGcodeVWidget ul.dropdown-menu a').off('click').on('click',function(event,dontLoad){
                     $('#UICGcodeVWidget  ul.dropdown-menu li.active').removeClass('active');
                     $(this).parent().addClass('active');
@@ -1568,7 +1564,7 @@ $(function() {
             $('#IUCWebcamContainerSrc,div.UICWebCamWidgetWait').remove();
 
             // Not configured - then show a warning
-            if (OctoPrint.coreui.viewmodels.classicWebcamSettingsViewModel.webcamEnabled() == false || OctoPrint.coreui.viewmodels.classicWebcamSettingsViewModel.streamUrl() == ""){
+            if (self.coreSettings.webcam_webcams().length == 0){
                 $('#IUCWebcamContainer div.nowebcam').remove();
                 $('#IUCWebcamContainer > div').append('<div class="nowebcam"><i class="fas fa-question"></i> <span>Webcam not configured&hellip;</span></div>');
                 $('#IUCWebcamContainer').find('.UICWebCamWidgetWait,.UICwebcamdockinfo').hide();
@@ -1582,6 +1578,7 @@ $(function() {
                     OctoPrint.coreui.viewmodels.controlViewModel.recreateIntersectionObservers();
                 }
             });
+
             $('#UICWebCamWidget').on('shown.bs.collapse.UIC',function(){
                 if (self.webcamInWidget()){
                     OctoPrint.coreui.viewmodels.controlViewModel.recreateIntersectionObservers();
@@ -1619,6 +1616,7 @@ $(function() {
             if (!$('#UICWebCamWidget').length){
                 return;
             }
+
             if (!self.newCam){
                 return self.webcamAttachHandlerOLD();
             }
@@ -3114,12 +3112,18 @@ $(function() {
                     }
                 });
                 // Settings
-                body += "\n\n**UI Customizer settings**\n";
+                body += "\n\n**UI Customizer settings/info**\n";
                 $(Object.entries(self.UICsettings)).each(function(x,item){
                     if (typeof item[1]() == "boolean"){
                         body += '- ' + item[0] + ": " +item[1]() + "\n";
                     }
                 });
+                body += "\n- New Webcam model: "+self.newCam.toString();
+                if (self.classicCam != null){
+                    body += "\n- Clasic cam: "+self.classicCam._bindings;
+                }else{
+                    body += "\n- Clasic cam: false";
+                }
                 body += "\n\n**Software versions**\n- "+$('#footer_version li').map(function(){return $(this).text()}).get().join("\n- ");
                 body += "\n\n**Browser**\n- "+navigator.userAgent
                 window.open(url+'?body='+encodeURIComponent(body),'UICBugReport');
@@ -3874,13 +3878,17 @@ $(function() {
                 // Gcode widget on and visible
                 if (!$('#UICGcodeVWidgetContainer.collapse.in').length || !$('#gcode_canvas').length || typeof OctoPrint.coreui.viewmodels.gcodeViewModel != "object") return;
 
+                OctoPrint.coreui.viewmodels.gcodeViewModel.tabActive = true;
+
                 // load the file is needed
                 if (OctoPrint.coreui.viewmodels.gcodeViewModel.needsLoad){
                     OctoPrint.coreui.viewmodels.gcodeViewModel.loadFile(OctoPrint.coreui.viewmodels.gcodeViewModel.selectedFile.path(), OctoPrint.coreui.viewmodels.gcodeViewModel.selectedFile.date());
                 }
 
-                // Update if gcode if not centered
-                if (OctoPrint.coreui.selectedTab !== "#gcode") OctoPrint.coreui.viewmodels.gcodeViewModel._renderPercentage(data.progress.completion);
+                // Update if gcode
+                if (data.progress.completion != null){
+                    OctoPrint.coreui.viewmodels.gcodeViewModel._renderPercentage(data.progress.completion);
+                }
 
                 self.cloneGcodeWidget();
             }
