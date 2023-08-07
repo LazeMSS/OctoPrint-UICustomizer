@@ -63,6 +63,7 @@ $(function() {
         self.settingsBeenShown = false;
 
         self.gCodeViewerActive = false;
+        self.gCodePerCentEvent = null;
         self.tempGraphActive = false;
 
         self.ThemesLoaded = false;
@@ -481,6 +482,14 @@ $(function() {
                 if (self.gCodeViewerActive && $('#UICGcodeVWidgetCan').attr('width') == undefined){
                     self.cloneGcodeWidget();
                 }
+
+                // Auto load gcode if possible
+                gCodePerCentEvent = OctoPrint.coreui.viewmodels.gcodeViewModel.ui_progress_percentage.subscribe(function(per){
+                    if (OctoPrint.coreui.viewmodels.gcodeViewModel.tabActive == false && self.gCodeViewerActive){
+                        OctoPrint.coreui.viewmodels.gcodeViewModel.tabActive = true;
+                    }
+                });
+
 
                 // Disable/Enable storage of accordion states again just to make sure
                 self.set_saveAccordions(self.UICsettings.saveAccordions());
@@ -1467,6 +1476,7 @@ $(function() {
             self.logToConsole('CustomW_initGcode',enable);
             self.gCodeViewerActive = enable;
             if (enable){
+                OctoPrint.coreui.viewmodels.gcodeViewModel.tabActive = true;
                 $('#UICGcodeVWidget ul.dropdown-menu a').off('click').on('click',function(event,dontLoad){
                     $('#UICGcodeVWidget  ul.dropdown-menu li.active').removeClass('active');
                     $(this).parent().addClass('active');
@@ -3868,13 +3878,17 @@ $(function() {
                 // Gcode widget on and visible
                 if (!$('#UICGcodeVWidgetContainer.collapse.in').length || !$('#gcode_canvas').length || typeof OctoPrint.coreui.viewmodels.gcodeViewModel != "object") return;
 
+                OctoPrint.coreui.viewmodels.gcodeViewModel.tabActive = true;
+
                 // load the file is needed
                 if (OctoPrint.coreui.viewmodels.gcodeViewModel.needsLoad){
                     OctoPrint.coreui.viewmodels.gcodeViewModel.loadFile(OctoPrint.coreui.viewmodels.gcodeViewModel.selectedFile.path(), OctoPrint.coreui.viewmodels.gcodeViewModel.selectedFile.date());
                 }
 
-                // Update if gcode if not centered
-                if (OctoPrint.coreui.selectedTab !== "#gcode") OctoPrint.coreui.viewmodels.gcodeViewModel._renderPercentage(data.progress.completion);
+                // Update if gcode
+                if (data.progress.completion != null){
+                    OctoPrint.coreui.viewmodels.gcodeViewModel._renderPercentage(data.progress.completion);
+                }
 
                 self.cloneGcodeWidget();
             }
