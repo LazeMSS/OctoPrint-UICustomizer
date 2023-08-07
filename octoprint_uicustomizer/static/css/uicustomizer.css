@@ -1003,6 +1003,11 @@ body.inlineFullscreen .UICWebCamClick{
     border-radius: 3px;
     text-align: center;
 }
+.UICWebCamClickMulti{
+    left: 10px;
+    right: initial !important;
+    top: -5px;
+}
 
 #UICWebCamTarget{
     z-index: 1020;
