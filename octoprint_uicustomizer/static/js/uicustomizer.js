@@ -46,7 +46,7 @@ $(function() {
         self.settings = null;
         self.UICsettings = null;
         self.tempModel = parameters[2] ? parameters[2] : parameters[1];
-        self.newCam = (typeof self.coreSettings.webcam_webcams != undefined);
+        self.newCam = (typeof self.coreSettings.webcam_webcams === 'function');
         self.classicCam = parameters[3];
 
         // Ignore these accordions - warnings about safety should always be shown
@@ -3878,6 +3878,7 @@ $(function() {
                 // Gcode widget on and visible
                 if (!$('#UICGcodeVWidgetContainer.collapse.in').length || !$('#gcode_canvas').length || typeof OctoPrint.coreui.viewmodels.gcodeViewModel != "object") return;
 
+                var prevGcodeTab = OctoPrint.coreui.viewmodels.gcodeViewModel.tabActive;
                 OctoPrint.coreui.viewmodels.gcodeViewModel.tabActive = true;
 
                 // load the file is needed
@@ -3886,9 +3887,10 @@ $(function() {
                 }
 
                 // Update if gcode
-                if (data.progress.completion != null){
+                if (data.progress.completion != null && OctoPrint.coreui.selectedTab != "#gcode"){
                     OctoPrint.coreui.viewmodels.gcodeViewModel._renderPercentage(data.progress.completion);
                 }
+                OctoPrint.coreui.viewmodels.gcodeViewModel.tabActive = prevGcodeTab;
 
                 self.cloneGcodeWidget();
             }

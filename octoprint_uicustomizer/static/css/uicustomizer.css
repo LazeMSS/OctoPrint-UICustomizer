@@ -1093,6 +1093,11 @@ body.inlineFullscreen .UICWebCamClick{
     cursor: none !important;
 }
 
+/* force hide shrink on fullscreen to prevent double */
+#UICWebCamFull.FullCam > #UICWebCamTarget div.UICWebCamClick{
+    display: none !important;
+}
+
 
 /* webcam progress bar */
 #UICWebCamFullProgress{
