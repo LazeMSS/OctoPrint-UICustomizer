@@ -46,7 +46,7 @@ $(function() {
         self.settings = null;
         self.UICsettings = null;
         self.tempModel = parameters[2] ? parameters[2] : parameters[1];
-        self.newCam = (typeof self.coreSettings.webcam_webcams != undefined);
+        self.newCam = (typeof self.coreSettings.webcam_webcams === 'function');
         self.classicCam = parameters[3];
 
         // Ignore these accordions - warnings about safety should always be shown
