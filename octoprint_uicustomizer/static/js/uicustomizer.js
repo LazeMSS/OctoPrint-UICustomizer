@@ -3878,6 +3878,7 @@ $(function() {
                 // Gcode widget on and visible
                 if (!$('#UICGcodeVWidgetContainer.collapse.in').length || !$('#gcode_canvas').length || typeof OctoPrint.coreui.viewmodels.gcodeViewModel != "object") return;
 
+                var prevGcodeTab = OctoPrint.coreui.viewmodels.gcodeViewModel.tabActive;
                 OctoPrint.coreui.viewmodels.gcodeViewModel.tabActive = true;
 
                 // load the file is needed
@@ -3886,9 +3887,10 @@ $(function() {
                 }
 
                 // Update if gcode
-                if (data.progress.completion != null){
+                if (data.progress.completion != null && OctoPrint.coreui.selectedTab != "#gcode"){
                     OctoPrint.coreui.viewmodels.gcodeViewModel._renderPercentage(data.progress.completion);
                 }
+                OctoPrint.coreui.viewmodels.gcodeViewModel.tabActive = prevGcodeTab;
 
                 self.cloneGcodeWidget();
             }
