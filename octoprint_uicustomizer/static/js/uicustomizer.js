@@ -34,7 +34,7 @@ $('body').append('<link class="UICBSResp" rel="stylesheet" href="./plugin/uicust
 
 // Now we start
 $(function() {
-    $('#control > #webcam_container > #webcam_rotator').attr('data-webcamorg','true');
+     $('#control > #webcam_container > #webcam_rotator').attr('data-webcamorg','true');
     $('#control > #webcam_container').attr('data-webcamorg','true');
     function UICustomizerViewModel(parameters) {
         var self = this;
@@ -159,7 +159,13 @@ $(function() {
             self.settings = self.coreSettings.settings;
             self.UICsettings = self.coreSettings.settings.plugins.uicustomizer;
 
-
+            var verDiff = self.compareVersion(VERSION,'1.10.0');
+            if (verDiff == -1){
+                $('body').addClass('UICOldCamFix');
+            }
+            if (verDiff == 0){
+                $('h1.sr-only').remove();
+            }
 
             // Cleanup everything if using touch ui
             if (typeof OctoPrint.coreui.viewmodels.touchUIViewModel != "undefined"){
@@ -3631,6 +3637,43 @@ $(function() {
             self.webcamAttachHandler();
 
             self.settingsBeenShown = false;
+        }
+
+        // https://stackoverflow.com/questions/6832596/how-can-i-compare-software-version-number-using-javascript-only-numbers
+        self.compareVersion = function (a, b) {
+            if (a === b) {
+               return 0;
+            }
+
+            var a_components = a.match(/^\d+\.\d+\.\d+/i)[0].split(".");
+            var b_components = b.match(/^\d+\.\d+\.\d+/i)[0].split(".");
+
+            var len = Math.min(a_components.length, b_components.length);
+
+            // loop while the components are equal
+            for (var i = 0; i < len; i++) {
+                // A bigger than B
+                if (parseInt(a_components[i]) > parseInt(b_components[i])) {
+                    return 1;
+                }
+
+                // B bigger than A
+                if (parseInt(a_components[i]) < parseInt(b_components[i])) {
+                    return -1;
+                }
+            }
+
+            // If one's a prefix of the other, the longer one is greater.
+            if (a_components.length > b_components.length) {
+                return 1;
+            }
+
+            if (a_components.length < b_components.length) {
+                return -1;
+            }
+
+            // Otherwise they are the same.
+            return 0;
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
