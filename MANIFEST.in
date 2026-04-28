@@ -1,1 +1,4 @@
 include README.md
+recursive-include octoprint_uicustomizer/templates *
+recursive-include octoprint_uicustomizer/translations *
+recursive-include octoprint_uicustomizer/static *

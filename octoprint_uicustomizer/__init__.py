@@ -1,7 +1,6 @@
 
 # coding=utf-8
 from __future__ import absolute_import
-from octoprint.server import user_permission
 
 import octoprint.plugin
 import os

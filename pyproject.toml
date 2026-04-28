@@ -1,0 +1,42 @@
+[build-system]
+requires = [
+    "setuptools>=68",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "UI-Customizer"
+version = "0.1.10.0"
+description = "Customize the layout of OctoPrint userinterface, add webcam widget and more"
+authors = [
+    { name = "Mikkel Skovgaard", email = "UICustomizer@jemi.dk" },
+]
+requires-python = ">=3.7,<4"
+dependencies = []
+dynamic = [
+    "license",
+]
+
+[project.entry-points."octoprint.plugin"]
+uicustomizer = "octoprint_uicustomizer"
+
+[project.urls]
+Homepage = "https://github.com/LazeMSS/OctoPrint-UICustomizer"
+
+[project.optional-dependencies]
+develop = [
+    "go-task-bin",
+]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = [
+    "octoprint_uicustomizer",
+    "octoprint_uicustomizer.*",
+]
