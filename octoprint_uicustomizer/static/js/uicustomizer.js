@@ -1488,15 +1488,17 @@ $(function() {
                     $(this).parent().addClass('active');
                     $('#UICGcodeVWidgetZL').text($(this).text());
                     $('#UICGcodeVWidget').data('zoomlvl',$(this).data('zoomlvl'));
-                    // Save the settings but not when the settings has been opened
-                    if (!self.settingsBeenShown){
+                    // Save the settings but not when the settings has been opened,
+                    // and not when the click was triggered programmatically to
+                    // restore the stored zoom level (see below)
+                    if (!self.settingsBeenShown && !dontLoad){
                         OctoPrint.settings.savePluginSettings('uicustomizer',{'gcodeZoom':$(this).data('zoomlvl')});
                     }
                 });
                 if (typeof self.UICsettings.gcodeZoom == "undefined" && $('#UICGcodeVWidget ul.dropdown-menu a[data-zoomlvl="'+self.UICsettings.gcodeZoom()+'"]').length == 0){
-                    $('#UICGcodeVWidget ul.dropdown-menu a:first').trigger('click');
+                    $('#UICGcodeVWidget ul.dropdown-menu a:first').trigger('click', [true]);
                 }else{
-                    $('#UICGcodeVWidget ul.dropdown-menu a[data-zoomlvl="'+self.UICsettings.gcodeZoom()+'"]').trigger('click')
+                    $('#UICGcodeVWidget ul.dropdown-menu a[data-zoomlvl="'+self.UICsettings.gcodeZoom()+'"]').trigger('click', [true])
                 }
             }
         }
