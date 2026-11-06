@@ -1326,6 +1326,11 @@ $(function() {
                 main.prepend(zoomclick);
                 // Double click
                 main.off('dblclick').on('dblclick',function(){
+                    // Double-click toggles: shrink when zoomed, zoom when not
+                    if ($('#UICWebCamFull').length){
+                        $('#UICWebCamShrink').trigger('click');
+                        return;
+                    }
                     zoomclick.trigger('click.UICWebCamClick');
                 });
 
@@ -1339,10 +1344,18 @@ $(function() {
                 }
 
                 zoomclick.off('click.UICWebCamClick').on('click.UICWebCamClick',function(){
-                    // Just in case
-                    $('#UICWebCamFull').remove();
+                    // Already zoomed: the webcam is inside the zoom box, so removing the box would take the webcam with it
+                    if ($('#UICWebCamFull').length){
+                        return false;
+                    }
                     // Hide any loading/info in the widget
                     $('#IUCWebcamContainer').find('.UICWebCamWidgetWait,.UICwebcamdockinfo').hide();
+                    // Remember where the webcam lives so shrinking can put it back
+                    var origins = (self.newCam ? main : main.find(childstr)).map(function(){
+                        return {el: this, parent: this.parentNode, next: this.nextSibling};
+                    }).get();
+                    var mainDisplay = main.length ? main[0].style.display : '';
+                    var scrollPos = $(window).scrollTop();
                     if (!self.newCam){
                         main.hide();
                     }
@@ -1440,8 +1453,24 @@ $(function() {
                         $('body').off('dragover.UICCam');
                         $('body').off('drop.UICCam');
                         $('#drop_overlay').removeClass('UICHideHard in');
+                        // Put the webcam back where it came from, then let the widget dock it if one is in use
+                        $.each(origins,function(i,o){
+                            o.parent.insertBefore(o.el,(o.next && o.next.parentNode == o.parent) ? o.next : null);
+                        });
+                        if (main.length){
+                            main[0].style.display = mainDisplay;
+                        }
+                        if (self.newCam){
+                            OctoPrint.coreui.viewmodels.controlViewModel.recreateIntersectionObservers();
+                        }
                         self.webcamAttachHandler();
                         $('#UICWebCamFull').remove();
+                        // Return the page to where it was scrolled before zooming. The browser can apply its own
+                        // scroll restore after leaving full screen, so set it again on the next frame.
+                        $(window).scrollTop(scrollPos);
+                        window.requestAnimationFrame(function(){
+                            $(window).scrollTop(scrollPos);
+                        });
                         return false;
                     });
                 });
