@@ -1,7 +1,7 @@
-# UI Customizer
+# UI Customizer Reborn
 ![](extras/responsive.png)
 ![](extras/discoranged.png)
-A [OctoPrint](https://github.com/foosel/OctoPrint) plugin that allows you to customize the look and feel of the user interface.
+A currently-active fork of the [OctoPrint](https://github.com/foosel/OctoPrint) UICustomizer plugin that allows you to customize the look and feel of the user interface.
 It also features a lot of other fixes and improvements:
 * Themes/skins - choose between 6+ themes
 * Customize tabs: Change icon, labels, order, show/hide
