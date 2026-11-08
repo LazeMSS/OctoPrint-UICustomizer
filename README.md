@@ -26,6 +26,7 @@ It also features a lot of other fixes and improvements:
 
 Table of Contents
 =================
+  * [Differences](#differences)
   * [Setup](#setup)
   * [Configuration](#configuration)
      * [General](#general)
@@ -40,6 +41,12 @@ Table of Contents
      * [Webcam and gcode widget](#webcam-and-gcode-widget)
      * [Floating webcam](#floating-webcam)
 
+
+## Differences
+
+The key difference is this repo is actively maintained. Developers are encouraged to submit pull requests that have been sitting on the upstream code here for inclusion. The original developer has indicated he no longer uses Octoprint and has no time to maintain the code, so this will keep the plugin from going stale, and will also fix the outstanding known issues.
+
+I have some larger plans, including making changes to support the new opt-in security model. I have other ideas, too, but let's not get too ambitious right away - I'm still a relative beginner at OctoPrint plugins.
 
 ## Setup
 
