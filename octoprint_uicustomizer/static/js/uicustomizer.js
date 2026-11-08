@@ -307,9 +307,9 @@ $(function() {
                             textStr += htmlmarkupfix(response.data.body);
                         }
                     }
-                    new PNotify({title:titleStr, type: "info","text": textStr + textStrFooter,"hide":false});
+                    new PNotify({ title: titleStr, type: "info", "text": textStr + textStrFooter, "hide": false, text_escape: true });
                 }).fail(function( data ) {
-                    new PNotify({title:titleStr, type: "info","text": textStr + textStrFooter,"hide":false});
+                    new PNotify({ title: titleStr, type: "info", "text": textStr + textStrFooter, "hide": false, text_escape: true });
                 }).always(function(){
                     self.setStorage('themeversion',self.UICsettings.themeVersion(),false);
                 });
@@ -2895,7 +2895,8 @@ $(function() {
                             title: 'Unable to load themes',
                             text: 'Failed to load "'+self.ThemesExternalURL+'themes.json" file - internal files loaded as fallback.<br><br>Do you have any plugins blocking access to external sites, for example NoScript.<br><br><code>Error message: ' + jqXHR.status + " " + jqXHR.statusText   + '</code>',
                             type: "error",
-                            hide: false
+                            hide: false,
+                            text_escape: true
                         });
                         $.ajax({
                             url: self.ThemesInternalURL+'../themes.json',
