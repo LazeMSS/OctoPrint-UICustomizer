@@ -215,12 +215,27 @@ class UICustomizerPlugin(octoprint.plugin.StartupPlugin,
     def route_hook(self, server_routes, *args, **kwargs):
         from octoprint.server.util.tornado import LargeResponseHandler, path_validation_factory
         from octoprint.util import is_hidden_path
+
+        def allow_public_theme_access(request):
+            """
+            Theme assets must be publicly accessible so themes also work
+            on the OctoPrint login page.
+            """
+            return
+
         return [
             (r"theme/(.*)", LargeResponseHandler,
-             {'path': self.baseFolder, 'as_attachment': False, 'path_validation': path_validation_factory(
-                 lambda path: not is_hidden_path(path), status_code=404)})
+             {
+                 'path': self.baseFolder,
+                 'as_attachment': False,
+                 'path_validation': path_validation_factory(
+                     lambda path: not is_hidden_path(path),
+                     status_code=404
+                 ),
+                 'access_validation': allow_public_theme_access
+             })
         ]
-
+        
 __plugin_name__ = "UI Customizer"
 __plugin_pythoncompat__ = ">=2.7,<4"
 
