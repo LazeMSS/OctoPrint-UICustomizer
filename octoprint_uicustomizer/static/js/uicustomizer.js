@@ -46,6 +46,41 @@ $(function() {
         self.settings = null;
         self.UICsettings = null;
         self.tempModel = parameters[2] ? parameters[2] : parameters[1];
+        // Track the selected tool on OctoPrint versions that do not expose
+        // printerStateViewModel.currentTool (e.g. OctoPrint 1.11.x).
+        // OctoPrint's ToolChange event supplies the new tool index.
+        self.currentToolIndex = null;
+        self.getActiveToolIndex = function() {
+            // Prefer OctoPrint's currentTool observable when available.
+            var stateViewModel = OctoPrint.coreui &&
+                OctoPrint.coreui.viewmodels &&
+                OctoPrint.coreui.viewmodels.printerStateViewModel;
+            if (stateViewModel && typeof stateViewModel.currentTool === 'function') {
+                var selectedTool = stateViewModel.currentTool();
+                if (selectedTool !== undefined && selectedTool !== null) {
+                    var match = /^tool(\d+)$/i.exec(String(selectedTool));
+                    if (match) {
+                        return parseInt(match[1], 10);
+                    }
+                    if (/^\d+$/.test(String(selectedTool))) {
+                        return parseInt(String(selectedTool), 10);
+                    }
+                }
+            }
+            return self.currentToolIndex;
+        };
+        self.onEventToolChange = function(payload) {
+            if (!payload || payload.new === undefined || payload.new === null) {
+                return;
+            }
+            var value = String(payload.new);
+            var match = /^tool(\d+)$/i.exec(value);
+            var toolIndex = match ? parseInt(match[1], 10) :
+                (/^\d+$/.test(value) ? parseInt(value, 10) : NaN);
+            if (isFinite(toolIndex) && toolIndex >= 0) {
+                self.currentToolIndex = toolIndex;
+            }
+        };
         self.newCam = (typeof self.coreSettings.webcam_webcams === 'function');
         self.classicCam = parameters[3];
 
@@ -272,9 +307,9 @@ $(function() {
                             textStr += htmlmarkupfix(response.data.body);
                         }
                     }
-                    new PNotify({title:titleStr, type: "info","text": textStr + textStrFooter,"hide":false});
+                    new PNotify({ title: titleStr, type: "info", "text": textStr + textStrFooter, "hide": false, text_escape: true });
                 }).fail(function( data ) {
-                    new PNotify({title:titleStr, type: "info","text": textStr + textStrFooter,"hide":false});
+                    new PNotify({ title: titleStr, type: "info", "text": textStr + textStrFooter, "hide": false, text_escape: true });
                 }).always(function(){
                     self.setStorage('themeversion',self.UICsettings.themeVersion(),false);
                 });
@@ -610,7 +645,7 @@ $(function() {
                 if (pluginData != null && 'enabled' in pluginData && pluginData.enabled == true){
                     self.logToConsole("Plugin issues detected: " + plugKeyName);
                     var optionsCust = $.extend(true,{},options);
-                    optionsCust.text = '"'+pluginData.name+'" plugin is installed and enabled. This might cause problems, ie. conflicts, broken layout, etc. when running together with UICustomizer.<br><br>It’s recommended to either disable UICustomizer or '+pluginData.name+'. <hr class="UICUpdateHR">';
+                    optionsCust.text = '"'+pluginData.name+'" plugin is installed and enabled. This might cause problems, ie. conflicts, broken layout, etc. when running together with UICustomizer.<br><br>Itâ€™s recommended to either disable UICustomizer or '+pluginData.name+'. <hr class="UICUpdateHR">';
                      optionsCust.confirm.buttons =
                      [
                         {
@@ -2860,7 +2895,8 @@ $(function() {
                             title: 'Unable to load themes',
                             text: 'Failed to load "'+self.ThemesExternalURL+'themes.json" file - internal files loaded as fallback.<br><br>Do you have any plugins blocking access to external sites, for example NoScript.<br><br><code>Error message: ' + jqXHR.status + " " + jqXHR.statusText   + '</code>',
                             type: "error",
-                            hide: false
+                            hide: false,
+                            text_escape: true
                         });
                         $.ajax({
                             url: self.ThemesInternalURL+'../themes.json',
@@ -3783,20 +3819,39 @@ $(function() {
 
                 // Build temps - these are kinda special
                 if(data.temps && data.temps[0]){
-                    if(self.tempModel.hasTools() && data.temps[0].tool0 != undefined){
-                        var calcVal = formatTemperature(data.temps[0].tool0.actual,false)+" / "+formatTemperature(data.temps[0].tool0.target,false);
+                    var activeToolIndex = self.getActiveToolIndex();
+                    var activeToolKey = activeToolIndex !== null && activeToolIndex !== undefined ?
+                        'tool' + activeToolIndex : null;
+                    var activeToolData = activeToolKey ? data.temps[0][activeToolKey] : undefined;
+                    if(self.tempModel.hasTools() && activeToolData != undefined){
+                        var calcVal = formatTemperature(activeToolData.actual,false)+" / "+formatTemperature(activeToolData.target,false);
                         setLabelFSWC('t0','Tool temperature','fas fa-fire', calcVal,false);
+                    }else if(self.tempModel.hasTools()){
+                        setLabelFSWC('t0','Tool temperature (active tool unknown)','fas fa-fire','-',false);
                     }
                     if(self.tempModel.hasBed() && data.temps[0].bed != undefined){
                         var calcVal = formatTemperature(data.temps[0].bed.actual,false)+" / "+formatTemperature(data.temps[0].bed.target,false);
                         setLabelFSWC('bed','Bed temperature','fas fa-window-minimize', calcVal,false);
                     }
                 }else{
-                    if(self.tempModel.hasTools() && self.tempModel.temperatures['tool0'].actual.length > 0 && self.tempModel.temperatures['tool0'].actual[self.tempModel.temperatures['tool0'].actual.length-1][1] != undefined){
-                        var tempAct  = self.tempModel.temperatures['tool0'].actual[self.tempModel.temperatures['tool0'].actual.length-1][1];
-                        var tempTrg  = self.tempModel.temperatures['tool0'].target[self.tempModel.temperatures['tool0'].target.length-1][1];
+                    var activeToolIndex = self.getActiveToolIndex();
+                    var activeToolKey = activeToolIndex !== null && activeToolIndex !== undefined ?
+                        'tool' + activeToolIndex : null;
+                    var activeToolHistory = activeToolKey && self.tempModel.temperatures ?
+                        self.tempModel.temperatures[activeToolKey] : undefined;
+                    var actualHistory = activeToolHistory && activeToolHistory.actual;
+                    var targetHistory = activeToolHistory && activeToolHistory.target;
+                    var actualLast = actualHistory && actualHistory.length ?
+                        actualHistory[actualHistory.length - 1] : undefined;
+                    var targetLast = targetHistory && targetHistory.length ?
+                        targetHistory[targetHistory.length - 1] : undefined;
+                    if(self.tempModel.hasTools() && actualLast && actualLast[1] != undefined){
+                        var tempAct = actualLast[1];
+                        var tempTrg = targetLast && targetLast[1] != undefined ? targetLast[1] : 0;
                         var calcVal = formatTemperature(tempAct,false)+" / "+formatTemperature(tempTrg,false);
-                       setLabelFSWC('t0','Tool temperature','fas fa-fire', calcVal,false);
+                        setLabelFSWC('t0','Tool temperature','fas fa-fire', calcVal,false);
+                    }else if(self.tempModel.hasTools()){
+                        setLabelFSWC('t0','Tool temperature (active tool unknown)','fas fa-fire','-',false);
                     }
                     if(self.tempModel.hasBed() && self.tempModel.temperatures['bed'].actual.length > 0 && self.tempModel.temperatures['bed'].actual[self.tempModel.temperatures['bed'].actual.length-1][1] != undefined){
                         var tempAct  = self.tempModel.temperatures['bed'].actual[self.tempModel.temperatures['bed'].actual.length-1][1];
